@@ -1,0 +1,30 @@
+/* Impression (PDF et Ctrl+P). Les sauts de page \newpage / <!-- newpage --> sont invisibles à l'écran. */
+.pagebreak, .nohf, .samepage { display: none; }
+
+@media print {
+  /* TOC Markdown : à l'impression tout est déplié, la flèche est masquée et sa compensation d'alignement retirée. */
+  .toc-block .fo { display: none; }
+  .toc-block summary { list-style: none; }
+  .toc-block summary::-webkit-details-marker { display: none; }
+  @page { background: var(--bg); }
+  html { -webkit-print-color-adjust: exact; print-color-adjust: exact; background: var(--bg); }
+  body { background: var(--bg); }
+  .pb { break-before: page; }
+  :is(h1, h2, h3, h4, h5, h6) { break-after: avoid; }
+  :is(tr, img, .mermaid-box, blockquote, .katex-display) { break-inside: avoid; }
+  .pdf-seg { break-inside: avoid; }
+  :root.keep-blocks :is(p, pre, li, figure, .code-block, .markdown-alert, dl) { break-inside: avoid; }
+  details > summary { list-style: none; }
+  details > summary::-webkit-details-marker { display: none; }
+  p { orphans: 3; widows: 3; }
+  :target { animation: none; }
+
+  .markdown-body img { max-height: var(--pdf-fig-h, none); object-fit: contain; }
+  .markdown-body table { display: table; width: 100%; overflow: visible; font-size: .92em; overflow-wrap: anywhere; }
+  .markdown-body thead { display: table-header-group; }
+  .code-block code.hljs { white-space: pre-wrap; overflow: visible; overflow-wrap: anywhere; }
+  .mermaid-box { border: 0; overflow: visible; margin: 1em 0; }
+  pre.mermaid { padding: 0; }
+  pre.mermaid svg { max-height: calc(var(--pdf-fig-h, 100vh) - 9em); }
+  .markdown-body a { color: var(--accent); }
+}

@@ -1,0 +1,91 @@
+// Configuration du document doc/@@name@@.md (JSON avec commentaires autorisés).
+// Ce fichier porte le même nom que le .md (@@name@@.md ↔ @@name@@.jsonc) ; un .md sans .jsonc est ignoré.
+// Les chemins éventuels (icon, logo, customCss) sont relatifs à ce dossier (doc/). Toute clé omise prend sa valeur par défaut.
+// Référence complète de toutes les options : README.md à la racine du projet.
+{
+  // ---------------------------------------------------------------- Général
+  // Nom du fichier HTML généré (sans extension), dans output_html/@@name@@/. Défaut : "index" => output_html/@@name@@/index.html
+  "htmlName": @@htmlName@@,
+
+  // Titre de l'onglet et du sommaire (null = nom du fichier .md)
+  "title": @@title@@,
+  // Icône de l'onglet (favicon) et logo affiché devant le titre du sommaire : chemin d'une image de doc/ (ex. "media/logo.png"), null = aucune
+  "icon": @@icon@@,
+  "language": @@language@@,
+
+  // MODE DE LA PAGE (pas celui du code) : "auto" suit le système, "light" reste clair, "dark" reste sombre.
+  // Le bouton de la page permet aussi de passer manuellement de Auto à Clair ou Sombre.
+  "theme": @@theme@@,
+
+  // true : les images sont incorporées dans le HTML (fichier autonome mais lourd, rien à copier).
+  // false : les images utilisées sont copiées dans output_html/@@name@@/ avec la même arborescence que dans doc/ (HTML léger).
+  "embedImages": @@embedImages@@,
+
+  // ---------------------------------------------------------------- Numérotation des titres
+  // `npm run edit:numbering` applique ce schéma au .md ; `edit:numbering:guess` le déduit du .md ; `edit:numbering:reset` l'enlève.
+  // Par niveau (1 = « # »…) : "style" =
+  //   ignore  : le niveau n'est jamais modifié ;
+  //   none    : pas d'indice, mais le "separator" sert de symbole devant le titre ("▪" => "## ▪ Titre") ;
+  //   decimal (1, 2) | alpha (a, b) | ALPHA (A, B) | roman (i, ii) | ROMAN (I, II) : numérotation.
+  // "separator" = texte placé après chaque indice (".", " ", "-"…). "cumulative" : true => "2.1." (indices des parents inclus).
+  "numbering": {
+    "levels": @@numberingLevels@@
+  },
+
+  // ---------------------------------------------------------------- Table des matières (`npm run edit:toc`)
+  // Écrite dans le .md entre <!-- TOC --> et <!-- /TOC --> ; insérée en haut du document la première fois.
+  "toc": {
+    "range": @@tocRange@@,    // [niveau min, niveau max] listés
+    "collapsible": false,     // true : table repliable (HTML / Markdown uniquement)
+    "summary": "Table des matières",
+    "open": false
+    // Options avancées par niveau ("levels" : symbol, indent, bold, italic, size, collapsible) : voir README.md
+  },
+
+  // ---------------------------------------------------------------- Export PDF (`npm run build:pdf`, Chrome ou Edge requis)
+  // Sauts de page dans le Markdown : une ligne `\newpage` ou <!-- newpage -->.
+  // Page sans en-tête ni pied (page de garde…) : <!-- nohf --> en toute première ligne, ou juste après un saut de page.
+  "pdf": {
+    "name": @@pdfName@@,         // nom du fichier dans output_pdf/, sans extension (null = nom du .md)
+    "theme": @@pdfTheme@@,       // "light" ou "dark"
+    "format": @@format@@,        // A3, A4, A5, Letter, Legal, Tabloid
+    "landscape": @@landscape@@,
+    "zoom": @@zoom@@,            // en % (10 à 200)
+    "margins": @@margins@@,      // mm, cm, in, pt ou px
+    "pageBreakBefore": @@pageBreaks@@,   // niveaux de titres qui commencent une nouvelle page ; [] = aucun
+    "hideToc": @@hideToc@@,      // true : retire du PDF la table des matières du .md
+    "keepSectionsTogether": true,  // une section qui tient sur une page n'est jamais coupée
+    "keepBlocksTogether": true,    // paragraphes, blocs de code… jamais coupés entre deux pages
+    "browser": null,             // chemin d'un chrome.exe / msedge.exe ; null = détection automatique
+
+    // En-tête / pied de page : null pour désactiver. Zones left / center / right, HTML autorisé.
+    // Variables : {page} {pages} {title} {date} {h1} … {h6}. Image : <img src="media/logo.png" style="height:8mm">
+    "header": @@header@@,
+    "footer": @@footer@@
+  },
+
+  // ---------------------------------------------------------------- Page HTML
+  "layout": {
+    "sidebarWidth": 320,         // largeur initiale du sommaire en px (glisser sa bordure pour ajuster)
+    "contentWidthPercent": 90    // part de la largeur restante occupée par le contenu
+  },
+
+  "style": {
+    "fontSize": "16px",
+    // Couleurs de la page : choix indépendant pour le mode clair / sombre.
+    // Thèmes intégrés : "default" (gris/noir/blanc), "formal" (clair), "neon" (sombre). Pour en créer : voir pagePalettes ci-dessous.
+    "pageTheme": { "light": "default", "dark": "default" },
+    "pagePalettes": {},
+    // Mode des couleurs du code : "follow" suit la page, "auto" suit le système, "light" ou "dark" sont fixes.
+    "codeTheme": { "mode": "follow" },
+    // Thème de coloration des balises : "default", nom highlight.js ("vs", "vs2015"...) ou fichier CSS dans template/ ou doc/.
+    "highlight": { "light": "default", "dark": "default" },
+    // Thème des diagrammes Mermaid : "auto", default, dark, forest ou neutral
+    "mermaidTheme": "auto",
+    // layout : "dagre" (hiérarchique) ou "elk" (adaptatif) ; direction : null, "TB", "BT", "LR" ou "RL".
+    // Modifiable par diagramme dans le .md : ```mermaid layout=elk direction=LR
+    "mermaid": { "layout": "elk", "direction": "TB" },
+    // Taille / retrait / couleur de chaque niveau de titre (« headings ») et du sommaire (« toc ») : voir README.md
+    "customCss": null            // fichier CSS supplémentaire (relatif à doc/), appliqué en dernier
+  }
+}

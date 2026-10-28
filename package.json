@@ -1,0 +1,31 @@
+{
+  "name": "md-report-tool",
+  "version": "3.0.0",
+  "description": "Documents Markdown -> HTML (output_html/) et PDF (output_pdf/) : sommaire, LaTeX, Mermaid, code coloré",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build:html": "node scripts/build.mjs",
+    "build:pdf": "node scripts/build.mjs --pdf",
+    "edit:numbering": "node scripts/edit.mjs numbering",
+    "edit:numbering:guess": "node scripts/edit.mjs guess",
+    "edit:numbering:reset": "node scripts/edit.mjs reset",
+    "edit:toc": "node scripts/edit.mjs toc",
+    "edit:outline": "node scripts/edit.mjs numbering toc",
+    "dev": "node scripts/build.mjs --watch",
+    "init": "node scripts/init.mjs"
+  },
+  "dependencies": {
+    "@mermaid-js/layout-elk": "^1.0.1",
+    "esbuild": "^0.28.2",
+    "github-slugger": "^2.0.0",
+    "highlight.js": "^11.10.0",
+    "katex": "^0.16.11",
+    "markdown-it": "^14.1.0",
+    "markdown-it-texmath": "^1.0.0",
+    "mermaid": "^12.2.0",
+    "pdf-lib": "^1.17.1",
+    "playwright-core": "^1.64.1",
+    "svg-pan-zoom": "^3.6.2"
+  }
+}

@@ -1,0 +1,9 @@
+/* Palette de coloration syntaxique sombre, contrastée et néon. */
+.hljs-keyword, .hljs-selector-tag, .hljs-literal { color: #ff5cf4; }
+.hljs-string, .hljs-doctag { color: #ffd166; }
+.hljs-comment, .hljs-quote { color: #8a9b91; }
+.hljs-number, .hljs-literal { color: #9dff70; }
+.hljs-type, .hljs-built_in { color: #45e6ff; }
+.hljs-title, .hljs-title.function_, .hljs-title.class_ { color: #fff275; }
+.hljs-attr, .hljs-attribute, .hljs-property { color: #7de2d1; }
+.hljs-meta, .hljs-meta .hljs-keyword { color: #c792ea; }

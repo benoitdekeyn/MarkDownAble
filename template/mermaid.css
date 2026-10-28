@@ -1,0 +1,16 @@
+/* Style des diagrammes Mermaid : ce fichier est injecté dans chaque diagramme (page et plein écran).
+   Les règles écrites ici s'appliquent aux deux thèmes. Pour en réserver à un thème, placez avant elles
+   une ligne marqueur « arobase light » ou « arobase dark » entre commentaires (voir en bas), et « arobase all » pour revenir aux règles communes.
+   Classes utiles : .node rect/polygon/circle (nœuds), .label (texte), .flowchart-link et .transition (liens),
+   .edgeLabel (étiquettes des flèches), .cluster rect (groupes), .actor (diagramme de séquence).
+   La palette de base vient de style.mermaidTheme dans la configuration JSONC. Exemples à décommenter : */
+
+/* .node rect, .node polygon, .node circle { rx: 8px; ry: 8px; stroke-width: 2px; } */
+/* .flowchart-link, .transition { stroke-width: 2px; } */
+/* .edgeLabel, .edgeLabel p { font-size: 13px; } */
+
+/* @light */
+/* .node rect { fill: #eef6ff; stroke: #0969da; } */
+
+/* @dark */
+/* .node rect { fill: #1b2a41; stroke: #4493f8; } */

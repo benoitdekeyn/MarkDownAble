@@ -1,0 +1,24 @@
+/* Personnalisation fine des balises de code (coloration syntaxique).
+   Ce fichier s'applique à tous les documents, en complément ou en surcouche du thème choisi dans le .jsonc.
+   Les marqueurs de thème clair et sombre sont indiqués séparément ci-dessous.
+   Classes highlight.js : keyword (mots-clés), string, comment, number, type, title.function_ (fonctions),
+   built_in, variable, params, operator, meta, literal, attr.
+   Décommentez et adaptez les exemples pour activer vos propres règles. */
+
+/* @light */
+/* Palette typique style VS Code Light : */
+/* .hljs-keyword          { color: #0000ff; font-weight: 600; } */
+/* .hljs-string           { color: #a31515; } */
+/* .hljs-comment          { color: #008000; font-style: italic; } */
+/* .hljs-number           { color: #098658; } */
+/* .hljs-type             { color: #267f99; } */
+/* .hljs-title.function_  { color: #795e26; } */
+
+/* @dark */
+/* Palette typique style VS Code Dark+ : */
+/* .hljs-keyword          { color: #569cd6; font-weight: 600; } */
+/* .hljs-string           { color: #ce9178; } */
+/* .hljs-comment          { color: #6a9955; font-style: italic; } */
+/* .hljs-number           { color: #b5cea8; } */
+/* .hljs-type             { color: #4ec9b0; } */
+/* .hljs-title.function_  { color: #dcdcaa; } */

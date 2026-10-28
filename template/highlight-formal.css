@@ -1,0 +1,9 @@
+/* Palette de coloration syntaxique claire, sobre et formelle. */
+.hljs-keyword, .hljs-selector-tag, .hljs-literal { color: #0000a8; }
+.hljs-string, .hljs-doctag { color: #8a2c0d; }
+.hljs-comment, .hljs-quote { color: #53744a; }
+.hljs-number, .hljs-literal { color: #08733c; }
+.hljs-type, .hljs-built_in { color: #176b83; }
+.hljs-title, .hljs-title.function_, .hljs-title.class_ { color: #76521b; }
+.hljs-attr, .hljs-attribute, .hljs-property { color: #795300; }
+.hljs-meta, .hljs-meta .hljs-keyword { color: #68479a; }
