@@ -843,22 +843,24 @@ async function buildFiles() {
   const issues = prepIssues.map((message) => ({ type: 'error', message }));
   for (const { cfg } of jobs) {
     try {
-      if (PDF) {
-        const { html, headings, warnings } = await generate(cfg, { pdf: true });
-        const pdfWarnings = [];
-        const r = await exportPdf({ cfg, html, ConfigError, warn: (m) => pdfWarnings.push(m) });
-        warnings.push(...pdfWarnings);
-        outputs.push({ path: cfg.pdfFile, message: `${cfg.docName} → ${rel(cfg.pdfFile)} (${r.pages} pages, ${r.bookmarks} signets, ${headings} titres)` });
-        warnings.forEach((message) => issues.push({ type: 'warning', message: `${cfg.docName} : ${message}` }));
-      } else {
-        const { html, assets, headings, warnings } = await generate(cfg);
-        fs.mkdirSync(cfg.outputDir, { recursive: true });
-        fs.writeFileSync(cfg.outputFile, html);
-        copyAssets(cfg, assets);
-        syncManifest(cfg, [path.basename(cfg.outputFile), ...assets.map(([outputPath]) => outputPath)]);
-        outputs.push({ path: cfg.outputFile, message: `${cfg.docName} → ${rel(cfg.outputFile)} (${headings} titres, ${assets.length} média(s))` });
-        warnings.forEach((message) => issues.push({ type: 'warning', message: `${cfg.docName} : ${message}` }));
-      }
+      await log.withSpinner(`${PDF ? 'Génération PDF' : 'Génération HTML'} : ${cfg.docName}`, async () => {
+        if (PDF) {
+          const { html, headings, warnings } = await generate(cfg, { pdf: true });
+          const pdfWarnings = [];
+          const r = await exportPdf({ cfg, html, ConfigError, warn: (m) => pdfWarnings.push(m) });
+          warnings.push(...pdfWarnings);
+          outputs.push({ path: cfg.pdfFile, message: `${cfg.docName} → ${rel(cfg.pdfFile)} (${r.pages} pages, ${r.bookmarks} signets, ${headings} titres)` });
+          warnings.forEach((message) => issues.push({ type: 'warning', message: `${cfg.docName} : ${message}` }));
+        } else {
+          const { html, assets, headings, warnings } = await generate(cfg);
+          fs.mkdirSync(cfg.outputDir, { recursive: true });
+          fs.writeFileSync(cfg.outputFile, html);
+          copyAssets(cfg, assets);
+          syncManifest(cfg, [path.basename(cfg.outputFile), ...assets.map(([outputPath]) => outputPath)]);
+          outputs.push({ path: cfg.outputFile, message: `${cfg.docName} → ${rel(cfg.outputFile)} (${headings} titres, ${assets.length} média(s))` });
+          warnings.forEach((message) => issues.push({ type: 'warning', message: `${cfg.docName} : ${message}` }));
+        }
+      });
     } catch (e) {
       if (!isConfigError(e)) throw e;
       issues.push({ type: 'error', message: `${cfg.docName} : ${e.message}` });
@@ -893,7 +895,7 @@ async function serve() {
         const successes = [];
         for (const { doc, cfg } of jobs) {
           try {
-            const result = await generate(cfg);
+            const result = await log.withSpinner(`Génération de l’aperçu : ${doc.name}`, () => generate(cfg));
             states.set(doc.name, result);
             successes.push({ message: `${doc.name} : aperçu prêt (${result.headings} titres)` });
             result.warnings.forEach((message) => issues.push({ type: 'warning', message: `${doc.name} : ${message}` }));
