@@ -7,6 +7,8 @@ Cet outil transforme un ou plusieurs documents Markdown (`.md`) en :
 
 Il fournit aussi des commandes pour **numéroter les titres** et **générer la table des matières** directement dans le Markdown.
 
+Vous pouvez consulter le dépôt GitHub mais ce n'est pas nécessaire pour utiliser l'outil :   [https://github.com/benoitdekeyn/MarkDownAble](https://github.com/benoitdekeyn/MarkDownAble)
+
 ## Par où commencer ?
 
 | Votre situation | Où aller |
@@ -227,7 +229,7 @@ Squelette complet (valeurs par défaut de l'outil, sauf indication) :
 }
 ```
 
-> Le fichier [doc/exemple.jsonc](doc/exemple.jsonc) est un exemple complet et commenté. `npm run init` génère le même type de fichier (§3).
+> Le fichier [doc/exemple.jsonc](https://github.com/benoitdekeyn/MarkDownAble/blob/main/doc/exemple.jsonc) est un exemple complet et commenté. `npm run init` génère le même type de fichier (§3).
 
 ### 5.2 Général : fichiers de sortie, titre, icône, thème
 
