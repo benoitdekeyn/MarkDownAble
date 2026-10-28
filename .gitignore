@@ -1,3 +1,5 @@
 node_modules/
 .markdown-pdf-*.html
 scripts/state/
+output_*/README*
+doc/README.*
