@@ -73,7 +73,7 @@
   "style": {
     "fontSize": "16px",
     // Couleurs de la page : choix indépendant pour le mode clair / sombre.
-    // Thèmes intégrés : "default" (gris/noir/blanc), "formal" (clair), "neon" (sombre). Pour en créer : voir pagePalettes ci-dessous.
+    // Thèmes intégrés : "default" (gris/noir/blanc, liens bleus), "formal" (clair), "neon" (sombre). Pour en créer : voir pagePalettes ci-dessous.
     "pageTheme": { "light": "default", "dark": "default" },
     "pagePalettes": {},
     // Mode des couleurs du code : "follow" suit la page, "auto" suit le système, "light" ou "dark" sont fixes.

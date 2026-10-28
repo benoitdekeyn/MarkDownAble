@@ -3,7 +3,7 @@
 // Usage : node scripts/build.mjs [nom…]           -> output_html/<nom>/<htmlName>.html + médias utilisés
 //         node scripts/build.mjs --pdf [nom…]     -> output_pdf/<nom>.pdf
 //         node scripts/build.mjs --watch [nom…]   -> sert les pages sur http://localhost:4173 avec rechargement automatique
-// Options : --open (ouvre l'explorateur sur le HTML ou le PDF généré ; rien n'est ouvert par défaut)
+// Options : --open (ouvre le HTML dans le navigateur par défaut, ou le PDF dans son lecteur ; rien n'est ouvert par défaut)
 //          --no-open (en mode --watch, n'ouvre pas le navigateur)
 import fs from 'node:fs';
 import path from 'node:path';
@@ -798,18 +798,17 @@ async function generate(cfg, opts = {}) {
 // Le mode --watch ouvre le navigateur par défaut ; --no-open (ou MARKDOWN_NO_OPEN=1) l'en empêche.
 const NO_OPEN = process.argv.includes('--no-open') || Boolean(process.env.MARKDOWN_NO_OPEN);
 const OPEN = !NO_OPEN && (process.argv.includes('--open') || Boolean(process.env.MARKDOWN_OPEN) || WATCH);
-function openTarget(target, { reveal = false } = {}) {
+function openTarget(target) {
   if (!OPEN) return;
   let cmd;
   let args;
   let opts = { detached: true, stdio: 'ignore' };
   if (process.platform === 'win32') {
-    if (reveal) { cmd = 'explorer.exe'; args = [`/select,"${target}"`]; opts = { ...opts, windowsVerbatimArguments: true }; }
-    else { cmd = 'cmd.exe'; args = ['/c', 'start', '""', `"${target}"`]; opts = { ...opts, windowsVerbatimArguments: true }; }
+    cmd = 'cmd.exe'; args = ['/c', 'start', '""', `"${target}"`]; opts = { ...opts, windowsVerbatimArguments: true };
   } else if (process.platform === 'darwin') {
-    cmd = 'open'; args = reveal ? ['-R', target] : [target];
+    cmd = 'open'; args = [target];
   } else {
-    cmd = 'xdg-open'; args = [reveal ? path.dirname(target) : target];
+    cmd = 'xdg-open'; args = [target];
   }
   try {
     const child = spawn(cmd, args, opts);
@@ -939,8 +938,7 @@ async function buildFiles() {
       issues.push({ type: 'error', message: `${cfg.docName} : ${e.message}` });
     }
   }
-  if (PDF) outputs.forEach(({ path: file }) => openTarget(file));
-  else if (outputs.length) openTarget(outputs[0].path, { reveal: true });
+  if (outputs.length) outputs.forEach(({ path: file }) => openTarget(file));
   printRunSummary({ successes: outputs, issues, action: PDF ? 'Export PDF' : 'Build HTML' });
   if (issues.some((issue) => issue.type === 'error')) process.exitCode = 1;
 }

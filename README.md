@@ -111,13 +111,14 @@ Toutes les commandes se lancent depuis le terminal, dans ce dossier.
 | --- | --- |
 | `npm run init -- MonDoc` | Crée `doc/MonDoc.md` et `doc/MonDoc.jsonc` (config commentée). Voir §3. |
 | `npm run dev` | Serveur local avec **rechargement automatique** à chaque sauvegarde (ouvre le navigateur sur http://localhost:4173). Ctrl+C pour arrêter. |
-| `npm run build:html` | Écrit `output_html/<nom>/<htmlName>.html` + médias utilisés, et l'ouvre dans l'Explorateur avec `--open`. |
+| `npm run build:html` | Écrit `output_html/<nom>/<htmlName>.html` + médias utilisés, et l'ouvre dans le navigateur par défaut avec `--open`. |
 | `npm run build:pdf` | Écrit `output_pdf/<nom>.pdf` (l'ouvre avec `--open`). |
 | `npm run edit:numbering` | Numérote les titres du `.md` selon `numbering`. |
 | `npm run edit:numbering:guess` | Détecte la numérotation **déjà présente** et réécrit `numbering.levels` dans la config. |
 | `npm run edit:numbering:reset` | Retire toute la numérotation des titres. |
 | `npm run edit:toc` | Génère / met à jour la table des matières dans le `.md`. |
 | `npm run edit:outline` | `edit:numbering` puis `edit:toc`. |
+| `npm run release` | Publication de ce dépôt : copie `README.md` vers `doc/README.md`, génère les HTML et PDF de **tous** les documents, puis copie `output_html/README/index.html` et `output_pdf/README.pdf` vers `README.html` et `README.pdf` à la racine (fichiers écrasés). Nécessite `doc/README.jsonc`. |
 
 Options (à ajouter après `--`) :
 
@@ -490,7 +491,7 @@ Voici un exemple complet : la page utilise une palette formelle en mode clair et
 }
 ```
 
-Les palettes de page intégrées sont `default` (mode sombre neutre, gris/noir/blanc), `formal` (clair) et `neon` (sombre coloré). Pour créer une palette de page, déclarez-la dans `pagePalettes`, puis sélectionnez son nom dans `pageTheme` :
+Les palettes de page intégrées sont `default` (mode sombre gris/noir/blanc, liens en bleu), `formal` (clair) et `neon` (sombre coloré). Pour créer une palette de page, déclarez-la dans `pagePalettes`, puis sélectionnez son nom dans `pageTheme` :
 
 ```jsonc
 "pageTheme": { "light": "papier", "dark": "neon" },
@@ -557,7 +558,7 @@ Valeurs par défaut :
 | `muted` | texte secondaire (en-têtes / pieds PDF) | `#59636e` / `#a0a0a0` |
 | `border` | bordures, séparateurs | `#d1d9e0` / `#3d3d3d` |
 | `sidebarBg` | fond du sommaire latéral | `#f6f8fa` / `#191919` |
-| `accent` | liens, titre actif du sommaire, poignée de redimensionnement | `#0969da` / `#d0d0d0` |
+| `accent` | liens, titre actif du sommaire, poignée de redimensionnement | `#0969da` / `#4493f8` |
 | `codeBg` | fond du code, lignes paires des tableaux | `#f6f8fa` / `#191919` |
 | `quote` | texte des citations | `#656d76` / `#a0a0a0` |
 

@@ -13,7 +13,8 @@
     "edit:toc": "node scripts/edit.mjs toc",
     "edit:outline": "node scripts/edit.mjs numbering toc",
     "dev": "node scripts/build.mjs --watch",
-    "init": "node scripts/init.mjs"
+    "init": "node scripts/init.mjs",
+    "release": "node scripts/release.mjs"
   },
   "dependencies": {
     "@mermaid-js/layout-elk": "^1.0.1",

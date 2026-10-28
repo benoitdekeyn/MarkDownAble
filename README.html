@@ -34,7 +34,7 @@ if(w)r.style.setProperty('--sidebar-w',Math.max(c.sidebarMin,Math.min(c.sidebarM
   --muted: #a0a0a0;
   --border: #3d3d3d;
   --sidebar-bg: #191919;
-  --accent: #d0d0d0;
+  --accent: #4493f8;
   --code-bg: #191919;
   --quote: #a0a0a0;
   color-scheme: dark;
@@ -451,7 +451,7 @@ npm run dev <span class="hljs-literal">--</span> MonDoc
 </tr>
 <tr>
 <td><code>npm run build:html</code></td>
-<td>Écrit <code>output_html/&lt;nom&gt;/&lt;htmlName&gt;.html</code> + médias utilisés, et l'ouvre dans l'Explorateur avec <code>--open</code>.</td>
+<td>Écrit <code>output_html/&lt;nom&gt;/&lt;htmlName&gt;.html</code> + médias utilisés, et l'ouvre dans le navigateur par défaut avec <code>--open</code>.</td>
 </tr>
 <tr>
 <td><code>npm run build:pdf</code></td>
@@ -476,6 +476,10 @@ npm run dev <span class="hljs-literal">--</span> MonDoc
 <tr>
 <td><code>npm run edit:outline</code></td>
 <td><code>edit:numbering</code> puis <code>edit:toc</code>.</td>
+</tr>
+<tr>
+<td><code>npm run release</code></td>
+<td>Publication de ce dépôt : copie <code>README.md</code> vers <code>doc/README.md</code>, génère les HTML et PDF de <strong>tous</strong> les documents, puis copie <code>output_html/README/index.html</code> et <code>output_pdf/README.pdf</code> vers <code>README.html</code> et <code>README.pdf</code> à la racine (fichiers écrasés). Nécessite <code>doc/README.jsonc</code>.</td>
 </tr>
 </tbody>
 </table>
@@ -1158,7 +1162,7 @@ graph TD
   <span class="hljs-punctuation">}</span>
 <span class="hljs-punctuation">}</span>
 </code></pre><div class="code-side"><div class="code-actions"><button class="copy-btn" type="button" title="Copier le code" aria-label="Copier le code"></button><button class="expand-btn" type="button" title="Agrandir le code" aria-label="Agrandir le code"></button><button class="download-btn" type="button" title="Télécharger le code" aria-label="Télécharger le code"></button></div></div></div></div>
-<p>Les palettes de page intégrées sont <code>default</code> (mode sombre neutre, gris/noir/blanc), <code>formal</code> (clair) et <code>neon</code> (sombre coloré). Pour créer une palette de page, déclarez-la dans <code>pagePalettes</code>, puis sélectionnez son nom dans <code>pageTheme</code> :</p>
+<p>Les palettes de page intégrées sont <code>default</code> (mode sombre gris/noir/blanc, liens en bleu), <code>formal</code> (clair) et <code>neon</code> (sombre coloré). Pour créer une palette de page, déclarez-la dans <code>pagePalettes</code>, puis sélectionnez son nom dans <code>pageTheme</code> :</p>
 <div class="code-block"><div class="code-frame side" data-lang="jsonc"><pre><code class="hljs language-jsonc"><span class="hljs-attr">&quot;pageTheme&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;light&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;papier&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;dark&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;neon&quot;</span> <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
 <span class="hljs-attr">&quot;pagePalettes&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
   <span class="hljs-attr">&quot;papier&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
@@ -1293,7 +1297,7 @@ graph TD
 <tr>
 <td><code>accent</code></td>
 <td>liens, titre actif du sommaire, poignée de redimensionnement</td>
-<td><code>#0969da</code> / <code>#d0d0d0</code></td>
+<td><code>#0969da</code> / <code>#4493f8</code></td>
 </tr>
 <tr>
 <td><code>codeBg</code></td>
