@@ -89,6 +89,9 @@
     // "auto" suit directement le thème clair/sombre du système, sans suivre le bouton de la page.
     // "light" ou "dark" imposent toujours ce mode aux balises de code.
     "codeTheme": { "mode": "follow" },
+    // ÉTIQUETTE DES BLOCS DE CODE : true = barre avec le nom du langage ; false = code seul (PDF) et boutons en colonne à droite (HTML).
+    // Par bloc, un commentaire HTML juste avant le bloc : <!-- code:lang -->, <!-- code:nolang --> ou <!-- code:chemin/fichier.ext --> (texte libre).
+    "codeLanguage": false,
     // COULEURS DU CODE : thème de coloration syntaxique choisi pour chaque mode du code.
     // "default" = thèmes intégrés du générateur ; un nom connu (ex. "vs", "vs2015", "github-dark")
     // = thème highlight.js ; un fichier .css dans template/ ou doc/ = thème personnalisé.

@@ -58,6 +58,7 @@ const DEFAULTS = {
     codeFontSize: '85%',
     highlight: { light: 'default', dark: 'default' },
     codeTheme: { mode: 'follow' },
+    codeLanguage: true,
     pageTheme: { light: 'default', dark: 'default' },
     pagePalettes: {},
     mermaidTheme: 'auto',
@@ -133,6 +134,9 @@ function loadConfig(doc) {
   if (!['auto', 'light', 'dark', 'follow'].includes(cfg.style.codeTheme.mode)) {
     throw new ConfigError(`style.codeTheme.mode doit valoir auto, light, dark ou follow (reçu "${cfg.style.codeTheme.mode}")`);
   }
+  if (typeof cfg.style.codeLanguage !== 'boolean') {
+    throw new ConfigError(`style.codeLanguage doit valoir true ou false (reçu ${JSON.stringify(cfg.style.codeLanguage)})`);
+  }
   const paletteNames = new Set(['default', 'formal', 'neon', ...Object.keys(cfg.style.pagePalettes)]);
   for (const mode of ['light', 'dark']) {
     if (typeof cfg.style.pageTheme[mode] !== 'string' || !paletteNames.has(cfg.style.pageTheme[mode])) {
@@ -171,6 +175,12 @@ function loadConfig(doc) {
 const modDir = (name) => path.dirname(require.resolve(`${name}/package.json`));
 const readAsset = (...p) => fs.readFileSync(path.join(...p), 'utf8');
 const esc = (s) => MarkdownIt().utils.escapeHtml(s);
+
+// Nom de fichier proposé au téléchargement quand le texte de <!-- code:… --> ressemble à "chemin/main.cpp" ; sinon ''.
+function safeFileName(label) {
+  const base = label.split(/[\\/]/).pop().trim();
+  return /^[\p{L}\p{N}_.+\- ]*[\p{L}\p{N}_+\-]\.[A-Za-z0-9]{1,10}$/u.test(base) && !/^(con|prn|aux|nul|com\d|lpt\d)\./i.test(base) ? base : '';
+}
 const safeScript = (js) => js.replace(/<\/script/gi, '<\\/script');
 const dataUri = (file) => `data:${MIME[path.extname(file).toLowerCase()] || 'application/octet-stream'};base64,${fs.readFileSync(file).toString('base64')}`;
 
@@ -469,6 +479,50 @@ async function render(cfg, { pdf = false } = {}) {
     }
   });
 
+  // Marqueur <!-- code:lang -->, <!-- code:nolang --> ou <!-- code:texte libre --> placé juste avant un bloc de code :
+  // il règle l'étiquette de CE bloc (invisible sur GitHub et à l'écran car c'est un commentaire HTML).
+  md.core.ruler.push('code_label', (state) => {
+    const t = state.tokens;
+    const MARK = /^\s*<!--\s*code:([\s\S]*?)-->\s*$/i;
+    let pending = null;
+    for (let i = 0; i < t.length; i++) {
+      const tok = t[i];
+      if (tok.type === 'html_block' && /^\s*<!--\s*code:/i.test(tok.content)) {
+        const m = tok.content.match(MARK);
+        if (!m || m[1].includes('-->') || m[1].includes('<!--')) {
+          warnings.push(`balise "${tok.content.trim().split('\n')[0]}" ignorée : elle doit tenir seule sur sa ligne (<!-- code:lang -->, <!-- code:nolang --> ou <!-- code:texte -->)`);
+          continue;
+        }
+        const value = m[1].trim();
+        if (pending) warnings.push(`ligne ${(tok.map?.[0] ?? 0) + 1} : deux balises <!-- code:… --> de suite, seule la dernière est prise en compte`);
+        pending = { value, line: (tok.map?.[0] ?? 0) + 1 };
+        t.splice(i, 1);
+        i--;
+        continue;
+      }
+      if (!pending) continue;
+      const p = pending;
+      pending = null;
+      if (tok.type !== 'fence') {
+        warnings.push(`ligne ${p.line} : <!-- code:${p.value} --> n'est pas suivi directement d'un bloc de code, il est ignoré`);
+        continue;
+      }
+      const lang = tok.info.trim().split(/\s+/)[0].toLowerCase();
+      if (lang === 'mermaid') {
+        warnings.push(`ligne ${p.line} : <!-- code:${p.value} --> ne s'applique pas aux diagrammes Mermaid, il est ignoré`);
+        continue;
+      }
+      const mode = p.value.toLowerCase();
+      if (!p.value) warnings.push(`ligne ${p.line} : <!-- code: --> est vide (attendu : lang, nolang ou un texte), il est ignoré`);
+      else if (mode === 'nolang') tok.meta = { ...tok.meta, showLang: false };
+      else if (mode === 'lang') {
+        if (!lang) warnings.push(`ligne ${p.line} : <!-- code:lang --> mais le bloc de code n'indique aucun langage`);
+        tok.meta = { ...tok.meta, showLang: true };
+      } else tok.meta = { ...tok.meta, label: p.value.replace(/\s+/g, ' ') };
+    }
+    if (pending) warnings.push(`ligne ${pending.line} : <!-- code:${pending.value} --> n'est suivi d'aucun bloc de code, il est ignoré`);
+  });
+
   let hasMermaid = false;
   let usesElk = false;
   let mermaidCount = 0;
@@ -488,10 +542,24 @@ async function render(cfg, { pdf = false } = {}) {
       if (lang) warnings.push(`langage de code inconnu : "${lang}"`);
       body = esc(token.content);
     }
-    const label = lang ? `<span class="code-lang">${esc(lang)}</span>` : '';
-    const actions = pdf ? '' : '<div class="code-actions"><button class="copy-btn" type="button" title="Copier le code" aria-label="Copier le code"></button><button class="expand-btn" type="button" title="Agrandir le code" aria-label="Agrandir le code"></button><button class="download-btn" type="button" title="Télécharger le code" aria-label="Télécharger le code"></button></div>';
-    const bar = actions || label ? `<div class="code-bar">${actions}${label}</div>` : '';
-    return `<div class="code-block"><div class="code-frame"${lang ? ` data-lang="${esc(lang)}"` : ''}>${bar}<pre><code class="hljs${lang ? ` language-${esc(lang)}` : ''}">${body}</code></pre></div></div>\n`;
+    const label = token.meta?.label || (token.meta?.showLang ?? cfg.style.codeLanguage ? lang : '');
+    const custom = !!token.meta?.label;
+    const filename = custom ? safeFileName(label) : '';
+    const lines = Math.max(1, token.content.replace(/\n$/, '').split('\n').length);
+    const btn = (cls, text) => `<button class="${cls}" type="button" title="${text}" aria-label="${text}"></button>`;
+    const buttons = [btn('copy-btn', 'Copier le code'), btn('expand-btn', 'Agrandir le code'), btn('download-btn', 'Télécharger le code')];
+    const labelHtml = label ? `<span class="code-lang${custom ? ' custom' : ''}" title="${esc(label)}">${esc(label)}</span>` : '';
+    let bar = '';
+    let side = '';
+    if (label) {
+      const actions = pdf ? '' : `<div class="code-actions">${buttons.join('')}</div>`;
+      bar = `<div class="code-bar">${actions}${labelHtml}</div>`;
+    } else if (!pdf) {
+      // Sans libellé : colonne de boutons à droite ; sur un code très court, seuls les boutons utiles apparaissent.
+      side = `<div class="code-side"><div class="code-actions">${buttons.slice(0, Math.min(lines, 3)).join('')}</div></div>`;
+    }
+    const attrs = `${lang ? ` data-lang="${esc(lang)}"` : ''}${filename ? ` data-filename="${esc(filename)}"` : ''}`;
+    return `<div class="code-block"><div class="code-frame${side ? ' side' : ''}"${attrs}>${bar}<pre><code class="hljs${lang ? ` language-${esc(lang)}` : ''}">${body}</code></pre>${side}</div></div>\n`;
   };
 
   // Identifiants de titres identiques à ceux de GitHub, pour que les liens [..](#...) marchent pareil.

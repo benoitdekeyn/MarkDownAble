@@ -9,7 +9,7 @@ Ce document d'exemple montre ce que l'outil sait faire : texte, tableaux, code, 
 2. remplacez l'image `media/exemple_blague.jpg` par la vôtre ;
 3. remplacez ce texte par le vôtre et lancez `npm run dev`.
 
-\newpage
+<!-- newpage -->
 
 # Table des matières
 
@@ -33,7 +33,7 @@ Ce document d'exemple montre ce que l'outil sait faire : texte, tableaux, code, 
 
 <!-- /TOC -->
 
-\newpage
+<!-- newpage -->
 
 # Bases du Markdown
 
@@ -63,7 +63,8 @@ Exemple d'une petite image en .png avec balise HTML pour choisir la largeur :
 
 ## 3. Code coloré
 
-```c
+Code sans l'affichage du langage :  
+```cpp
 int main(void) {
   HAL_Init();
   while (1) {
@@ -73,13 +74,34 @@ int main(void) {
 }
 ```
 
+Code avec affichage du langage :  
+<!-- code:lang -->
 ```python
-def pid(e, e_prec, somme, kp, ki, kd, dt):
-    somme += e * dt
-    u = kp * e + ki * somme + kd * (e - e_prec) / dt
-    return u, somme
+import os
+
+if len(sys.argv) < 2:
+    print("Usage: %s <font file>" % sys.argv[0])
+    sys.exit(1)
+else:
+    main()
+
+def main():
+    font_path = sys.argv[1]
+    font = TTFont(font_path)
+    print("Loaded font:", font_path)
 ```
 
+Code avec affichage du fichier :  
+<!-- code:src/main.js -->
+```javascript
+const levelsBlock = (levels) => {
+  const rows = [1, 2, 3, 4, 5, 6].map((n) => {
+    const o = levels[n];
+    return `      "${n}": { "style": ${JSON.stringify(o.style)}, "separator": ${JSON.stringify(o.separator)}, "cumulative": ${o.cumulative} }`;
+  });
+  return `{\n${rows.join(',\n')}\n    }`;
+};
+```
 # Formules LaTeX
 
 ## 1. Résoudre une équation du second degré

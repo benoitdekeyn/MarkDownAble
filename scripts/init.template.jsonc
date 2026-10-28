@@ -78,6 +78,9 @@
     "pagePalettes": {},
     // Mode des couleurs du code : "follow" suit la page, "auto" suit le système, "light" ou "dark" sont fixes.
     "codeTheme": { "mode": "follow" },
+    // Étiquette des blocs de code : true = barre avec le nom du langage ; false = code seul (PDF) et boutons en colonne à droite (HTML).
+    // Par bloc, un commentaire juste avant le bloc : <!-- code:lang -->, <!-- code:nolang --> ou <!-- code:chemin/fichier.ext --> (texte libre).
+    "codeLanguage": true,
     // Thème de coloration des balises : "default", nom highlight.js ("vs", "vs2015"...) ou fichier CSS dans template/ ou doc/.
     "highlight": { "light": "default", "dark": "default" },
     // Thème des diagrammes Mermaid : "auto", default, dark, forest ou neutral

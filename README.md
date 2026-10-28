@@ -42,7 +42,7 @@ Le détail, étape par étape :
 
 Node.js est le programme qui exécute l'outil (à faire une seule fois par machine).
 
-1. Allez sur <https://nodejs.org> et téléchargez la version **LTS** (recommandée).
+1. Allez sur <https://nodejs.org/download> et téléchargez la version **LTS** (recommandée).
 2. Lancez l'installateur et acceptez les options par défaut.
 3. **Fermez puis rouvrez** votre terminal (ou VS Code), puis vérifiez :
 
@@ -55,9 +55,10 @@ Node.js est le programme qui exécute l'outil (à faire une seule fois par machi
 
 ### 1.2 Récupérer le projet
 
-Avec **Git** : `git clone https://github.com/benoitdekeyn/MarkDownAble MonProjet` puis `cd MonProjet`. Git s'installe depuis <https://git-scm.com/downloads> (options par défaut) ; rouvrez ensuite le terminal et vérifiez avec `git --version`.
+**Avec Git** : `git clone https://github.com/benoitdekeyn/MarkDownAble MonProjet` puis `cd MonProjet`.
+> Pour installer Git, rendez-vous sur <https://git-scm.com/downloads> (options par défaut) ; rouvrez ensuite le terminal et vérifiez avec `git --version`.
 
-Sans Git : sur la page GitHub du dépôt, bouton **Code → Download ZIP**, dézippez, puis ouvrez un terminal dans le dossier obtenu.
+**Sans Git** : [Télécharger le ZIP du dépôt GitHub](https://github.com/benoitdekeyn/MarkDownAble/archive/refs/heads/main.zip), dézippez, puis ouvrez un terminal dans le dossier obtenu.
 
 > Astuce VS Code : clic droit sur le dossier → « Ouvrir dans le terminal intégré ».
 
@@ -179,7 +180,21 @@ Chaque document a son propre dossier `output_html/<nom>/`, donc plusieurs docume
 - **Titres, tableaux, listes de tâches, liens internes** `[voir](#titre-de-la-section)` comme sur GitHub (ancres générées comme GitHub).
 - **Liens vers un autre fichier** : les chemins sont relatifs au `.md` (donc `media/…`, pas `doc/media/…`).
 - **Formules LaTeX** : `$x^2$` en ligne, `$$ \int_0^1 f(x)\,dx $$` en bloc.
-- **Code coloré** : <code>```c</code>, <code>```python</code>, etc. Chaque bloc a une barre avec le nom du langage ; dans la page HTML elle propose aussi **copier**, **agrandir** (quasi plein écran, `Échap` pour fermer) et **télécharger** (extension déduite du langage, `.txt` sinon). Dans le PDF, seule l'étiquette du langage apparaît.
+- **Code coloré** : <code>```c</code>, <code>```python</code>, etc. Deux présentations, au choix (réglage global `style.codeLanguage`, §5.7) :
+  - **avec le langage** (par défaut) : une barre au-dessus du code affiche le langage à droite ; en HTML elle porte à gauche les boutons **copier**, **agrandir** (quasi plein écran, `Échap` pour fermer) et **télécharger** (extension déduite du langage, `.txt` sinon) ; en PDF, la barre ne contient que le langage ;
+  - **sans le langage** (`"codeLanguage": false`) : en PDF on ne voit que le code ; en HTML les boutons forment une colonne à droite du bloc. Sur un code très court, seuls les boutons utiles sont affichés : 1 ligne → copier ; 2 lignes → copier + agrandir ; 3 lignes et plus → les trois.
+- **Choisir bloc par bloc** : un commentaire HTML, seul sur sa ligne **juste avant** le bloc (invisible à l'écran et sur GitHub) :
+
+  ````markdown
+  <!-- code:lang -->            affiche le langage pour ce bloc
+  <!-- code:nolang -->          le masque pour ce bloc
+  <!-- code:chemin/main.cpp --> affiche ce texte à la place du langage (HTML et PDF)
+  ```cpp
+  int main() {}
+  ```
+  ````
+
+  `lang` et `nolang` sont réservés ; tout autre texte devient l'étiquette. Si ce texte ressemble à un nom de fichier (`main.cpp`), le bouton télécharger l'utilise (nom de fichier seul, sans dossier). Une balise mal placée (pas suivie d'un bloc de code, devant un diagramme Mermaid, `code:lang` sur un bloc sans langage) est ignorée et signalée en avertissement.
 - **Mermaid** : bloc <code>```mermaid</code>. Options par diagramme sur la même ligne :
 
   ````markdown
@@ -436,6 +451,7 @@ Ce bloc agit sur la page HTML **et** sur le PDF (sauf mention contraire).
 | `pageTheme` | `{ "light": "default", "dark": "default" }` | Palette de couleurs de la page choisie séparément pour le mode clair et le mode sombre. |
 | `pagePalettes` | `{}` | Palettes de page personnalisées, définies uniquement avec des couleurs. |
 | `codeTheme.mode` | `"follow"` | Mode de couleur propre au code : `follow`, `auto`, `light` ou `dark`. |
+| `codeLanguage` | `true` | `true` : barre de code avec le langage ; `false` : code seul (PDF) / boutons en colonne à droite (HTML). Surchargeable par bloc avec `<!-- code:lang -->`, `<!-- code:nolang -->` ou `<!-- code:texte -->` (§4). |
 | `highlight` | `{ "light": "default", "dark": "default" }` | Thème de coloration syntaxique des balises de code, choisi séparément pour les modes clair et sombre du code. |
 | `mermaidTheme` | `"auto"` | `auto` (suit le thème de la page), `default`, `dark`, `forest`, `neutral`. |
 | `mermaid` | `{ "layout": "dagre", "direction": null }` | Réglages **par défaut** des diagrammes Mermaid (surchargeables diagramme par diagramme, §4). |

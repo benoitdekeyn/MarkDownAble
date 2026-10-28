@@ -163,7 +163,15 @@ body.resizing img { pointer-events: none; }
 .code-actions button:hover, .code-actions button:focus-visible { color: var(--accent); border-color: var(--accent); }
 .code-actions button.ok { color: #1a7f37; border-color: #1a7f37; }
 .code-actions button.ko { color: #cf222e; border-color: #cf222e; }
-.code-lang { margin-left: auto; text-transform: lowercase; white-space: nowrap; }
+.code-lang { margin-left: auto; text-transform: lowercase; white-space: nowrap; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.code-lang.custom { text-transform: none; }
+.code-frame.side { flex-direction: row; }
+.code-frame.side pre { min-width: 0; }
+.code-side {
+  display: flex; flex-direction: column; flex: none; padding: 6px; border-left: 1px solid var(--border);
+  background: color-mix(in srgb, var(--muted) 10%, transparent);
+}
+.code-side .code-actions { flex-direction: column; flex-wrap: nowrap; }
 .code-block.expanded { position: fixed; inset: 0; z-index: 100; padding: 2.5vh 2.5vw; background: rgba(0, 0, 0, .6); margin: 0; }
 .code-block.expanded .code-frame { height: 100%; background: var(--bg); }
 .code-block.expanded code.hljs { font-size: 1em; }
@@ -213,7 +221,7 @@ body.mm-open { overflow: hidden; }
   .markdown-body .anchor { display: none; }
 }
 @media print {
-  #sidebar, #sidebar-toggle, #resizer, .code-actions, .anchor, .mm-expand, .mm-controls { display: none !important; }
+  #sidebar, #sidebar-toggle, #resizer, .code-actions, .code-side, .anchor, .mm-expand, .mm-controls { display: none !important; }
   #content { margin: 0; padding: 0; }
   .markdown-body { width: 100%; }
 }
@@ -258,7 +266,8 @@ li.task-item { list-style: none; }
 
 
 :root[data-code-theme="light"] pre code.hljs{}:root[data-code-theme="light"] code.hljs{}:root[data-code-theme="light"] .hljs{color:#24292e}:root[data-code-theme="light"] .hljs-doctag,:root[data-code-theme="light"] .hljs-keyword,:root[data-code-theme="light"] .hljs-meta .hljs-keyword,:root[data-code-theme="light"] .hljs-template-tag,:root[data-code-theme="light"] .hljs-template-variable,:root[data-code-theme="light"] .hljs-type,:root[data-code-theme="light"] .hljs-variable.language_{color:#d73a49}:root[data-code-theme="light"] .hljs-title,:root[data-code-theme="light"] .hljs-title.class_,:root[data-code-theme="light"] .hljs-title.class_.inherited__,:root[data-code-theme="light"] .hljs-title.function_{color:#6f42c1}:root[data-code-theme="light"] .hljs-attr,:root[data-code-theme="light"] .hljs-attribute,:root[data-code-theme="light"] .hljs-literal,:root[data-code-theme="light"] .hljs-meta,:root[data-code-theme="light"] .hljs-number,:root[data-code-theme="light"] .hljs-operator,:root[data-code-theme="light"] .hljs-selector-attr,:root[data-code-theme="light"] .hljs-selector-class,:root[data-code-theme="light"] .hljs-selector-id,:root[data-code-theme="light"] .hljs-variable{color:#005cc5}:root[data-code-theme="light"] .hljs-meta .hljs-string,:root[data-code-theme="light"] .hljs-regexp,:root[data-code-theme="light"] .hljs-string{color:#032f62}:root[data-code-theme="light"] .hljs-built_in,:root[data-code-theme="light"] .hljs-symbol{color:#e36209}:root[data-code-theme="light"] .hljs-code,:root[data-code-theme="light"] .hljs-comment,:root[data-code-theme="light"] .hljs-formula{color:#6a737d}:root[data-code-theme="light"] .hljs-name,:root[data-code-theme="light"] .hljs-quote,:root[data-code-theme="light"] .hljs-selector-pseudo,:root[data-code-theme="light"] .hljs-selector-tag{color:#22863a}:root[data-code-theme="light"] .hljs-subst{color:#24292e}:root[data-code-theme="light"] .hljs-section{color:#005cc5}:root[data-code-theme="light"] .hljs-bullet{color:#735c0f}:root[data-code-theme="light"] .hljs-emphasis{color:#24292e}:root[data-code-theme="light"] .hljs-strong{color:#24292e}:root[data-code-theme="light"] .hljs-addition{color:#22863a}:root[data-code-theme="light"] .hljs-deletion{color:#b31d28}
-:root[data-code-theme="dark"] pre code.hljs{}:root[data-code-theme="dark"] code.hljs{}:root[data-code-theme="dark"] .hljs{color:#c9d1d9}:root[data-code-theme="dark"] .hljs-doctag,:root[data-code-theme="dark"] .hljs-keyword,:root[data-code-theme="dark"] .hljs-meta .hljs-keyword,:root[data-code-theme="dark"] .hljs-template-tag,:root[data-code-theme="dark"] .hljs-template-variable,:root[data-code-theme="dark"] .hljs-type,:root[data-code-theme="dark"] .hljs-variable.language_{color:#ff7b72}:root[data-code-theme="dark"] .hljs-title,:root[data-code-theme="dark"] .hljs-title.class_,:root[data-code-theme="dark"] .hljs-title.class_.inherited__,:root[data-code-theme="dark"] .hljs-title.function_{color:#d2a8ff}:root[data-code-theme="dark"] .hljs-attr,:root[data-code-theme="dark"] .hljs-attribute,:root[data-code-theme="dark"] .hljs-literal,:root[data-code-theme="dark"] .hljs-meta,:root[data-code-theme="dark"] .hljs-number,:root[data-code-theme="dark"] .hljs-operator,:root[data-code-theme="dark"] .hljs-selector-attr,:root[data-code-theme="dark"] .hljs-selector-class,:root[data-code-theme="dark"] .hljs-selector-id,:root[data-code-theme="dark"] .hljs-variable{color:#79c0ff}:root[data-code-theme="dark"] .hljs-meta .hljs-string,:root[data-code-theme="dark"] .hljs-regexp,:root[data-code-theme="dark"] .hljs-string{color:#a5d6ff}:root[data-code-theme="dark"] .hljs-built_in,:root[data-code-theme="dark"] .hljs-symbol{color:#ffa657}:root[data-code-theme="dark"] .hljs-code,:root[data-code-theme="dark"] .hljs-comment,:root[data-code-theme="dark"] .hljs-formula{color:#8b949e}:root[data-code-theme="dark"] .hljs-name,:root[data-code-theme="dark"] .hljs-quote,:root[data-code-theme="dark"] .hljs-selector-pseudo,:root[data-code-theme="dark"] .hljs-selector-tag{color:#7ee787}:root[data-code-theme="dark"] .hljs-subst{color:#c9d1d9}:root[data-code-theme="dark"] .hljs-section{color:#1f6feb}:root[data-code-theme="dark"] .hljs-bullet{color:#f2cc60}:root[data-code-theme="dark"] .hljs-emphasis{color:#c9d1d9}:root[data-code-theme="dark"] .hljs-strong{color:#c9d1d9}:root[data-code-theme="dark"] .hljs-addition{color:#aff5b4}:root[data-code-theme="dark"] .hljs-deletion{color:#ffdcd7}
+:root[data-code-theme="dark"] .hljs-keyword,:root[data-code-theme="dark"] .hljs-selector-tag,:root[data-code-theme="dark"] .hljs-literal{ color: #ff5cf4}:root[data-code-theme="dark"] .hljs-string,:root[data-code-theme="dark"] .hljs-doctag{ color: #ffd166}:root[data-code-theme="dark"] .hljs-comment,:root[data-code-theme="dark"] .hljs-quote{ color: #8a9b91}:root[data-code-theme="dark"] .hljs-number,:root[data-code-theme="dark"] .hljs-literal{ color: #9dff70}:root[data-code-theme="dark"] .hljs-type,:root[data-code-theme="dark"] .hljs-built_in{ color: #45e6ff}:root[data-code-theme="dark"] .hljs-title,:root[data-code-theme="dark"] .hljs-title.function_,:root[data-code-theme="dark"] .hljs-title.class_{ color: #fff275}:root[data-code-theme="dark"] .hljs-attr,:root[data-code-theme="dark"] .hljs-attribute,:root[data-code-theme="dark"] .hljs-property{ color: #7de2d1}:root[data-code-theme="dark"] .hljs-meta,:root[data-code-theme="dark"] .hljs-meta .hljs-keyword{ color: #c792ea}
+
 
 
 
@@ -366,11 +375,11 @@ li.task-item { list-style: none; }
 <hr>
 <h2 id="1-démarrage-rapide">1. Démarrage rapide<a class="anchor" href="#1-démarrage-rapide" aria-label="Lien vers cette section">#</a></h2>
 <p>De zéro à un aperçu dans le navigateur en quelques minutes. Il faut <strong>Node.js</strong> (obligatoire), <strong>Git</strong> (facultatif) et <strong>Chrome ou Edge</strong> (uniquement pour le PDF).</p>
-<div class="code-block"><div class="code-frame" data-lang="powershell"><div class="code-bar"><div class="code-actions"><button class="copy-btn" type="button" title="Copier le code" aria-label="Copier le code"></button><button class="expand-btn" type="button" title="Agrandir le code" aria-label="Agrandir le code"></button><button class="download-btn" type="button" title="Télécharger le code" aria-label="Télécharger le code"></button></div><span class="code-lang">powershell</span></div><pre><code class="hljs language-powershell">git clone https://github.com/benoitdekeyn/MarkDownAble MonProjet     <span class="hljs-comment"># remplacez MonProjet</span>
+<div class="code-block"><div class="code-frame side" data-lang="powershell"><pre><code class="hljs language-powershell">git clone https://github.com/benoitdekeyn/MarkDownAble MonProjet     <span class="hljs-comment"># remplacez MonProjet</span>
 <span class="hljs-built_in">cd</span> MonProjet
 npm install
 npm run dev                              <span class="hljs-comment"># aperçu en direct de doc/exemple.md</span>
-</code></pre></div></div>
+</code></pre><div class="code-side"><div class="code-actions"><button class="copy-btn" type="button" title="Copier le code" aria-label="Copier le code"></button><button class="expand-btn" type="button" title="Agrandir le code" aria-label="Agrandir le code"></button><button class="download-btn" type="button" title="Télécharger le code" aria-label="Télécharger le code"></button></div></div></div></div>
 <blockquote>
 <p><strong>Erreur <code>npm : Le terme « npm » n'est pas reconnu…</code> (ou <code>'npm' is not recognized…</code>, <code>npm: command not found</code>) ?</strong> Node.js (qui fournit <code>npm</code>) n'est pas installé, ou le terminal a été ouvert avant l'installation : suivez le <a href="#11-installer-nodejs">§1.1</a> puis fermez et rouvrez le terminal. De même, <code>git : Le terme « git » n'est pas reconnu</code> signifie que Git n'est pas installé : voir le <a href="#12-r%C3%A9cup%C3%A9rer-le-projet">§1.2</a> (ou téléchargez le dépôt en ZIP).</p>
 </blockquote>
@@ -379,39 +388,42 @@ npm run dev                              <span class="hljs-comment"># aperçu en
 <p>Node.js est le programme qui exécute l'outil (à faire une seule fois par machine).</p>
 <ol>
 <li>
-<p>Allez sur <a href="https://nodejs.org" target="_blank" rel="noopener noreferrer">https://nodejs.org</a> et téléchargez la version <strong>LTS</strong> (recommandée).</p>
+<p>Allez sur <a href="https://nodejs.org/download" target="_blank" rel="noopener noreferrer">https://nodejs.org/download</a> et téléchargez la version <strong>LTS</strong> (recommandée).</p>
 </li>
 <li>
 <p>Lancez l'installateur et acceptez les options par défaut.</p>
 </li>
 <li>
 <p><strong>Fermez puis rouvrez</strong> votre terminal (ou VS Code), puis vérifiez :</p>
-<div class="code-block"><div class="code-frame" data-lang="powershell"><div class="code-bar"><div class="code-actions"><button class="copy-btn" type="button" title="Copier le code" aria-label="Copier le code"></button><button class="expand-btn" type="button" title="Agrandir le code" aria-label="Agrandir le code"></button><button class="download-btn" type="button" title="Télécharger le code" aria-label="Télécharger le code"></button></div><span class="code-lang">powershell</span></div><pre><code class="hljs language-powershell">node <span class="hljs-literal">-v</span>
+<div class="code-block"><div class="code-frame side" data-lang="powershell"><pre><code class="hljs language-powershell">node <span class="hljs-literal">-v</span>
 npm <span class="hljs-literal">-v</span>
-</code></pre></div></div>
+</code></pre><div class="code-side"><div class="code-actions"><button class="copy-btn" type="button" title="Copier le code" aria-label="Copier le code"></button><button class="expand-btn" type="button" title="Agrandir le code" aria-label="Agrandir le code"></button></div></div></div></div>
 <p>Chaque commande doit afficher un numéro de version (Node 20 ou plus récent conseillé). <code>npm</code> est installé avec Node.js.</p>
 </li>
 </ol>
 <h3 id="12-récupérer-le-projet">1.2 Récupérer le projet<a class="anchor" href="#12-récupérer-le-projet" aria-label="Lien vers cette section">#</a></h3>
-<p>Avec <strong>Git</strong> : <code>git clone https://github.com/benoitdekeyn/MarkDownAble MonProjet</code> puis <code>cd MonProjet</code>. Git s'installe depuis <a href="https://git-scm.com/downloads" target="_blank" rel="noopener noreferrer">https://git-scm.com/downloads</a> (options par défaut) ; rouvrez ensuite le terminal et vérifiez avec <code>git --version</code>.</p>
-<p>Sans Git : sur la page GitHub du dépôt, bouton <strong>Code → Download ZIP</strong>, dézippez, puis ouvrez un terminal dans le dossier obtenu.</p>
+<p><strong>Avec Git</strong> : <code>git clone https://github.com/benoitdekeyn/MarkDownAble MonProjet</code> puis <code>cd MonProjet</code>.</p>
+<blockquote>
+<p>Pour installer Git, rendez-vous sur <a href="https://git-scm.com/downloads" target="_blank" rel="noopener noreferrer">https://git-scm.com/downloads</a> (options par défaut) ; rouvrez ensuite le terminal et vérifiez avec <code>git --version</code>.</p>
+</blockquote>
+<p><strong>Sans Git</strong> : <a href="https://github.com/benoitdekeyn/MarkDownAble/archive/refs/heads/main.zip" target="_blank" rel="noopener noreferrer">Télécharger le ZIP du dépôt GitHub</a>, dézippez, puis ouvrez un terminal dans le dossier obtenu.</p>
 <blockquote>
 <p>Astuce VS Code : clic droit sur le dossier → « Ouvrir dans le terminal intégré ».</p>
 </blockquote>
 <h3 id="13-installer-les-dépendances-de-loutil">1.3 Installer les dépendances de l'outil<a class="anchor" href="#13-installer-les-dépendances-de-loutil" aria-label="Lien vers cette section">#</a></h3>
 <p>Dans un terminal <strong>ouvert dans le dossier du projet</strong> (celui qui contient ce <code>README.md</code>) :</p>
-<div class="code-block"><div class="code-frame" data-lang="powershell"><div class="code-bar"><div class="code-actions"><button class="copy-btn" type="button" title="Copier le code" aria-label="Copier le code"></button><button class="expand-btn" type="button" title="Agrandir le code" aria-label="Agrandir le code"></button><button class="download-btn" type="button" title="Télécharger le code" aria-label="Télécharger le code"></button></div><span class="code-lang">powershell</span></div><pre><code class="hljs language-powershell">npm install
-</code></pre></div></div>
+<div class="code-block"><div class="code-frame side" data-lang="powershell"><pre><code class="hljs language-powershell">npm install
+</code></pre><div class="code-side"><div class="code-actions"><button class="copy-btn" type="button" title="Copier le code" aria-label="Copier le code"></button></div></div></div></div>
 <p>Cela crée le dossier <code>node_modules/</code> (ne le modifiez pas, il n'est pas versionné). À refaire seulement si ce dossier disparaît ou si <code>package.json</code> change.</p>
 <h3 id="14-voir-lexemple">1.4 Voir l'exemple<a class="anchor" href="#14-voir-lexemple" aria-label="Lien vers cette section">#</a></h3>
-<div class="code-block"><div class="code-frame" data-lang="powershell"><div class="code-bar"><div class="code-actions"><button class="copy-btn" type="button" title="Copier le code" aria-label="Copier le code"></button><button class="expand-btn" type="button" title="Agrandir le code" aria-label="Agrandir le code"></button><button class="download-btn" type="button" title="Télécharger le code" aria-label="Télécharger le code"></button></div><span class="code-lang">powershell</span></div><pre><code class="hljs language-powershell">npm run dev
-</code></pre></div></div>
+<div class="code-block"><div class="code-frame side" data-lang="powershell"><pre><code class="hljs language-powershell">npm run dev
+</code></pre><div class="code-side"><div class="code-actions"><button class="copy-btn" type="button" title="Copier le code" aria-label="Copier le code"></button></div></div></div></div>
 <p>Le navigateur s'ouvre sur l'aperçu de <code>doc/exemple.md</code> (formules, code, Mermaid, images…). Chaque sauvegarde recharge la page. <code>Ctrl+C</code> arrête le serveur.</p>
 <h3 id="15-démarrer-votre-propre-document">1.5 Démarrer votre propre document<a class="anchor" href="#15-démarrer-votre-propre-document" aria-label="Lien vers cette section">#</a></h3>
 <p>La méthode la plus simple : une commande crée un <code>.md</code> et un <code>.jsonc</code> vierges, que vous pouvez écrire aussitôt.</p>
-<div class="code-block"><div class="code-frame" data-lang="powershell"><div class="code-bar"><div class="code-actions"><button class="copy-btn" type="button" title="Copier le code" aria-label="Copier le code"></button><button class="expand-btn" type="button" title="Agrandir le code" aria-label="Agrandir le code"></button><button class="download-btn" type="button" title="Télécharger le code" aria-label="Télécharger le code"></button></div><span class="code-lang">powershell</span></div><pre><code class="hljs language-powershell">npm run init <span class="hljs-literal">--</span> MonDoc
+<div class="code-block"><div class="code-frame side" data-lang="powershell"><pre><code class="hljs language-powershell">npm run init <span class="hljs-literal">--</span> MonDoc
 npm run dev <span class="hljs-literal">--</span> MonDoc
-</code></pre></div></div>
+</code></pre><div class="code-side"><div class="code-actions"><button class="copy-btn" type="button" title="Copier le code" aria-label="Copier le code"></button><button class="expand-btn" type="button" title="Agrandir le code" aria-label="Agrandir le code"></button></div></div></div></div>
 <p>Vous pouvez ensuite supprimer l'exemple (<code>doc/exemple.md</code>, <code>doc/exemple.jsonc</code> et les images <code>doc/media/exemple_*</code>). Autre possibilité : dans <code>doc/</code>, <strong>renommer <code>exemple.md</code> et <code>exemple.jsonc</code> avec le même nouveau nom</strong> (le lien entre les deux se fait uniquement par ce nom), puis remplacer le texte et les images.</p>
 <p>Pour les livrables : <code>npm run edit:outline</code> (numérotation + table des matières, facultatif), puis <code>npm run build:html</code> et/ou <code>npm run build:pdf</code>. Les fichiers sont écrits dans <code>output_html/</code> et <code>output_pdf/</code>. Le détail des commandes est au <a href="#2-utilisation-au-quotidien">§2</a>.</p>
 <h3 id="16-pour-le-pdf--chrome-ou-edge">1.6 Pour le PDF : Chrome ou Edge<a class="anchor" href="#16-pour-le-pdf--chrome-ou-edge" aria-label="Lien vers cette section">#</a></h3>
@@ -468,10 +480,10 @@ npm run dev <span class="hljs-literal">--</span> MonDoc
 </tbody>
 </table>
 <p>Options (à ajouter après <code>--</code>) :</p>
-<div class="code-block"><div class="code-frame" data-lang="powershell"><div class="code-bar"><div class="code-actions"><button class="copy-btn" type="button" title="Copier le code" aria-label="Copier le code"></button><button class="expand-btn" type="button" title="Agrandir le code" aria-label="Agrandir le code"></button><button class="download-btn" type="button" title="Télécharger le code" aria-label="Télécharger le code"></button></div><span class="code-lang">powershell</span></div><pre><code class="hljs language-powershell">npm run build:pdf <span class="hljs-literal">--</span> exemple          <span class="hljs-comment"># ne traiter que le document « exemple »</span>
+<div class="code-block"><div class="code-frame side" data-lang="powershell"><pre><code class="hljs language-powershell">npm run build:pdf <span class="hljs-literal">--</span> exemple          <span class="hljs-comment"># ne traiter que le document « exemple »</span>
 npm run edit:toc <span class="hljs-literal">--</span> exemple <span class="hljs-literal">--dry</span>     <span class="hljs-comment"># --dry : affiche ce qui serait fait sans rien écrire</span>
 npm run build:html <span class="hljs-literal">--</span> <span class="hljs-literal">--open</span>          <span class="hljs-comment"># ouvre le résultat à la fin du build (rien ne s&#x27;ouvre par défaut)</span>
-</code></pre></div></div>
+</code></pre><div class="code-side"><div class="code-actions"><button class="copy-btn" type="button" title="Copier le code" aria-label="Copier le code"></button><button class="expand-btn" type="button" title="Agrandir le code" aria-label="Agrandir le code"></button><button class="download-btn" type="button" title="Télécharger le code" aria-label="Télécharger le code"></button></div></div></div></div>
 <ul>
 <li>Avec <strong>un seul</strong> document dans <code>doc/</code>, le nom est facultatif. Avec <strong>plusieurs</strong>, les commandes <code>edit:*</code> exigent le nom ; <code>build:*</code> traitent tout si aucun nom n'est donné.</li>
 <li>Variables d'environnement : <code>MARKDOWN_OPEN=1</code> (équivaut à <code>--open</code>), <code>MARKDOWN_NO_OPEN=1</code> (équivaut à <code>--no-open</code> : <code>dev</code> n'ouvre pas le navigateur), <code>PORT=5000</code> (port du serveur <code>dev</code>), <code>MARKDOWN_KEEP_TMP=1</code> (conserve le HTML temporaire du PDF, utile pour déboguer).</li>
@@ -488,12 +500,12 @@ npm run build:html <span class="hljs-literal">--</span> <span class="hljs-litera
 <hr>
 <h2 id="3-créer-un-nouveau-document">3. Créer un nouveau document<a class="anchor" href="#3-créer-un-nouveau-document" aria-label="Lien vers cette section">#</a></h2>
 <p>Une commande crée le Markdown et sa configuration commentée :</p>
-<div class="code-block"><div class="code-frame" data-lang="powershell"><div class="code-bar"><div class="code-actions"><button class="copy-btn" type="button" title="Copier le code" aria-label="Copier le code"></button><button class="expand-btn" type="button" title="Agrandir le code" aria-label="Agrandir le code"></button><button class="download-btn" type="button" title="Télécharger le code" aria-label="Télécharger le code"></button></div><span class="code-lang">powershell</span></div><pre><code class="hljs language-powershell">npm run init <span class="hljs-literal">--</span> MonDoc
-</code></pre></div></div>
+<div class="code-block"><div class="code-frame side" data-lang="powershell"><pre><code class="hljs language-powershell">npm run init <span class="hljs-literal">--</span> MonDoc
+</code></pre><div class="code-side"><div class="code-actions"><button class="copy-btn" type="button" title="Copier le code" aria-label="Copier le code"></button></div></div></div></div>
 <p>Elle écrit <code>doc/MonDoc.md</code> (un squelette, jamais écrasé s'il existe) et <code>doc/MonDoc.jsonc</code> (tous les réglages avec leurs explications). Des options préremplissent la config pour aller plus vite :</p>
-<div class="code-block"><div class="code-frame" data-lang="powershell"><div class="code-bar"><div class="code-actions"><button class="copy-btn" type="button" title="Copier le code" aria-label="Copier le code"></button><button class="expand-btn" type="button" title="Agrandir le code" aria-label="Agrandir le code"></button><button class="download-btn" type="button" title="Télécharger le code" aria-label="Télécharger le code"></button></div><span class="code-lang">powershell</span></div><pre><code class="hljs language-powershell">npm run init <span class="hljs-literal">--</span> MonDoc <span class="hljs-literal">--title</span> <span class="hljs-string">&quot;Mon document&quot;</span> <span class="hljs-literal">--icon</span> media/logo.png <span class="hljs-literal">--theme</span> dark <span class="hljs-literal">--pdf-theme</span> light <span class="hljs-literal">--format</span> A4 <span class="hljs-literal">--margin</span> <span class="hljs-number">15</span>mm <span class="hljs-literal">--page-breaks</span> <span class="hljs-number">1</span>,<span class="hljs-number">2</span> <span class="hljs-literal">--numbering</span> decimal
+<div class="code-block"><div class="code-frame side" data-lang="powershell"><pre><code class="hljs language-powershell">npm run init <span class="hljs-literal">--</span> MonDoc <span class="hljs-literal">--title</span> <span class="hljs-string">&quot;Mon document&quot;</span> <span class="hljs-literal">--icon</span> media/logo.png <span class="hljs-literal">--theme</span> dark <span class="hljs-literal">--pdf-theme</span> light <span class="hljs-literal">--format</span> A4 <span class="hljs-literal">--margin</span> <span class="hljs-number">15</span>mm <span class="hljs-literal">--page-breaks</span> <span class="hljs-number">1</span>,<span class="hljs-number">2</span> <span class="hljs-literal">--numbering</span> decimal
 npm run init <span class="hljs-literal">--</span> <span class="hljs-literal">--help</span>        <span class="hljs-comment"># liste complète des options</span>
-</code></pre></div></div>
+</code></pre><div class="code-side"><div class="code-actions"><button class="copy-btn" type="button" title="Copier le code" aria-label="Copier le code"></button><button class="expand-btn" type="button" title="Agrandir le code" aria-label="Agrandir le code"></button></div></div></div></div>
 <table>
 <thead>
 <tr>
@@ -551,15 +563,30 @@ npm run init <span class="hljs-literal">--</span> <span class="hljs-literal">--h
 <p><strong>Formules LaTeX</strong> : <code>$x^2$</code> en ligne, <code>$$ \int_0^1 f(x)\,dx $$</code> en bloc.</p>
 </li>
 <li>
-<p><strong>Code coloré</strong> : <code><code>c&lt;/code&gt;, &lt;code&gt;</code>python</code>, etc. Chaque bloc a une barre avec le nom du langage ; dans la page HTML elle propose aussi <strong>copier</strong>, <strong>agrandir</strong> (quasi plein écran, <code>Échap</code> pour fermer) et <strong>télécharger</strong> (extension déduite du langage, <code>.txt</code> sinon). Dans le PDF, seule l'étiquette du langage apparaît.</p>
+<p><strong>Code coloré</strong> : <code><code>c&lt;/code&gt;, &lt;code&gt;</code>python</code>, etc. Deux présentations, au choix (réglage global <code>style.codeLanguage</code>, §5.7) :</p>
+<ul>
+<li><strong>avec le langage</strong> (par défaut) : une barre au-dessus du code affiche le langage à droite ; en HTML elle porte à gauche les boutons <strong>copier</strong>, <strong>agrandir</strong> (quasi plein écran, <code>Échap</code> pour fermer) et <strong>télécharger</strong> (extension déduite du langage, <code>.txt</code> sinon) ; en PDF, la barre ne contient que le langage ;</li>
+<li><strong>sans le langage</strong> (<code>&quot;codeLanguage&quot;: false</code>) : en PDF on ne voit que le code ; en HTML les boutons forment une colonne à droite du bloc. Sur un code très court, seuls les boutons utiles sont affichés : 1 ligne → copier ; 2 lignes → copier + agrandir ; 3 lignes et plus → les trois.</li>
+</ul>
+</li>
+<li>
+<p><strong>Choisir bloc par bloc</strong> : un commentaire HTML, seul sur sa ligne <strong>juste avant</strong> le bloc (invisible à l'écran et sur GitHub) :</p>
+<div class="code-block"><div class="code-frame side" data-lang="markdown"><pre><code class="hljs language-markdown">&lt;!-- code:lang --&gt;            affiche le langage pour ce bloc
+&lt;!-- code:nolang --&gt;          le masque pour ce bloc
+&lt;!-- code:chemin/main.cpp --&gt; affiche ce texte à la place du langage (HTML et PDF)
+<span class="hljs-code">```cpp
+int main() {}
+```</span>
+</code></pre><div class="code-side"><div class="code-actions"><button class="copy-btn" type="button" title="Copier le code" aria-label="Copier le code"></button><button class="expand-btn" type="button" title="Agrandir le code" aria-label="Agrandir le code"></button><button class="download-btn" type="button" title="Télécharger le code" aria-label="Télécharger le code"></button></div></div></div></div>
+<p><code>lang</code> et <code>nolang</code> sont réservés ; tout autre texte devient l'étiquette. Si ce texte ressemble à un nom de fichier (<code>main.cpp</code>), le bouton télécharger l'utilise (nom de fichier seul, sans dossier). Une balise mal placée (pas suivie d'un bloc de code, devant un diagramme Mermaid, <code>code:lang</code> sur un bloc sans langage) est ignorée et signalée en avertissement.</p>
 </li>
 <li>
 <p><strong>Mermaid</strong> : bloc <code>```mermaid</code>. Options par diagramme sur la même ligne :</p>
-<div class="code-block"><div class="code-frame" data-lang="markdown"><div class="code-bar"><div class="code-actions"><button class="copy-btn" type="button" title="Copier le code" aria-label="Copier le code"></button><button class="expand-btn" type="button" title="Agrandir le code" aria-label="Agrandir le code"></button><button class="download-btn" type="button" title="Télécharger le code" aria-label="Télécharger le code"></button></div><span class="code-lang">markdown</span></div><pre><code class="hljs language-markdown"><span class="hljs-code">```mermaid layout=elk direction=LR
+<div class="code-block"><div class="code-frame side" data-lang="markdown"><pre><code class="hljs language-markdown"><span class="hljs-code">```mermaid layout=elk direction=LR
 graph TD
   A --&gt; B
 ```</span>
-</code></pre></div></div>
+</code></pre><div class="code-side"><div class="code-actions"><button class="copy-btn" type="button" title="Copier le code" aria-label="Copier le code"></button><button class="expand-btn" type="button" title="Agrandir le code" aria-label="Agrandir le code"></button><button class="download-btn" type="button" title="Télécharger le code" aria-label="Télécharger le code"></button></div></div></div></div>
 <p><code>layout</code> : <code>dagre</code> (hiérarchique) ou <code>elk</code> (adaptatif). <code>direction</code> : <code>TB</code>, <code>BT</code>, <code>LR</code>, <code>RL</code> (flowchart / graph / stateDiagram).</p>
 </li>
 <li>
@@ -590,7 +617,7 @@ graph TD
 <li>une valeur invalide (ou une clé inconnue dans <code>numbering</code>, <code>toc</code>, <code>header</code> / <code>footer</code>) arrête la génération avec un message qui indique la clé fautive ; une clé inconnue ailleurs est simplement ignorée.</li>
 </ul>
 <p>Squelette complet (valeurs par défaut de l'outil, sauf indication) :</p>
-<div class="code-block"><div class="code-frame" data-lang="jsonc"><div class="code-bar"><div class="code-actions"><button class="copy-btn" type="button" title="Copier le code" aria-label="Copier le code"></button><button class="expand-btn" type="button" title="Agrandir le code" aria-label="Agrandir le code"></button><button class="download-btn" type="button" title="Télécharger le code" aria-label="Télécharger le code"></button></div><span class="code-lang">jsonc</span></div><pre><code class="hljs language-jsonc"><span class="hljs-punctuation">{</span>
+<div class="code-block"><div class="code-frame side" data-lang="jsonc"><pre><code class="hljs language-jsonc"><span class="hljs-punctuation">{</span>
   <span class="hljs-attr">&quot;htmlName&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;index&quot;</span><span class="hljs-punctuation">,</span>          <span class="hljs-comment">// → output_html/&lt;nom&gt;/index.html</span>
   <span class="hljs-attr">&quot;title&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">null</span></span><span class="hljs-punctuation">,</span>                <span class="hljs-comment">// null = nom du .md</span>
   <span class="hljs-attr">&quot;icon&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">null</span></span><span class="hljs-punctuation">,</span>                 <span class="hljs-comment">// ex. &quot;media/logo.png&quot;</span>
@@ -604,7 +631,7 @@ graph TD
   <span class="hljs-attr">&quot;layout&quot;</span><span class="hljs-punctuation">:</span>    <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;sidebarWidth&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">320</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;sidebarMinWidth&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">200</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;sidebarMaxWidth&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">700</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;contentWidthPercent&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">90</span> <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
   <span class="hljs-attr">&quot;style&quot;</span><span class="hljs-punctuation">:</span>     <span class="hljs-punctuation">{</span> <span class="hljs-comment">/* §5.7 */</span> <span class="hljs-punctuation">}</span>
 <span class="hljs-punctuation">}</span>
-</code></pre></div></div>
+</code></pre><div class="code-side"><div class="code-actions"><button class="copy-btn" type="button" title="Copier le code" aria-label="Copier le code"></button><button class="expand-btn" type="button" title="Agrandir le code" aria-label="Agrandir le code"></button><button class="download-btn" type="button" title="Télécharger le code" aria-label="Télécharger le code"></button></div></div></div></div>
 <blockquote>
 <p>Le fichier <a href="https://github.com/benoitdekeyn/MarkDownAble/blob/main/doc/exemple.jsonc" target="_blank" rel="noopener noreferrer">doc/exemple.jsonc</a> est un exemple complet et commenté. <code>npm run init</code> génère le même type de fichier (§3).</p>
 </blockquote>
@@ -657,14 +684,14 @@ graph TD
 </tr>
 </tbody>
 </table>
-<div class="code-block"><div class="code-frame" data-lang="jsonc"><div class="code-bar"><div class="code-actions"><button class="copy-btn" type="button" title="Copier le code" aria-label="Copier le code"></button><button class="expand-btn" type="button" title="Agrandir le code" aria-label="Agrandir le code"></button><button class="download-btn" type="button" title="Télécharger le code" aria-label="Télécharger le code"></button></div><span class="code-lang">jsonc</span></div><pre><code class="hljs language-jsonc"><span class="hljs-punctuation">{</span>
+<div class="code-block"><div class="code-frame side" data-lang="jsonc"><pre><code class="hljs language-jsonc"><span class="hljs-punctuation">{</span>
   <span class="hljs-attr">&quot;htmlName&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;document-final&quot;</span><span class="hljs-punctuation">,</span>  <span class="hljs-comment">// output_html/&lt;nom&gt;/document-final.html</span>
   <span class="hljs-attr">&quot;title&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Projet – Maison intelligente&quot;</span><span class="hljs-punctuation">,</span>
   <span class="hljs-attr">&quot;icon&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;media/logo.png&quot;</span><span class="hljs-punctuation">,</span>
   <span class="hljs-attr">&quot;theme&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;dark&quot;</span><span class="hljs-punctuation">,</span>
   <span class="hljs-attr">&quot;embedImages&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span>            <span class="hljs-comment">// un seul fichier à envoyer par mail</span>
 <span class="hljs-punctuation">}</span>
-</code></pre></div></div>
+</code></pre><div class="code-side"><div class="code-actions"><button class="copy-btn" type="button" title="Copier le code" aria-label="Copier le code"></button><button class="expand-btn" type="button" title="Agrandir le code" aria-label="Agrandir le code"></button><button class="download-btn" type="button" title="Télécharger le code" aria-label="Télécharger le code"></button></div></div></div></div>
 <p>Les noms de PDF se règlent dans <code>pdf.name</code> (§5.6).</p>
 <h3 id="53-disposition-de-la-page-html--layout">5.3 Disposition de la page HTML : <code>layout</code><a class="anchor" href="#53-disposition-de-la-page-html--layout" aria-label="Lien vers cette section">#</a></h3>
 <table>
@@ -693,8 +720,8 @@ graph TD
 </tr>
 </tbody>
 </table>
-<div class="code-block"><div class="code-frame" data-lang="jsonc"><div class="code-bar"><div class="code-actions"><button class="copy-btn" type="button" title="Copier le code" aria-label="Copier le code"></button><button class="expand-btn" type="button" title="Agrandir le code" aria-label="Agrandir le code"></button><button class="download-btn" type="button" title="Télécharger le code" aria-label="Télécharger le code"></button></div><span class="code-lang">jsonc</span></div><pre><code class="hljs language-jsonc"><span class="hljs-attr">&quot;layout&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;sidebarWidth&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">380</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;contentWidthPercent&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">80</span> <span class="hljs-punctuation">}</span>
-</code></pre></div></div>
+<div class="code-block"><div class="code-frame side" data-lang="jsonc"><pre><code class="hljs language-jsonc"><span class="hljs-attr">&quot;layout&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;sidebarWidth&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">380</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;contentWidthPercent&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">80</span> <span class="hljs-punctuation">}</span>
+</code></pre><div class="code-side"><div class="code-actions"><button class="copy-btn" type="button" title="Copier le code" aria-label="Copier le code"></button></div></div></div></div>
 <h3 id="54-numérotation-des-titres--numbering">5.4 Numérotation des titres : <code>numbering</code><a class="anchor" href="#54-numérotation-des-titres--numbering" aria-label="Lien vers cette section">#</a></h3>
 <p>Commandes concernées : <code>npm run edit:numbering</code>, <code>edit:numbering:guess</code>, <code>edit:numbering:reset</code>. <strong>Le <code>.md</code> n'est modifié que quand vous lancez ces commandes.</strong></p>
 <p><code>numbering.levels</code> contient une entrée par niveau (<code>&quot;1&quot;</code> = <code>#</code>, <code>&quot;2&quot;</code> = <code>##</code>, … <code>&quot;6&quot;</code> = <code>######</code>). Chaque niveau accepte :</p>
@@ -755,7 +782,7 @@ graph TD
 </tbody>
 </table>
 <p>Exemple : parties en chiffres romains, sections en décimal cumulatif, sous-sections avec un symbole, le reste ignoré.</p>
-<div class="code-block"><div class="code-frame" data-lang="jsonc"><div class="code-bar"><div class="code-actions"><button class="copy-btn" type="button" title="Copier le code" aria-label="Copier le code"></button><button class="expand-btn" type="button" title="Agrandir le code" aria-label="Agrandir le code"></button><button class="download-btn" type="button" title="Télécharger le code" aria-label="Télécharger le code"></button></div><span class="code-lang">jsonc</span></div><pre><code class="hljs language-jsonc"><span class="hljs-attr">&quot;numbering&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+<div class="code-block"><div class="code-frame side" data-lang="jsonc"><pre><code class="hljs language-jsonc"><span class="hljs-attr">&quot;numbering&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
   <span class="hljs-attr">&quot;levels&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
     <span class="hljs-attr">&quot;1&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;style&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;ignore&quot;</span> <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
     <span class="hljs-attr">&quot;2&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;style&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;ROMAN&quot;</span><span class="hljs-punctuation">,</span>   <span class="hljs-attr">&quot;separator&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;.&quot;</span> <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>                         <span class="hljs-comment">// ## I. Introduction</span>
@@ -765,12 +792,12 @@ graph TD
     <span class="hljs-attr">&quot;6&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;style&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;ignore&quot;</span> <span class="hljs-punctuation">}</span>
   <span class="hljs-punctuation">}</span>
 <span class="hljs-punctuation">}</span>
-</code></pre></div></div>
+</code></pre><div class="code-side"><div class="code-actions"><button class="copy-btn" type="button" title="Copier le code" aria-label="Copier le code"></button><button class="expand-btn" type="button" title="Agrandir le code" aria-label="Agrandir le code"></button><button class="download-btn" type="button" title="Télécharger le code" aria-label="Télécharger le code"></button></div></div></div></div>
 <p>Résultat dans le <code>.md</code> après <code>npm run edit:numbering</code> :</p>
-<div class="code-block"><div class="code-frame" data-lang="markdown"><div class="code-bar"><div class="code-actions"><button class="copy-btn" type="button" title="Copier le code" aria-label="Copier le code"></button><button class="expand-btn" type="button" title="Agrandir le code" aria-label="Agrandir le code"></button><button class="download-btn" type="button" title="Télécharger le code" aria-label="Télécharger le code"></button></div><span class="code-lang">markdown</span></div><pre><code class="hljs language-markdown"><span class="hljs-section">## I. Introduction</span>
+<div class="code-block"><div class="code-frame side" data-lang="markdown"><pre><code class="hljs language-markdown"><span class="hljs-section">## I. Introduction</span>
 <span class="hljs-section">### 1.1. Contexte</span>
 <span class="hljs-section">#### ▪ Détail</span>
-</code></pre></div></div>
+</code></pre><div class="code-side"><div class="code-actions"><button class="copy-btn" type="button" title="Copier le code" aria-label="Copier le code"></button><button class="expand-btn" type="button" title="Agrandir le code" aria-label="Agrandir le code"></button><button class="download-btn" type="button" title="Télécharger le code" aria-label="Télécharger le code"></button></div></div></div></div>
 <p>Comment ça se passe :</p>
 <ul>
 <li><strong>Changer de schéma</strong> : modifiez <code>levels</code>, relancez <code>npm run edit:numbering</code>. L'ancienne numérotation est retirée automatiquement, grâce à la mémoire <code>scripts/state/&lt;nom&gt;.numbering.json</code> (dernier schéma appliqué).</li>
@@ -878,7 +905,7 @@ graph TD
 </tbody>
 </table>
 <p>Exemple : TOC repliable, niveau 2 en gras avec puce, niveau 3 en italique et plus grand retrait, niveau 4 sans symbole.</p>
-<div class="code-block"><div class="code-frame" data-lang="jsonc"><div class="code-bar"><div class="code-actions"><button class="copy-btn" type="button" title="Copier le code" aria-label="Copier le code"></button><button class="expand-btn" type="button" title="Agrandir le code" aria-label="Agrandir le code"></button><button class="download-btn" type="button" title="Télécharger le code" aria-label="Télécharger le code"></button></div><span class="code-lang">jsonc</span></div><pre><code class="hljs language-jsonc"><span class="hljs-attr">&quot;toc&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+<div class="code-block"><div class="code-frame side" data-lang="jsonc"><pre><code class="hljs language-jsonc"><span class="hljs-attr">&quot;toc&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
   <span class="hljs-attr">&quot;range&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-number">2</span><span class="hljs-punctuation">,</span> <span class="hljs-number">4</span><span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span>
   <span class="hljs-attr">&quot;collapsible&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span>
   <span class="hljs-attr">&quot;summary&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Sommaire&quot;</span><span class="hljs-punctuation">,</span>
@@ -889,7 +916,7 @@ graph TD
     <span class="hljs-attr">&quot;4&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;symbol&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;&quot;</span><span class="hljs-punctuation">,</span>  <span class="hljs-attr">&quot;indent&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">8</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;bold&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">false</span></span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;italic&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">false</span></span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;size&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">0.9</span><span class="hljs-punctuation">,</span>  <span class="hljs-attr">&quot;collapsible&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">false</span></span> <span class="hljs-punctuation">}</span>
   <span class="hljs-punctuation">}</span>
 <span class="hljs-punctuation">}</span>
-</code></pre></div></div>
+</code></pre><div class="code-side"><div class="code-actions"><button class="copy-btn" type="button" title="Copier le code" aria-label="Copier le code"></button><button class="expand-btn" type="button" title="Agrandir le code" aria-label="Agrandir le code"></button><button class="download-btn" type="button" title="Télécharger le code" aria-label="Télécharger le code"></button></div></div></div></div>
 <p>Seuls les niveaux que vous écrivez sont modifiés : les autres gardent leurs valeurs par défaut. Pour la masquer <strong>dans le PDF uniquement</strong> : <code>pdf.hideToc</code> (§5.6).</p>
 <h3 id="56-export-pdf--pdf">5.6 Export PDF : <code>pdf</code><a class="anchor" href="#56-export-pdf--pdf" aria-label="Lien vers cette section">#</a></h3>
 <p>Commande : <code>npm run build:pdf</code> (Chrome ou Edge requis). Le PDF contient les <strong>signets</strong> (volet de navigation du lecteur PDF) correspondant à tous les titres, et reprend les styles de <code>style</code> (polices, couleurs, titres, code, Mermaid) dans le thème <code>pdf.theme</code>.</p>
@@ -991,7 +1018,7 @@ graph TD
 </tr>
 </tbody>
 </table>
-<div class="code-block"><div class="code-frame" data-lang="jsonc"><div class="code-bar"><div class="code-actions"><button class="copy-btn" type="button" title="Copier le code" aria-label="Copier le code"></button><button class="expand-btn" type="button" title="Agrandir le code" aria-label="Agrandir le code"></button><button class="download-btn" type="button" title="Télécharger le code" aria-label="Télécharger le code"></button></div><span class="code-lang">jsonc</span></div><pre><code class="hljs language-jsonc"><span class="hljs-attr">&quot;pdf&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+<div class="code-block"><div class="code-frame side" data-lang="jsonc"><pre><code class="hljs language-jsonc"><span class="hljs-attr">&quot;pdf&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
   <span class="hljs-attr">&quot;name&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Document-final&quot;</span><span class="hljs-punctuation">,</span>
   <span class="hljs-attr">&quot;theme&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;light&quot;</span><span class="hljs-punctuation">,</span>
   <span class="hljs-attr">&quot;format&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;A4&quot;</span><span class="hljs-punctuation">,</span>
@@ -1007,7 +1034,7 @@ graph TD
   <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
   <span class="hljs-attr">&quot;footer&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;left&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;{date}&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;right&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Page {page} / {pages}&quot;</span> <span class="hljs-punctuation">}</span>
 <span class="hljs-punctuation">}</span>
-</code></pre></div></div>
+</code></pre><div class="code-side"><div class="code-actions"><button class="copy-btn" type="button" title="Copier le code" aria-label="Copier le code"></button><button class="expand-btn" type="button" title="Agrandir le code" aria-label="Agrandir le code"></button><button class="download-btn" type="button" title="Télécharger le code" aria-label="Télécharger le code"></button></div></div></div></div>
 <p>Remarques :</p>
 <ul>
 <li>Les images des en-têtes / pieds sont <strong>incorporées</strong> au PDF ; un chemin introuvable donne un avertissement.</li>
@@ -1059,6 +1086,11 @@ graph TD
 <td><code>codeTheme.mode</code></td>
 <td><code>&quot;follow&quot;</code></td>
 <td>Mode de couleur propre au code : <code>follow</code>, <code>auto</code>, <code>light</code> ou <code>dark</code>.</td>
+</tr>
+<tr>
+<td><code>codeLanguage</code></td>
+<td><code>true</code></td>
+<td><code>true</code> : barre de code avec le langage ; <code>false</code> : code seul (PDF) / boutons en colonne à droite (HTML). Surchargeable par bloc avec <code>&lt;!-- code:lang --&gt;</code>, <code>&lt;!-- code:nolang --&gt;</code> ou <code>&lt;!-- code:texte --&gt;</code> (§4).</td>
 </tr>
 <tr>
 <td><code>highlight</code></td>
@@ -1115,7 +1147,7 @@ graph TD
 <li><strong><code>style.highlight.light</code> / <code>dark</code></strong> sélectionnent les couleurs de coloration syntaxique du code pour chaque mode de code.</li>
 </ul>
 <p>Voici un exemple complet : la page utilise une palette formelle en mode clair et une palette néon en mode sombre ; le code suit le mode de la page et utilise ses deux feuilles CSS personnalisées.</p>
-<div class="code-block"><div class="code-frame" data-lang="jsonc"><div class="code-bar"><div class="code-actions"><button class="copy-btn" type="button" title="Copier le code" aria-label="Copier le code"></button><button class="expand-btn" type="button" title="Agrandir le code" aria-label="Agrandir le code"></button><button class="download-btn" type="button" title="Télécharger le code" aria-label="Télécharger le code"></button></div><span class="code-lang">jsonc</span></div><pre><code class="hljs language-jsonc"><span class="hljs-attr">&quot;theme&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;auto&quot;</span><span class="hljs-punctuation">,</span>
+<div class="code-block"><div class="code-frame side" data-lang="jsonc"><pre><code class="hljs language-jsonc"><span class="hljs-attr">&quot;theme&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;auto&quot;</span><span class="hljs-punctuation">,</span>
 <span class="hljs-attr">&quot;style&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
   <span class="hljs-attr">&quot;pageTheme&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;light&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;formal&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;dark&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;neon&quot;</span> <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
   <span class="hljs-attr">&quot;pagePalettes&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span><span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
@@ -1125,9 +1157,9 @@ graph TD
     <span class="hljs-attr">&quot;dark&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;highlight-neon.css&quot;</span>
   <span class="hljs-punctuation">}</span>
 <span class="hljs-punctuation">}</span>
-</code></pre></div></div>
+</code></pre><div class="code-side"><div class="code-actions"><button class="copy-btn" type="button" title="Copier le code" aria-label="Copier le code"></button><button class="expand-btn" type="button" title="Agrandir le code" aria-label="Agrandir le code"></button><button class="download-btn" type="button" title="Télécharger le code" aria-label="Télécharger le code"></button></div></div></div></div>
 <p>Les palettes de page intégrées sont <code>default</code> (mode sombre neutre, gris/noir/blanc), <code>formal</code> (clair) et <code>neon</code> (sombre coloré). Pour créer une palette de page, déclarez-la dans <code>pagePalettes</code>, puis sélectionnez son nom dans <code>pageTheme</code> :</p>
-<div class="code-block"><div class="code-frame" data-lang="jsonc"><div class="code-bar"><div class="code-actions"><button class="copy-btn" type="button" title="Copier le code" aria-label="Copier le code"></button><button class="expand-btn" type="button" title="Agrandir le code" aria-label="Agrandir le code"></button><button class="download-btn" type="button" title="Télécharger le code" aria-label="Télécharger le code"></button></div><span class="code-lang">jsonc</span></div><pre><code class="hljs language-jsonc"><span class="hljs-attr">&quot;pageTheme&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;light&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;papier&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;dark&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;neon&quot;</span> <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+<div class="code-block"><div class="code-frame side" data-lang="jsonc"><pre><code class="hljs language-jsonc"><span class="hljs-attr">&quot;pageTheme&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;light&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;papier&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;dark&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;neon&quot;</span> <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
 <span class="hljs-attr">&quot;pagePalettes&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
   <span class="hljs-attr">&quot;papier&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
     <span class="hljs-attr">&quot;bg&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;#fffdf7&quot;</span><span class="hljs-punctuation">,</span>
@@ -1136,7 +1168,7 @@ graph TD
     <span class="hljs-attr">&quot;sidebarBg&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;#f2efe7&quot;</span>
   <span class="hljs-punctuation">}</span>
 <span class="hljs-punctuation">}</span>
-</code></pre></div></div>
+</code></pre><div class="code-side"><div class="code-actions"><button class="copy-btn" type="button" title="Copier le code" aria-label="Copier le code"></button><button class="expand-btn" type="button" title="Agrandir le code" aria-label="Agrandir le code"></button><button class="download-btn" type="button" title="Télécharger le code" aria-label="Télécharger le code"></button></div></div></div></div>
 <p>Les couleurs disponibles sont <code>bg</code>, <code>fg</code>, <code>muted</code>, <code>border</code>, <code>sidebarBg</code>, <code>accent</code>, <code>codeBg</code> et <code>quote</code>. Les couleurs non indiquées gardent leur valeur par défaut. La palette du code peut utiliser <code>default</code> (thèmes intégrés GitHub clair/sombre), le nom d'un thème <code>highlight.js</code> (<code>vs</code>, <code>vs2015</code>, <code>github-dark</code>, <code>nord</code>…) ou un fichier <code>.css</code> placé dans <code>template/</code> ou <code>doc/</code>. Un thème de code ne change que les couleurs de syntaxe, pas la police ni la forme du bloc ; les fichiers personnalisés de l'exemple sont <code>template/highlight-formal.css</code> et <code>template/highlight-neon.css</code>.</p>
 <p>Les palettes <code>default</code>, <code>formal</code> et <code>neon</code> changent <strong>les couleurs uniquement</strong>. Polices, tailles, coins arrondis et autres choix de présentation restent aux valeurs par défaut dans l'exemple. Il n'y a pas encore de sélecteur JSONC de thèmes complets pour ces réglages ; leur personnalisation globale passe par les fichiers CSS de <code>template/</code>.</p>
 <p><strong>Mermaid : <code>layout</code> et <code>direction</code>.</strong></p>
@@ -1159,8 +1191,8 @@ graph TD
 </tbody>
 </table>
 <p><code>direction</code> : <code>null</code> (celle écrite dans le diagramme), <code>&quot;TB&quot;</code> (haut → bas), <code>&quot;BT&quot;</code>, <code>&quot;LR&quot;</code> (gauche → droite), <code>&quot;RL&quot;</code>. Seuls <code>flowchart</code>/<code>graph</code> et <code>stateDiagram</code> acceptent une direction.</p>
-<div class="code-block"><div class="code-frame" data-lang="jsonc"><div class="code-bar"><div class="code-actions"><button class="copy-btn" type="button" title="Copier le code" aria-label="Copier le code"></button><button class="expand-btn" type="button" title="Agrandir le code" aria-label="Agrandir le code"></button><button class="download-btn" type="button" title="Télécharger le code" aria-label="Télécharger le code"></button></div><span class="code-lang">jsonc</span></div><pre><code class="hljs language-jsonc"><span class="hljs-attr">&quot;mermaid&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;layout&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;elk&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;direction&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;TB&quot;</span> <span class="hljs-punctuation">}</span>
-</code></pre></div></div>
+<div class="code-block"><div class="code-frame side" data-lang="jsonc"><pre><code class="hljs language-jsonc"><span class="hljs-attr">&quot;mermaid&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;layout&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;elk&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;direction&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;TB&quot;</span> <span class="hljs-punctuation">}</span>
+</code></pre><div class="code-side"><div class="code-actions"><button class="copy-btn" type="button" title="Copier le code" aria-label="Copier le code"></button></div></div></div></div>
 <p><strong>Titres et sommaire : <code>headings</code> et <code>toc</code>.</strong> Pour chaque niveau <code>&quot;1&quot;</code> à <code>&quot;6&quot;</code> : <code>size</code> (taille, en <strong>em</strong>, 0 à 20 ; 1 = taille du texte ; dans <code>toc</code> l'em vaut 14 px), <code>indent</code> (retrait à gauche en em, 0 à 20), <code>color</code> (<code>null</code>, une couleur CSS <code>&quot;#c0392b&quot;</code>, ou <code>{ &quot;light&quot;: &quot;…&quot;, &quot;dark&quot;: &quot;…&quot; }</code> pour une couleur par thème).</p>
 <p>Valeurs par défaut :</p>
 <table>
@@ -1212,14 +1244,14 @@ graph TD
 </tbody>
 </table>
 <p>(<code>headings.indent</code> vaut 0 partout, toutes les couleurs <code>null</code>.) Vous pouvez ne noter que ce qui change :</p>
-<div class="code-block"><div class="code-frame" data-lang="jsonc"><div class="code-bar"><div class="code-actions"><button class="copy-btn" type="button" title="Copier le code" aria-label="Copier le code"></button><button class="expand-btn" type="button" title="Agrandir le code" aria-label="Agrandir le code"></button><button class="download-btn" type="button" title="Télécharger le code" aria-label="Télécharger le code"></button></div><span class="code-lang">jsonc</span></div><pre><code class="hljs language-jsonc"><span class="hljs-attr">&quot;headings&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+<div class="code-block"><div class="code-frame side" data-lang="jsonc"><pre><code class="hljs language-jsonc"><span class="hljs-attr">&quot;headings&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
   <span class="hljs-attr">&quot;1&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;size&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">2.4</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;color&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;light&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;#0b3d91&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;dark&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;#7fb0ff&quot;</span> <span class="hljs-punctuation">}</span> <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
   <span class="hljs-attr">&quot;2&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;size&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">1.6</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;indent&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">0.5</span> <span class="hljs-punctuation">}</span>
 <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
 <span class="hljs-attr">&quot;toc&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
   <span class="hljs-attr">&quot;3&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;indent&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">2</span> <span class="hljs-punctuation">}</span>
 <span class="hljs-punctuation">}</span>
-</code></pre></div></div>
+</code></pre><div class="code-side"><div class="code-actions"><button class="copy-btn" type="button" title="Copier le code" aria-label="Copier le code"></button><button class="expand-btn" type="button" title="Agrandir le code" aria-label="Agrandir le code"></button><button class="download-btn" type="button" title="Télécharger le code" aria-label="Télécharger le code"></button></div></div></div></div>
 <blockquote>
 <p><strong>Ne pas confondre</strong> : <code>style.toc</code> = apparence du sommaire <strong>latéral</strong> (page HTML). Le bloc racine <code>toc</code> (§5.5) = table des matières <strong>écrite dans le Markdown</strong>.</p>
 </blockquote>
@@ -1275,11 +1307,11 @@ graph TD
 </tr>
 </tbody>
 </table>
-<div class="code-block"><div class="code-frame" data-lang="jsonc"><div class="code-bar"><div class="code-actions"><button class="copy-btn" type="button" title="Copier le code" aria-label="Copier le code"></button><button class="expand-btn" type="button" title="Agrandir le code" aria-label="Agrandir le code"></button><button class="download-btn" type="button" title="Télécharger le code" aria-label="Télécharger le code"></button></div><span class="code-lang">jsonc</span></div><pre><code class="hljs language-jsonc"><span class="hljs-attr">&quot;colors&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+<div class="code-block"><div class="code-frame side" data-lang="jsonc"><pre><code class="hljs language-jsonc"><span class="hljs-attr">&quot;colors&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
   <span class="hljs-attr">&quot;light&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;accent&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;#c0392b&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;sidebarBg&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;#fff8f0&quot;</span> <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
   <span class="hljs-attr">&quot;dark&quot;</span><span class="hljs-punctuation">:</span>  <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;accent&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;#ff8a65&quot;</span> <span class="hljs-punctuation">}</span>
 <span class="hljs-punctuation">}</span>
-</code></pre></div></div>
+</code></pre><div class="code-side"><div class="code-actions"><button class="copy-btn" type="button" title="Copier le code" aria-label="Copier le code"></button><button class="expand-btn" type="button" title="Agrandir le code" aria-label="Agrandir le code"></button><button class="download-btn" type="button" title="Télécharger le code" aria-label="Télécharger le code"></button></div></div></div></div>
 <p><code>style.colors</code> est un réglage direct de compatibilité : ses valeurs remplacent les couleurs correspondantes de <code>pageTheme</code> pour le mode choisi. Pour un thème nommé réutilisable, préférez <code>pagePalettes</code> et <code>pageTheme</code>.</p>
 <p><strong>Aller plus loin (CSS).</strong> Pour tout ce que le <code>.jsonc</code> ne couvre pas :</p>
 <table>
@@ -1326,7 +1358,7 @@ graph TD
 </ul>
 <hr>
 <h2 id="6-organisation-des-dossiers">6. Organisation des dossiers<a class="anchor" href="#6-organisation-des-dossiers" aria-label="Lien vers cette section">#</a></h2>
-<div class="code-block"><div class="code-frame"><div class="code-bar"><div class="code-actions"><button class="copy-btn" type="button" title="Copier le code" aria-label="Copier le code"></button><button class="expand-btn" type="button" title="Agrandir le code" aria-label="Agrandir le code"></button><button class="download-btn" type="button" title="Télécharger le code" aria-label="Télécharger le code"></button></div></div><pre><code class="hljs">.
+<div class="code-block"><div class="code-frame side"><pre><code class="hljs">.
 ├── doc/                  ← VOS documents (à modifier)
 │   ├── exemple.md              le texte Markdown (exemple fourni : à renommer)
 │   ├── exemple.jsonc           sa configuration (même nom que le .md, extension .jsonc)
@@ -1341,7 +1373,7 @@ graph TD
 │   └── state/            ← mémoire de numérotation et manifestes HTML (JSON internes, non versionnés)
 ├── package.json          ← liste des commandes npm
 └── README.md
-</code></pre></div></div>
+</code></pre><div class="code-side"><div class="code-actions"><button class="copy-btn" type="button" title="Copier le code" aria-label="Copier le code"></button><button class="expand-btn" type="button" title="Agrandir le code" aria-label="Agrandir le code"></button><button class="download-btn" type="button" title="Télécharger le code" aria-label="Télécharger le code"></button></div></div></div></div>
 <p>Règles importantes :</p>
 <ul>
 <li>Les fichiers générés sont mis à jour dans <strong><code>output_html/</code> et <code>output_pdf/</code></strong> : ne travaillez jamais dedans. Les anciens dossiers, s'ils existent, ne sont ni déplacés ni supprimés automatiquement.</li>
@@ -1534,7 +1566,7 @@ graph TD
     });
     block.addEventListener('click', (e) => { if (e.target === block) closeExpanded(); });
     if (download) download.addEventListener('click', () => {
-      const name = fileFor(frame && frame.dataset.lang);
+      const name = (frame && frame.dataset.filename) || fileFor(frame && frame.dataset.lang);
       const url = URL.createObjectURL(new Blob([code()], { type: 'text/plain;charset=utf-8' }));
       const a = document.createElement('a');
       a.href = url;

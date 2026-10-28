@@ -163,7 +163,15 @@ body.resizing img { pointer-events: none; }
 .code-actions button:hover, .code-actions button:focus-visible { color: var(--accent); border-color: var(--accent); }
 .code-actions button.ok { color: #1a7f37; border-color: #1a7f37; }
 .code-actions button.ko { color: #cf222e; border-color: #cf222e; }
-.code-lang { margin-left: auto; text-transform: lowercase; white-space: nowrap; }
+.code-lang { margin-left: auto; text-transform: lowercase; white-space: nowrap; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.code-lang.custom { text-transform: none; }
+.code-frame.side { flex-direction: row; }
+.code-frame.side pre { min-width: 0; }
+.code-side {
+  display: flex; flex-direction: column; flex: none; padding: 6px; border-left: 1px solid var(--border);
+  background: color-mix(in srgb, var(--muted) 10%, transparent);
+}
+.code-side .code-actions { flex-direction: column; flex-wrap: nowrap; }
 .code-block.expanded { position: fixed; inset: 0; z-index: 100; padding: 2.5vh 2.5vw; background: rgba(0, 0, 0, .6); margin: 0; }
 .code-block.expanded .code-frame { height: 100%; background: var(--bg); }
 .code-block.expanded code.hljs { font-size: 1em; }
@@ -213,7 +221,7 @@ body.mm-open { overflow: hidden; }
   .markdown-body .anchor { display: none; }
 }
 @media print {
-  #sidebar, #sidebar-toggle, #resizer, .code-actions, .anchor, .mm-expand, .mm-controls { display: none !important; }
+  #sidebar, #sidebar-toggle, #resizer, .code-actions, .code-side, .anchor, .mm-expand, .mm-controls { display: none !important; }
   #content { margin: 0; padding: 0; }
   .markdown-body { width: 100%; }
 }
@@ -391,18 +399,37 @@ li.task-item { list-style: none; }
 <p>Exemple d'une petite image en .png avec balise HTML pour choisir la largeur :</p>
 <img src="media/exemple_image_petite.png" alt="Petite image PNG" width="300">
 <h2 id="3-code-coloré">3. Code coloré<a class="anchor" href="#3-code-coloré" aria-label="Lien vers cette section">#</a></h2>
-<div class="code-block"><div class="code-frame" data-lang="c"><div class="code-bar"><div class="code-actions"><button class="copy-btn" type="button" title="Copier le code" aria-label="Copier le code"></button><button class="expand-btn" type="button" title="Agrandir le code" aria-label="Agrandir le code"></button><button class="download-btn" type="button" title="Télécharger le code" aria-label="Télécharger le code"></button></div><span class="code-lang">c</span></div><pre><code class="hljs language-c"><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span> {
-  HAL_Init();
+<p>Code sans l'affichage du langage :</p>
+<div class="code-block"><div class="code-frame side" data-lang="cpp"><pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span> </span>{
+  <span class="hljs-built_in">HAL_Init</span>();
   <span class="hljs-keyword">while</span> (<span class="hljs-number">1</span>) {
-    HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
-    HAL_Delay(<span class="hljs-number">500</span>);
+    <span class="hljs-built_in">HAL_GPIO_TogglePin</span>(LED_GPIO_Port, LED_Pin);
+    <span class="hljs-built_in">HAL_Delay</span>(<span class="hljs-number">500</span>);
   }
 }
+</code></pre><div class="code-side"><div class="code-actions"><button class="copy-btn" type="button" title="Copier le code" aria-label="Copier le code"></button><button class="expand-btn" type="button" title="Agrandir le code" aria-label="Agrandir le code"></button><button class="download-btn" type="button" title="Télécharger le code" aria-label="Télécharger le code"></button></div></div></div></div>
+<p>Code avec affichage du langage :</p>
+<div class="code-block"><div class="code-frame" data-lang="python"><div class="code-bar"><div class="code-actions"><button class="copy-btn" type="button" title="Copier le code" aria-label="Copier le code"></button><button class="expand-btn" type="button" title="Agrandir le code" aria-label="Agrandir le code"></button><button class="download-btn" type="button" title="Télécharger le code" aria-label="Télécharger le code"></button></div><span class="code-lang" title="python">python</span></div><pre><code class="hljs language-python"><span class="hljs-keyword">import</span> os
+
+<span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(sys.argv) &lt; <span class="hljs-number">2</span>:
+    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;Usage: %s &lt;font file&gt;&quot;</span> % sys.argv[<span class="hljs-number">0</span>])
+    sys.exit(<span class="hljs-number">1</span>)
+<span class="hljs-keyword">else</span>:
+    main()
+
+<span class="hljs-keyword">def</span> <span class="hljs-title function_">main</span>():
+    font_path = sys.argv[<span class="hljs-number">1</span>]
+    font = TTFont(font_path)
+    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;Loaded font:&quot;</span>, font_path)
 </code></pre></div></div>
-<div class="code-block"><div class="code-frame" data-lang="python"><div class="code-bar"><div class="code-actions"><button class="copy-btn" type="button" title="Copier le code" aria-label="Copier le code"></button><button class="expand-btn" type="button" title="Agrandir le code" aria-label="Agrandir le code"></button><button class="download-btn" type="button" title="Télécharger le code" aria-label="Télécharger le code"></button></div><span class="code-lang">python</span></div><pre><code class="hljs language-python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">pid</span>(<span class="hljs-params">e, e_prec, somme, kp, ki, kd, dt</span>):
-    somme += e * dt
-    u = kp * e + ki * somme + kd * (e - e_prec) / dt
-    <span class="hljs-keyword">return</span> u, somme
+<p>Code avec affichage du fichier :</p>
+<div class="code-block"><div class="code-frame" data-lang="javascript" data-filename="main.js"><div class="code-bar"><div class="code-actions"><button class="copy-btn" type="button" title="Copier le code" aria-label="Copier le code"></button><button class="expand-btn" type="button" title="Agrandir le code" aria-label="Agrandir le code"></button><button class="download-btn" type="button" title="Télécharger le code" aria-label="Télécharger le code"></button></div><span class="code-lang custom" title="src/main.js">src/main.js</span></div><pre><code class="hljs language-javascript"><span class="hljs-keyword">const</span> <span class="hljs-title function_">levelsBlock</span> = (<span class="hljs-params">levels</span>) =&gt; {
+  <span class="hljs-keyword">const</span> rows = [<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>, <span class="hljs-number">5</span>, <span class="hljs-number">6</span>].<span class="hljs-title function_">map</span>(<span class="hljs-function">(<span class="hljs-params">n</span>) =&gt;</span> {
+    <span class="hljs-keyword">const</span> o = levels[n];
+    <span class="hljs-keyword">return</span> <span class="hljs-string">`      &quot;<span class="hljs-subst">${n}</span>&quot;: { &quot;style&quot;: <span class="hljs-subst">${<span class="hljs-built_in">JSON</span>.stringify(o.style)}</span>, &quot;separator&quot;: <span class="hljs-subst">${<span class="hljs-built_in">JSON</span>.stringify(o.separator)}</span>, &quot;cumulative&quot;: <span class="hljs-subst">${o.cumulative}</span> }`</span>;
+  });
+  <span class="hljs-keyword">return</span> <span class="hljs-string">`{\n<span class="hljs-subst">${rows.join(<span class="hljs-string">&#x27;,\n&#x27;</span>)}</span>\n    }`</span>;
+};
 </code></pre></div></div>
 <h1 id="formules-latex">Formules LaTeX<a class="anchor" href="#formules-latex" aria-label="Lien vers cette section">#</a></h1>
 <h2 id="1-résoudre-une-équation-du-second-degré">1. Résoudre une équation du second degré<a class="anchor" href="#1-résoudre-une-équation-du-second-degré" aria-label="Lien vers cette section">#</a></h2>
@@ -5433,7 +5460,7 @@ lodash-es/lodash.js:
     });
     block.addEventListener('click', (e) => { if (e.target === block) closeExpanded(); });
     if (download) download.addEventListener('click', () => {
-      const name = fileFor(frame && frame.dataset.lang);
+      const name = (frame && frame.dataset.filename) || fileFor(frame && frame.dataset.lang);
       const url = URL.createObjectURL(new Blob([code()], { type: 'text/plain;charset=utf-8' }));
       const a = document.createElement('a');
       a.href = url;
