@@ -28,7 +28,7 @@ Vous pouvez consulter le dépôt GitHub mais ce n'est pas nécessaire pour utili
 De zéro à un aperçu dans le navigateur en quelques minutes. Il faut **Node.js** (obligatoire), **Git** (facultatif) et **Chrome ou Edge** (uniquement pour le PDF).
 
 ```powershell
-git clone <URL-DU-DEPOT> MonProjet     # remplacez <URL-DU-DEPOT> et MonProjet
+git clone https://github.com/benoitdekeyn/MarkDownAble MonProjet     # remplacez MonProjet
 cd MonProjet
 npm install
 npm run dev                              # aperçu en direct de doc/exemple.md
@@ -55,7 +55,7 @@ Node.js est le programme qui exécute l'outil (à faire une seule fois par machi
 
 ### 1.2 Récupérer le projet
 
-Avec **Git** : `git clone <URL-DU-DEPOT> MonProjet` puis `cd MonProjet`. Git s'installe depuis <https://git-scm.com/downloads> (options par défaut) ; rouvrez ensuite le terminal et vérifiez avec `git --version`.
+Avec **Git** : `git clone https://github.com/benoitdekeyn/MarkDownAble MonProjet` puis `cd MonProjet`. Git s'installe depuis <https://git-scm.com/downloads> (options par défaut) ; rouvrez ensuite le terminal et vérifiez avec `git --version`.
 
 Sans Git : sur la page GitHub du dépôt, bouton **Code → Download ZIP**, dézippez, puis ouvrez un terminal dans le dossier obtenu.
 
@@ -98,7 +98,7 @@ L'export PDF utilise le navigateur déjà installé sur la machine (Google Chrom
 
 ### 1.7 Un projet à vous, sans lien avec ce dépôt (facultatif)
 
-Après le clone, supprimez le dossier `.git` (`Remove-Item -Recurse -Force .git` sous PowerShell) puis faites `git init`. Pour recevoir plus tard les améliorations de l'outil, gardez plutôt le dépôt d'origine comme remote (`git remote add outil <URL>` puis `git pull outil main`) et ne modifiez pas `scripts/`.
+Après le clone, supprimez le dossier `.git` (`Remove-Item -Recurse -Force .git` sous PowerShell) puis faites `git init`. Pour recevoir plus tard les améliorations de l'outil, gardez plutôt le dépôt d'origine comme remote (`git remote add outil https://github.com/benoitdekeyn/MarkDownAble` puis `git pull outil main`) et ne modifiez pas `scripts/`.
 
 ---
 

@@ -366,7 +366,7 @@ li.task-item { list-style: none; }
 <hr>
 <h2 id="1-démarrage-rapide">1. Démarrage rapide<a class="anchor" href="#1-démarrage-rapide" aria-label="Lien vers cette section">#</a></h2>
 <p>De zéro à un aperçu dans le navigateur en quelques minutes. Il faut <strong>Node.js</strong> (obligatoire), <strong>Git</strong> (facultatif) et <strong>Chrome ou Edge</strong> (uniquement pour le PDF).</p>
-<div class="code-block"><div class="code-frame" data-lang="powershell"><div class="code-bar"><div class="code-actions"><button class="copy-btn" type="button" title="Copier le code" aria-label="Copier le code"></button><button class="expand-btn" type="button" title="Agrandir le code" aria-label="Agrandir le code"></button><button class="download-btn" type="button" title="Télécharger le code" aria-label="Télécharger le code"></button></div><span class="code-lang">powershell</span></div><pre><code class="hljs language-powershell">git clone &lt;URL<span class="hljs-literal">-DU-DEPOT</span>&gt; MonProjet     <span class="hljs-comment"># remplacez &lt;URL-DU-DEPOT&gt; et MonProjet</span>
+<div class="code-block"><div class="code-frame" data-lang="powershell"><div class="code-bar"><div class="code-actions"><button class="copy-btn" type="button" title="Copier le code" aria-label="Copier le code"></button><button class="expand-btn" type="button" title="Agrandir le code" aria-label="Agrandir le code"></button><button class="download-btn" type="button" title="Télécharger le code" aria-label="Télécharger le code"></button></div><span class="code-lang">powershell</span></div><pre><code class="hljs language-powershell">git clone https://github.com/benoitdekeyn/MarkDownAble MonProjet     <span class="hljs-comment"># remplacez MonProjet</span>
 <span class="hljs-built_in">cd</span> MonProjet
 npm install
 npm run dev                              <span class="hljs-comment"># aperçu en direct de doc/exemple.md</span>
@@ -393,7 +393,7 @@ npm <span class="hljs-literal">-v</span>
 </li>
 </ol>
 <h3 id="12-récupérer-le-projet">1.2 Récupérer le projet<a class="anchor" href="#12-récupérer-le-projet" aria-label="Lien vers cette section">#</a></h3>
-<p>Avec <strong>Git</strong> : <code>git clone &lt;URL-DU-DEPOT&gt; MonProjet</code> puis <code>cd MonProjet</code>. Git s'installe depuis <a href="https://git-scm.com/downloads" target="_blank" rel="noopener noreferrer">https://git-scm.com/downloads</a> (options par défaut) ; rouvrez ensuite le terminal et vérifiez avec <code>git --version</code>.</p>
+<p>Avec <strong>Git</strong> : <code>git clone https://github.com/benoitdekeyn/MarkDownAble MonProjet</code> puis <code>cd MonProjet</code>. Git s'installe depuis <a href="https://git-scm.com/downloads" target="_blank" rel="noopener noreferrer">https://git-scm.com/downloads</a> (options par défaut) ; rouvrez ensuite le terminal et vérifiez avec <code>git --version</code>.</p>
 <p>Sans Git : sur la page GitHub du dépôt, bouton <strong>Code → Download ZIP</strong>, dézippez, puis ouvrez un terminal dans le dossier obtenu.</p>
 <blockquote>
 <p>Astuce VS Code : clic droit sur le dossier → « Ouvrir dans le terminal intégré ».</p>
@@ -417,7 +417,7 @@ npm run dev <span class="hljs-literal">--</span> MonDoc
 <h3 id="16-pour-le-pdf--chrome-ou-edge">1.6 Pour le PDF : Chrome ou Edge<a class="anchor" href="#16-pour-le-pdf--chrome-ou-edge" aria-label="Lien vers cette section">#</a></h3>
 <p>L'export PDF utilise le navigateur déjà installé sur la machine (Google Chrome ou Microsoft Edge, détecté automatiquement). Rien à télécharger de plus ; si la détection échoue, indiquez son chemin avec <code>pdf.browser</code> (§5.6).</p>
 <h3 id="17-un-projet-à-vous-sans-lien-avec-ce-dépôt-facultatif">1.7 Un projet à vous, sans lien avec ce dépôt (facultatif)<a class="anchor" href="#17-un-projet-à-vous-sans-lien-avec-ce-dépôt-facultatif" aria-label="Lien vers cette section">#</a></h3>
-<p>Après le clone, supprimez le dossier <code>.git</code> (<code>Remove-Item -Recurse -Force .git</code> sous PowerShell) puis faites <code>git init</code>. Pour recevoir plus tard les améliorations de l'outil, gardez plutôt le dépôt d'origine comme remote (<code>git remote add outil &lt;URL&gt;</code> puis <code>git pull outil main</code>) et ne modifiez pas <code>scripts/</code>.</p>
+<p>Après le clone, supprimez le dossier <code>.git</code> (<code>Remove-Item -Recurse -Force .git</code> sous PowerShell) puis faites <code>git init</code>. Pour recevoir plus tard les améliorations de l'outil, gardez plutôt le dépôt d'origine comme remote (<code>git remote add outil https://github.com/benoitdekeyn/MarkDownAble</code> puis <code>git pull outil main</code>) et ne modifiez pas <code>scripts/</code>.</p>
 <hr>
 <h2 id="2-utilisation-au-quotidien">2. Utilisation au quotidien<a class="anchor" href="#2-utilisation-au-quotidien" aria-label="Lien vers cette section">#</a></h2>
 <p>Toutes les commandes se lancent depuis le terminal, dans ce dossier.</p>
