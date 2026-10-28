@@ -1,17 +1,29 @@
-# MarDownAble
+# MarkDownAble
 
 Cet outil transforme un ou plusieurs documents Markdown (`.md`) en :
 
-- **une page web** (HTML) avec sommaire latéral redimensionnable, thème clair/sombre, formules LaTeX, diagrammes Mermaid et code coloré ;
+- **une page web** (HTML) avec sommaire latéral redimensionnable, thème clair/sombre, formules LaTeX, diagrammes Mermaid, code coloré (avec boutons copier / agrandir / télécharger) ;
 - **un PDF** avec signets (navigation par titres), en-têtes / pieds de page, sauts de page, thème clair ou sombre.
 
 Il fournit aussi des commandes pour **numéroter les titres** et **générer la table des matières** directement dans le Markdown.
 
+## Par où commencer ?
+
+| Votre situation | Où aller |
+| --- | --- |
+| Je découvre l'outil, rien n'est encore installé | [§1 Démarrage rapide](#1-démarrage-rapide) |
+| C'est installé : je veux écrire et générer mon document | [§2 Utilisation au quotidien](#2-utilisation-au-quotidien) |
+| Je veux créer un nouveau document | [§3 Créer un nouveau document](#3-créer-un-nouveau-document) |
+| Je veux savoir ce que je peux écrire (formules, code, Mermaid, sauts de page…) | [§4 Écrire dans le Markdown](#4-écrire-dans-le-markdown) |
+| Je veux changer l'apparence, le PDF, la numérotation ou la table des matières | [§5 Personnaliser](#5-personnaliser--le-fichier-jsonc-et-le-dossier-template) |
+| Je cherche où sont (ou vont) mes fichiers | [§6 Organisation des dossiers](#6-organisation-des-dossiers) |
+| Un message d'erreur ou un avertissement s'affiche | [§7 Dépannage](#7-dépannage) |
+
 ---
 
-## 0. Démarrage rapide
+## 1. Démarrage rapide
 
-Prérequis : [Node.js](https://nodejs.org) (LTS) et Google Chrome ou Microsoft Edge (pour le PDF) — détails au §1.
+De zéro à un aperçu dans le navigateur en quelques minutes. Il faut **Node.js** (obligatoire), **Git** (facultatif) et **Chrome ou Edge** (uniquement pour le PDF).
 
 ```powershell
 git clone <URL-DU-DEPOT> MonProjet     # remplacez <URL-DU-DEPOT> et MonProjet
@@ -20,26 +32,13 @@ npm install
 npm run dev                              # aperçu en direct de doc/exemple.md
 ```
 
-> **Erreur `npm : Le terme « npm » n'est pas reconnu…` (ou `'npm' is not recognized…`, `npm: command not found`) ?** Node.js (qui fournit `npm`) n'est pas installé, ou le terminal a été ouvert avant l'installation. Suivez le [§1.1 Installer Node.js](#11-installer-nodejs), puis fermez et rouvrez le terminal. De même, `git : Le terme « git » n'est pas reconnu` signifie que Git n'est pas installé (voir le [§1.4](#14-installer-git-facultatif)) ; vous pouvez sinon télécharger le dépôt en ZIP.
+> **Erreur `npm : Le terme « npm » n'est pas reconnu…` (ou `'npm' is not recognized…`, `npm: command not found`) ?** Node.js (qui fournit `npm`) n'est pas installé, ou le terminal a été ouvert avant l'installation : suivez le [§1.1](#11-installer-nodejs) puis fermez et rouvrez le terminal. De même, `git : Le terme « git » n'est pas reconnu` signifie que Git n'est pas installé : voir le [§1.2](#12-récupérer-le-projet) (ou téléchargez le dépôt en ZIP).
 
-Le dépôt contient un document d'exemple, `doc/exemple.md` + `doc/exemple.jsonc`, qui montre toutes les fonctions (formules, code, Mermaid, images…). Pour démarrer **votre** document :
-
-1. Dans `doc/`, **renommez `exemple.md` et `exemple.jsonc` avec le même nouveau nom** (ex. `MonDoc.md` / `MonDoc.jsonc`). Le lien entre les deux se fait uniquement par ce nom.
-2. Remplacez les images `doc/media/exemple_*` par les vôtres (ou supprimez-les) et réécrivez le texte.
-3. Réglez le `.jsonc` (titre, icône, thème, PDF…) : tout y est commenté.
-4. `npm run dev` pour écrire en direct, puis `npm run edit:outline` (numérotation + table des matières), `npm run build:html` et `npm run build:pdf` pour les livrables (`output_html/` et `output_pdf/`).
-
-Vous préférez partir d'une page blanche ? `npm run init -- MonDoc` crée un `.md` et un `.jsonc` vierges (§4), et vous pouvez supprimer l'exemple.
-
-> **Un projet à vous, sans lien avec ce dépôt** : après le clone, supprimez le dossier `.git` (`Remove-Item -Recurse -Force .git` sous PowerShell) puis faites `git init`. Pour recevoir plus tard les améliorations de l'outil, gardez plutôt le dépôt d'origine comme remote (`git remote add outil <URL>` puis `git pull outil main`) et ne modifiez pas `scripts/`.
-
----
-
-## 1. Installation (première fois seulement)
+Le détail, étape par étape :
 
 ### 1.1 Installer Node.js
 
-Node.js est le programme qui exécute l'outil.
+Node.js est le programme qui exécute l'outil (à faire une seule fois par machine).
 
 1. Allez sur <https://nodejs.org> et téléchargez la version **LTS** (recommandée).
 2. Lancez l'installateur et acceptez les options par défaut.
@@ -52,70 +51,65 @@ Node.js est le programme qui exécute l'outil.
 
    Chaque commande doit afficher un numéro de version (Node 20 ou plus récent conseillé). `npm` est installé avec Node.js.
 
-### 1.2 Installer Chrome ou Edge
+### 1.2 Récupérer le projet
 
-Uniquement pour le **PDF** : l'outil utilise le navigateur déjà installé sur votre machine (Google Chrome ou Microsoft Edge, détecté automatiquement). Rien à télécharger de plus.
+Avec **Git** : `git clone <URL-DU-DEPOT> MonProjet` puis `cd MonProjet`. Git s'installe depuis <https://git-scm.com/downloads> (options par défaut) ; rouvrez ensuite le terminal et vérifiez avec `git --version`.
+
+Sans Git : sur la page GitHub du dépôt, bouton **Code → Download ZIP**, dézippez, puis ouvrez un terminal dans le dossier obtenu.
+
+> Astuce VS Code : clic droit sur le dossier → « Ouvrir dans le terminal intégré ».
 
 ### 1.3 Installer les dépendances de l'outil
 
-Ouvrez un terminal **dans le dossier du projet** (celui qui contient ce `README.md`) puis :
+Dans un terminal **ouvert dans le dossier du projet** (celui qui contient ce `README.md`) :
 
 ```powershell
 npm install
 ```
 
-Cela crée le dossier `node_modules/` (ne le modifiez pas, il n'est pas versionné). À refaire seulement si ce dossier disparaît.
+Cela crée le dossier `node_modules/` (ne le modifiez pas, il n'est pas versionné). À refaire seulement si ce dossier disparaît ou si `package.json` change.
 
-> Astuce VS Code : clic droit sur le dossier → « Ouvrir dans le terminal intégré ».
+### 1.4 Voir l'exemple
 
-### 1.4 Installer Git (facultatif)
+```powershell
+npm run dev
+```
 
-Git sert uniquement à cloner le dépôt (`git clone …`). Téléchargez-le sur <https://git-scm.com/downloads>, installez avec les options par défaut, rouvrez le terminal et vérifiez avec `git --version`. Sans Git : sur la page GitHub du dépôt, bouton **Code → Download ZIP**, puis dézippez.
+Le navigateur s'ouvre sur l'aperçu de `doc/exemple.md` (formules, code, Mermaid, images…). Chaque sauvegarde recharge la page. `Ctrl+C` arrête le serveur.
+
+### 1.5 Démarrer votre propre document
+
+La méthode la plus simple : une commande crée un `.md` et un `.jsonc` vierges, que vous pouvez écrire aussitôt.
+
+```powershell
+npm run init -- MonDoc
+npm run dev -- MonDoc
+```
+
+Vous pouvez ensuite supprimer l'exemple (`doc/exemple.md`, `doc/exemple.jsonc` et les images `doc/media/exemple_*`). Autre possibilité : dans `doc/`, **renommer `exemple.md` et `exemple.jsonc` avec le même nouveau nom** (le lien entre les deux se fait uniquement par ce nom), puis remplacer le texte et les images.
+
+Pour les livrables : `npm run edit:outline` (numérotation + table des matières, facultatif), puis `npm run build:html` et/ou `npm run build:pdf`. Les fichiers sont écrits dans `output_html/` et `output_pdf/`. Le détail des commandes est au [§2](#2-utilisation-au-quotidien).
+
+### 1.6 Pour le PDF : Chrome ou Edge
+
+L'export PDF utilise le navigateur déjà installé sur la machine (Google Chrome ou Microsoft Edge, détecté automatiquement). Rien à télécharger de plus ; si la détection échoue, indiquez son chemin avec `pdf.browser` (§5.6).
+
+### 1.7 Un projet à vous, sans lien avec ce dépôt (facultatif)
+
+Après le clone, supprimez le dossier `.git` (`Remove-Item -Recurse -Force .git` sous PowerShell) puis faites `git init`. Pour recevoir plus tard les améliorations de l'outil, gardez plutôt le dépôt d'origine comme remote (`git remote add outil <URL>` puis `git pull outil main`) et ne modifiez pas `scripts/`.
 
 ---
 
-## 2. Organisation des dossiers
-
-```
-.
-├── doc/                  ← VOS documents (à modifier)
-│   ├── exemple.md              le texte Markdown (exemple fourni : à renommer)
-│   ├── exemple.jsonc           sa configuration (même nom que le .md, extension .jsonc)
-│   └── media/                  vos images (partagées par tous les documents)
-├── template/             ← le VISUEL des générations (CSS / JS), modifiable : style.css, print.css, mermaid.css, highlight.css…
-├── output_html/          ← généré : un sous-dossier par document, avec son HTML + ses seuls médias utilisés
-│   └── exemple/
-│       ├── index.html
-│       └── media/…
-├── output_pdf/           ← généré : exemple.pdf
-├── scripts/              ← l'outil lui-même (build, init, edit…), à ne pas modifier
-│   └── state/            ← mémoire de numérotation et manifestes HTML (JSON internes, non versionnés)
-├── package.json          ← liste des commandes npm
-└── README.md
-```
-
-Règles importantes :
-
-- Les fichiers générés sont mis à jour dans **`output_html/` et `output_pdf/`** : ne travaillez jamais dedans. Les anciens dossiers, s'ils existent, ne sont ni déplacés ni supprimés automatiquement.
-- Un document n'est généré que si **`doc/<nom>.md` ET `doc/<nom>.jsonc`** existent (même `<nom>`). Un `.md` sans `.jsonc` est ignoré ; une config invalide est signalée et ignorée, les autres documents sont quand même traités.
-- Plusieurs `.md` = des **variantes** d'un même sujet qui partagent le même dossier `doc/media/`.
-- Les images se référencent **relativement au `.md`** : `![schéma](media/schema.png)`.
-- Dans `output_html/<nom>/`, le livrable contient le HTML et un seul dossier `media/`. Les ressources référencées dans `doc/media/` gardent leur chemin ; les autres ressources locales (y compris les fichiers JSON liés) sont copiées dans `media/linked/`, et leurs URL sont réécrites dans le HTML. **Seules les ressources utilisées** sont copiées. Pour publier ou envoyer la page : donnez/ouvrez **tout le dossier `output_html/<nom>/`**.
-- Les fichiers qui ne sont plus utilisés sont supprimés de `output_html/<nom>/` au build suivant (uniquement ceux que l'outil y avait écrits). Les manifestes JSON qui mémorisent ces fichiers sont conservés dans `scripts/state/`, pas dans les sorties HTML. Les ressources JSON explicitement référencées dans un Markdown restent des ressources de document et peuvent, elles, être copiées avec les autres médias.
-- **Personnaliser l'apparence** : modifiez les fichiers de `template/` (voir §5) ; ils s'appliquent à tous les documents.
-
----
-
-## 3. Utilisation au quotidien
+## 2. Utilisation au quotidien
 
 Toutes les commandes se lancent depuis le terminal, dans ce dossier.
 
 | Commande | Effet |
 | --- | --- |
-| `npm run init -- MonDoc` | Crée `doc/MonDoc.md` et `doc/MonDoc.jsonc` (config commentée). Voir §4. |
+| `npm run init -- MonDoc` | Crée `doc/MonDoc.md` et `doc/MonDoc.jsonc` (config commentée). Voir §3. |
 | `npm run dev` | Serveur local avec **rechargement automatique** à chaque sauvegarde (ouvre le navigateur sur http://localhost:4173). Ctrl+C pour arrêter. |
-| `npm run build:html` | Écrit `output_html/<nom>/<htmlName>.html` + médias utilisés, puis ouvre l'Explorateur sur le fichier. |
-| `npm run build:pdf` | Écrit `output_pdf/<nom>.pdf` puis l'ouvre. |
+| `npm run build:html` | Écrit `output_html/<nom>/<htmlName>.html` + médias utilisés, et l'ouvre dans l'Explorateur avec `--open`. |
+| `npm run build:pdf` | Écrit `output_pdf/<nom>.pdf` (l'ouvre avec `--open`). |
 | `npm run edit:numbering` | Numérote les titres du `.md` selon `numbering`. |
 | `npm run edit:numbering:guess` | Détecte la numérotation **déjà présente** et réécrit `numbering.levels` dans la config. |
 | `npm run edit:numbering:reset` | Retire toute la numérotation des titres. |
@@ -127,12 +121,16 @@ Options (à ajouter après `--`) :
 ```powershell
 npm run build:pdf -- exemple          # ne traiter que le document « exemple »
 npm run edit:toc -- exemple --dry     # --dry : affiche ce qui serait fait sans rien écrire
-npm run build:html -- --no-open       # ne rien ouvrir automatiquement
+npm run build:html -- --open          # ouvre le résultat à la fin du build (rien ne s'ouvre par défaut)
 ```
 
 - Avec **un seul** document dans `doc/`, le nom est facultatif. Avec **plusieurs**, les commandes `edit:*` exigent le nom ; `build:*` traitent tout si aucun nom n'est donné.
-- Variables d'environnement : `MARKDOWN_NO_OPEN=1` (équivaut à `--no-open`), `PORT=5000` (port du serveur `dev`), `MARKDOWN_KEEP_TMP=1` (conserve le HTML temporaire du PDF, utile pour déboguer).
+- Variables d'environnement : `MARKDOWN_OPEN=1` (équivaut à `--open`), `MARKDOWN_NO_OPEN=1` (équivaut à `--no-open` : `dev` n'ouvre pas le navigateur), `PORT=5000` (port du serveur `dev`), `MARKDOWN_KEEP_TMP=1` (conserve le HTML temporaire du PDF, utile pour déboguer).
 - En mode `dev` avec plusieurs documents, `/` affiche la liste et chaque document est sur `/<nom>/`. Rien n'est écrit dans `output_html/` en mode `dev`.
+
+### Lire les messages du terminal
+
+Chaque commande se termine par un **bilan sur les dernières lignes** : ✓ succès, ⚠ avertissements, ✖ erreurs (tous listés avec leur cause). Un indicateur animé s'affiche pendant les générations longues (HTML, PDF). Les couleurs sont automatiques dans un terminal ; `NO_COLOR=1` les désactive, `FORCE_COLOR=1` les force. Un avertissement n'empêche pas la génération ; une erreur indique ce qui n'a pas pu être produit (voir le [§7](#7-dépannage)).
 
 ### Flux de travail conseillé
 
@@ -142,7 +140,7 @@ npm run build:html -- --no-open       # ne rien ouvrir automatiquement
 
 ---
 
-## 4. Créer un nouveau document
+## 3. Créer un nouveau document
 
 Une commande crée le Markdown et sa configuration commentée :
 
@@ -171,6 +169,30 @@ npm run init -- --help        # liste complète des options
 Vous pouvez aussi le faire à la main : créez `doc/MonDoc.md` et `doc/MonDoc.jsonc` (même `{}` suffit, tout a une valeur par défaut).
 
 Chaque document a son propre dossier `output_html/<nom>/`, donc plusieurs documents peuvent garder `htmlName: "index"` sans conflit. Seuls deux **PDF** de même nom entrent en conflit (l'outil s'arrête alors en le signalant : changez `pdf.name`).
+
+---
+
+## 4. Écrire dans le Markdown
+
+- **Titres, tableaux, listes de tâches, liens internes** `[voir](#titre-de-la-section)` comme sur GitHub (ancres générées comme GitHub).
+- **Liens vers un autre fichier** : les chemins sont relatifs au `.md` (donc `media/…`, pas `doc/media/…`).
+- **Formules LaTeX** : `$x^2$` en ligne, `$$ \int_0^1 f(x)\,dx $$` en bloc.
+- **Code coloré** : <code>```c</code>, <code>```python</code>, etc. Chaque bloc a une barre avec le nom du langage ; dans la page HTML elle propose aussi **copier**, **agrandir** (quasi plein écran, `Échap` pour fermer) et **télécharger** (extension déduite du langage, `.txt` sinon). Dans le PDF, seule l'étiquette du langage apparaît.
+- **Mermaid** : bloc <code>```mermaid</code>. Options par diagramme sur la même ligne :
+
+  ````markdown
+  ```mermaid layout=elk direction=LR
+  graph TD
+    A --> B
+  ```
+  ````
+
+  `layout` : `dagre` (hiérarchique) ou `elk` (adaptatif). `direction` : `TB`, `BT`, `LR`, `RL` (flowchart / graph / stateDiagram).
+- **Saut de page (PDF uniquement)** : une ligne `\newpage` ou `<!-- newpage -->` (ignoré à l'écran). Il fonctionne aussi dans une liste, au milieu d'un paragraphe, dans la TOC, et **dans un tableau Markdown** : une ligne `\newpage` entre deux lignes du tableau n'est pas affichée et la ligne suivante commence une nouvelle page.
+- **Annuler un saut automatique** : `\samepage` (ou `<!-- samepage -->`) **juste avant un titre** dont le niveau figure dans `pdf.pageBreakBefore` supprime le saut de page imposé pour ce titre seul. Il est ignoré à l'écran ; placé ailleurs que devant un titre, il est signalé comme erreur.
+- **Page sans en-tête ni pied de page** (page de garde…) : `<!-- nohf -->` (ou `\nohf`) en **toute première ligne** du document, ou **juste après** un saut de page.
+- **Sauts de page automatiques** : `pdf.pageBreakBefore: [1, 2]` (niveaux de titres) ; `keepSectionsTogether` / `keepBlocksTogether` évitent de couper sections et blocs quand ils tiennent sur une page.
+- **En-têtes / pieds de page PDF** : variables `{page}`, `{pages}`, `{title}`, `{date}`, `{h1}`…`{h6}`, HTML autorisé (logo `<img src="media/logo.png">`).
 
 ---
 
@@ -205,7 +227,7 @@ Squelette complet (valeurs par défaut de l'outil, sauf indication) :
 }
 ```
 
-> Le fichier [doc/exemple.jsonc](doc/exemple.jsonc) est un exemple complet et commenté. `npm run init` génère le même type de fichier (§4).
+> Le fichier [doc/exemple.jsonc](doc/exemple.jsonc) est un exemple complet et commenté. `npm run init` génère le même type de fichier (§3).
 
 ### 5.2 Général : fichiers de sortie, titre, icône, thème
 
@@ -414,7 +436,7 @@ Ce bloc agit sur la page HTML **et** sur le PDF (sauf mention contraire).
 | `codeTheme.mode` | `"follow"` | Mode de couleur propre au code : `follow`, `auto`, `light` ou `dark`. |
 | `highlight` | `{ "light": "default", "dark": "default" }` | Thème de coloration syntaxique des balises de code, choisi séparément pour les modes clair et sombre du code. |
 | `mermaidTheme` | `"auto"` | `auto` (suit le thème de la page), `default`, `dark`, `forest`, `neutral`. |
-| `mermaid` | `{ "layout": "dagre", "direction": null }` | Réglages **par défaut** des diagrammes Mermaid (surchargeables diagramme par diagramme, §6). |
+| `mermaid` | `{ "layout": "dagre", "direction": null }` | Réglages **par défaut** des diagrammes Mermaid (surchargeables diagramme par diagramme, §4). |
 | `headings` | voir ci-dessous | Taille / retrait / couleur de chaque niveau de titre du document. |
 | `toc` | voir ci-dessous | Idem pour les liens du **sommaire latéral** (HTML). |
 | `colors` | `{ "light": {}, "dark": {} }` | Palette (clés ci-dessous), par thème. |
@@ -552,26 +574,35 @@ Exemple : `doc/exemple.jsonc` → `"customCss": "styles/document.css"` lit `doc/
 
 ---
 
-## 6. Ce que vous pouvez écrire dans le Markdown
+## 6. Organisation des dossiers
 
-- **Titres, tableaux, listes de tâches, liens internes** `[voir](#titre-de-la-section)` comme sur GitHub (ancres générées comme GitHub).
-- **Formules LaTeX** : `$x^2$` en ligne, `$$ \int_0^1 f(x)\,dx $$` en bloc.
-- **Code coloré** : <code>```c</code>, <code>```python</code>, etc.
-- **Mermaid** : bloc <code>```mermaid</code>. Options par diagramme sur la même ligne :
+```
+.
+├── doc/                  ← VOS documents (à modifier)
+│   ├── exemple.md              le texte Markdown (exemple fourni : à renommer)
+│   ├── exemple.jsonc           sa configuration (même nom que le .md, extension .jsonc)
+│   └── media/                  vos images (partagées par tous les documents)
+├── template/             ← le VISUEL des générations (CSS / JS), modifiable : style.css, print.css, mermaid.css, highlight.css…
+├── output_html/          ← généré : un sous-dossier par document, avec son HTML + ses seuls médias utilisés
+│   └── exemple/
+│       ├── index.html
+│       └── media/…
+├── output_pdf/           ← généré : exemple.pdf
+├── scripts/              ← l'outil lui-même (build, init, edit…), à ne pas modifier
+│   └── state/            ← mémoire de numérotation et manifestes HTML (JSON internes, non versionnés)
+├── package.json          ← liste des commandes npm
+└── README.md
+```
 
-  ````markdown
-  ```mermaid layout=elk direction=LR
-  graph TD
-    A --> B
-  ```
-  ````
+Règles importantes :
 
-  `layout` : `dagre` (hiérarchique) ou `elk` (adaptatif). `direction` : `TB`, `BT`, `LR`, `RL` (flowchart / graph / stateDiagram).
-- **Saut de page (PDF uniquement)** : une ligne `\newpage` ou `<!-- newpage -->` (ignoré à l'écran). Il fonctionne aussi dans une liste, au milieu d'un paragraphe, dans la TOC, et **dans un tableau Markdown** : une ligne `\newpage` entre deux lignes du tableau n'est pas affichée et la ligne suivante commence une nouvelle page.
-- **Annuler un saut automatique** : `\samepage` (ou `<!-- samepage -->`) **juste avant un titre** dont le niveau figure dans `pdf.pageBreakBefore` supprime le saut de page imposé pour ce titre seul. Il est ignoré à l'écran ; placé ailleurs que devant un titre, il est signalé comme erreur.
-- **Page sans en-tête ni pied de page** (page de garde…) : `<!-- nohf -->` (ou `\nohf`) en **toute première ligne** du document, ou **juste après** un saut de page.
-- **Sauts de page automatiques** : `pdf.pageBreakBefore: [1, 2]` (niveaux de titres) ; `keepSectionsTogether` / `keepBlocksTogether` évitent de couper sections et blocs quand ils tiennent sur une page.
-- **En-têtes / pieds de page PDF** : variables `{page}`, `{pages}`, `{title}`, `{date}`, `{h1}`…`{h6}`, HTML autorisé (logo `<img src="media/logo.png">`).
+- Les fichiers générés sont mis à jour dans **`output_html/` et `output_pdf/`** : ne travaillez jamais dedans. Les anciens dossiers, s'ils existent, ne sont ni déplacés ni supprimés automatiquement.
+- Un document n'est généré que si **`doc/<nom>.md` ET `doc/<nom>.jsonc`** existent (même `<nom>`). Un `.md` sans `.jsonc` est ignoré ; une config invalide est signalée et ignorée, les autres documents sont quand même traités.
+- Plusieurs `.md` = des **variantes** d'un même sujet qui partagent le même dossier `doc/media/`.
+- Les images se référencent **relativement au `.md`** : `![schéma](media/schema.png)`.
+- Dans `output_html/<nom>/`, le livrable contient le HTML et un seul dossier `media/`. Les ressources référencées dans `doc/media/` gardent leur chemin ; les autres ressources locales (y compris les fichiers JSON liés) sont copiées dans `media/linked/`, et leurs URL sont réécrites dans le HTML. **Seules les ressources utilisées** sont copiées. Pour publier ou envoyer la page : donnez/ouvrez **tout le dossier `output_html/<nom>/`**.
+- Les fichiers qui ne sont plus utilisés sont supprimés de `output_html/<nom>/` au build suivant (uniquement ceux que l'outil y avait écrits). Les manifestes JSON qui mémorisent ces fichiers sont conservés dans `scripts/state/`, pas dans les sorties HTML. Les ressources JSON explicitement référencées dans un Markdown restent des ressources de document et peuvent, elles, être copiées avec les autres médias.
+- **Personnaliser l'apparence** : modifiez les fichiers de `template/` (voir §5) ; ils s'appliquent à tous les documents.
 
 ---
 

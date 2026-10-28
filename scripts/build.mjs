@@ -3,7 +3,8 @@
 // Usage : node scripts/build.mjs [nom…]           -> output_html/<nom>/<htmlName>.html + médias utilisés
 //         node scripts/build.mjs --pdf [nom…]     -> output_pdf/<nom>.pdf
 //         node scripts/build.mjs --watch [nom…]   -> sert les pages sur http://localhost:4173 avec rechargement automatique
-// Option : --no-open (n'ouvre ni l'explorateur, ni le PDF, ni le navigateur)
+// Options : --open (ouvre l'explorateur sur le HTML ou le PDF généré ; rien n'est ouvert par défaut)
+//          --no-open (en mode --watch, n'ouvre pas le navigateur)
 import fs from 'node:fs';
 import path from 'node:path';
 import http from 'node:http';
@@ -24,7 +25,7 @@ const WATCH = process.argv.includes('--watch');
 const PDF = process.argv.includes('--pdf');
 const NAMES = process.argv.slice(2).filter((a) => !a.startsWith('--'));
 const PORT = process.env.PORT === undefined ? 4173 : Number(process.env.PORT);
-const FLAGS = new Set(['--watch', '--pdf', '--no-open']);
+const FLAGS = new Set(['--watch', '--pdf', '--open', '--no-open']);
 const UNKNOWN_FLAGS = process.argv.slice(2).filter((a) => a.startsWith('--') && !FLAGS.has(a));
 
 const DEFAULTS = {
@@ -488,7 +489,9 @@ async function render(cfg, { pdf = false } = {}) {
       body = esc(token.content);
     }
     const label = lang ? `<span class="code-lang">${esc(lang)}</span>` : '';
-    return `<div class="code-block">${label}<button class="copy-btn" type="button" aria-label="Copier le code">Copier</button><pre><code class="hljs${lang ? ` language-${esc(lang)}` : ''}">${body}</code></pre></div>\n`;
+    const actions = pdf ? '' : '<div class="code-actions"><button class="copy-btn" type="button" title="Copier le code" aria-label="Copier le code"></button><button class="expand-btn" type="button" title="Agrandir le code" aria-label="Agrandir le code"></button><button class="download-btn" type="button" title="Télécharger le code" aria-label="Télécharger le code"></button></div>';
+    const bar = actions || label ? `<div class="code-bar">${actions}${label}</div>` : '';
+    return `<div class="code-block"><div class="code-frame"${lang ? ` data-lang="${esc(lang)}"` : ''}>${bar}<pre><code class="hljs${lang ? ` language-${esc(lang)}` : ''}">${body}</code></pre></div></div>\n`;
   };
 
   // Identifiants de titres identiques à ceux de GitHub, pour que les liens [..](#...) marchent pareil.
@@ -723,8 +726,10 @@ async function generate(cfg, opts = {}) {
 }
 
 // ---------- ouverture automatique ----------
-// Désactivable avec --no-open (ou MARKDOWN_NO_OPEN=1).
-const OPEN = !process.argv.includes('--no-open') && !process.env.MARKDOWN_NO_OPEN;
+// Les builds n'ouvrent rien par défaut : --open (ou MARKDOWN_OPEN=1) ouvre le résultat.
+// Le mode --watch ouvre le navigateur par défaut ; --no-open (ou MARKDOWN_NO_OPEN=1) l'en empêche.
+const NO_OPEN = process.argv.includes('--no-open') || Boolean(process.env.MARKDOWN_NO_OPEN);
+const OPEN = !NO_OPEN && (process.argv.includes('--open') || Boolean(process.env.MARKDOWN_OPEN) || WATCH);
 function openTarget(target, { reveal = false } = {}) {
   if (!OPEN) return;
   let cmd;

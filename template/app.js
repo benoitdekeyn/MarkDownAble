@@ -35,17 +35,96 @@
   });
   window.addEventListener('hashchange', () => goTo(location.hash, false));
 
-  // --- Boutons "Copier" ---
-  $$('.copy-btn').forEach((btn) => {
-    btn.addEventListener('click', async () => {
-      const code = $('code', btn.parentElement).innerText;
-      try {
-        await navigator.clipboard.writeText(code);
-        btn.textContent = 'Copié ✓';
-      } catch (_) {
-        btn.textContent = 'Échec';
-      }
-      setTimeout(() => (btn.textContent = 'Copier'), 1500);
+  // --- Barre des blocs de code : copier, agrandir, télécharger ---
+  const EXTENSIONS = {
+    bash: 'sh', sh: 'sh', shell: 'sh', zsh: 'sh', powershell: 'ps1', ps1: 'ps1', pwsh: 'ps1', bat: 'bat', cmd: 'bat', dos: 'bat',
+    javascript: 'js', js: 'js', jsx: 'jsx', mjs: 'mjs', cjs: 'cjs', typescript: 'ts', ts: 'ts', tsx: 'tsx',
+    python: 'py', py: 'py', java: 'java', kotlin: 'kt', kt: 'kt', scala: 'scala', groovy: 'groovy',
+    c: 'c', h: 'h', cpp: 'cpp', 'c++': 'cpp', cc: 'cpp', hpp: 'hpp', csharp: 'cs', cs: 'cs', 'c#': 'cs', objectivec: 'm',
+    go: 'go', golang: 'go', rust: 'rs', rs: 'rs', swift: 'swift', dart: 'dart', php: 'php', ruby: 'rb', rb: 'rb',
+    perl: 'pl', lua: 'lua', r: 'r', julia: 'jl', haskell: 'hs', elixir: 'ex', erlang: 'erl', clojure: 'clj',
+    sql: 'sql', pgsql: 'sql', mysql: 'sql', plsql: 'sql', graphql: 'graphql',
+    html: 'html', xml: 'xml', svg: 'svg', css: 'css', scss: 'scss', sass: 'sass', less: 'less',
+    json: 'json', jsonc: 'jsonc', json5: 'json5', yaml: 'yml', yml: 'yml', toml: 'toml', ini: 'ini', properties: 'properties',
+    markdown: 'md', md: 'md', latex: 'tex', tex: 'tex', diff: 'diff', patch: 'patch',
+    dockerfile: 'Dockerfile', docker: 'Dockerfile', makefile: 'Makefile', make: 'Makefile', cmake: 'cmake',
+    vue: 'vue', svelte: 'svelte', vb: 'vb', vbnet: 'vb', vba: 'bas', matlab: 'm', fortran: 'f90', cobol: 'cbl',
+    plaintext: 'txt', text: 'txt', txt: 'txt',
+  };
+  const fileFor = (lang) => {
+    const ext = EXTENSIONS[(lang || '').toLowerCase()] || 'txt';
+    return /^[A-Z]/.test(ext) ? ext : `code.${ext}`;
+  };
+  // Icônes SVG intégrées (aucune dépendance externe).
+  const icon = (d) => `<svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+  const ICONS = {
+    copy: icon('<rect x="5.5" y="5.5" width="8" height="8" rx="1.5"/><path d="M10.5 5.5v-2a1 1 0 0 0-1-1h-6a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2"/>'),
+    check: icon('<path d="M3 8.5l3.2 3.2L13 4.8"/>'),
+    fail: icon('<path d="M4 4l8 8M12 4l-8 8"/>'),
+    expand: icon('<path d="M9.5 2.5h4v4M6.5 13.5h-4v-4M13.5 2.5L9 7M2.5 13.5L7 9"/>'),
+    collapse: icon('<path d="M13.5 6.5h-4v-4M2.5 9.5h4v4M9.5 6.5l4-4M6.5 9.5l-4 4"/>'),
+    download: icon('<path d="M8 2.5v7.5M4.8 7.2L8 10.4l3.2-3.2M3 13.5h10"/>'),
+  };
+  const setIcon = (btn, name, label) => {
+    btn.innerHTML = ICONS[name];
+    if (label) { btn.title = label; btn.setAttribute('aria-label', label); }
+  };
+  $$('.copy-btn').forEach((b) => setIcon(b, 'copy'));
+  $$('.expand-btn').forEach((b) => setIcon(b, 'expand'));
+  $$('.download-btn').forEach((b) => setIcon(b, 'download'));
+  const flash = (btn, ok) => {
+    setIcon(btn, ok ? 'check' : 'fail');
+    btn.classList.toggle('ok', ok);
+    btn.classList.toggle('ko', !ok);
+    setTimeout(() => { setIcon(btn, 'copy'); btn.classList.remove('ok', 'ko'); }, ok ? 1500 : 2000);
+  };
+  const copyText = async (text) => {
+    try { await navigator.clipboard.writeText(text); return true; } catch (_) {}
+    const area = document.createElement('textarea');
+    area.value = text;
+    area.style.cssText = 'position:fixed;opacity:0';
+    document.body.appendChild(area);
+    area.select();
+    let ok = false;
+    try { ok = document.execCommand('copy'); } catch (_) {}
+    area.remove();
+    return ok;
+  };
+  const closeExpanded = () => {
+    const open = $('.code-block.expanded');
+    if (!open) return;
+    open.classList.remove('expanded');
+    document.body.classList.remove('code-open');
+    const btn = $('.expand-btn', open);
+    if (btn) setIcon(btn, 'expand', 'Agrandir le code');
+  };
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeExpanded(); });
+  $$('.code-block').forEach((block) => {
+    const frame = $('.code-frame', block);
+    const code = () => $('code', block).innerText;
+    const copy = $('.copy-btn', block);
+    const expand = $('.expand-btn', block);
+    const download = $('.download-btn', block);
+    if (copy) copy.addEventListener('click', async () => flash(copy, await copyText(code())));
+    if (expand) expand.addEventListener('click', () => {
+      const wasOpen = block.classList.contains('expanded');
+      closeExpanded();
+      if (wasOpen) return;
+      block.classList.add('expanded');
+      document.body.classList.add('code-open');
+      setIcon(expand, 'collapse', 'Réduire le code');
+    });
+    block.addEventListener('click', (e) => { if (e.target === block) closeExpanded(); });
+    if (download) download.addEventListener('click', () => {
+      const name = fileFor(frame && frame.dataset.lang);
+      const url = URL.createObjectURL(new Blob([code()], { type: 'text/plain;charset=utf-8' }));
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = name;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
     });
   });
 

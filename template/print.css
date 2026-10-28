@@ -22,7 +22,8 @@
   .markdown-body img { max-height: var(--pdf-fig-h, none); object-fit: contain; }
   .markdown-body table { display: table; width: 100%; overflow: visible; font-size: .92em; overflow-wrap: anywhere; }
   .markdown-body thead { display: table-header-group; }
-  .code-block code.hljs { white-space: pre-wrap; overflow: visible; overflow-wrap: anywhere; }
+  .code-block code.hljs { white-space: pre-wrap; overflow: visible; overflow-wrap: anywhere; min-width: 0; }
+  .code-frame { overflow: visible; }
   .mermaid-box { border: 0; overflow: visible; margin: 1em 0; }
   pre.mermaid { padding: 0; }
   pre.mermaid svg { max-height: calc(var(--pdf-fig-h, 100vh) - 9em); }
