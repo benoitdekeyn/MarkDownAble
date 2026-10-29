@@ -1039,11 +1039,22 @@ async function serve() {
   const trigger = () => { clearTimeout(timer); timer = setTimeout(rebuild, 250); };
   // On surveille les dossiers : certains éditeurs remplacent le fichier à la sauvegarde.
   const watchers = [];
+  // Sorties générées (<output_html>/<nom>/… et <output_pdf>/*.pdf) : à ignorer si elles sont dans un dossier surveillé,
+  // sinon chaque build relancerait un build.
+  const isGenerated = (abs) => {
+    const inHtml = path.relative(HTML_OUTPUT_DIR, abs);
+    if (inHtml && !inHtml.startsWith('..') && !path.isAbsolute(inHtml)) {
+      let names = [];
+      try { names = fs.readdirSync(DOC_DIR).filter((n) => n.toLowerCase().endsWith(CONFIG_SUFFIX)).map((n) => n.slice(0, -CONFIG_SUFFIX.length).toLowerCase()); } catch {}
+      if (names.includes(inHtml.split(/[\\/]/)[0].toLowerCase())) return true;
+    }
+    return /\.pdf$/i.test(abs) && path.dirname(abs).toLowerCase() === PDF_OUTPUT_DIR.toLowerCase();
+  };
   const watchDirs = () => {
     watchers.splice(0).forEach((w) => w.close());
     for (const dir of [DOC_DIR, TEMPLATE_DIR]) {
       if (!fs.existsSync(dir)) continue;
-      const w = fs.watch(dir, { recursive: true }, (_, f) => { if (!f || !/(^|[\\/])\./.test(f)) trigger(); });
+      const w = fs.watch(dir, { recursive: true }, (_, f) => { if (!f || (!/(^|[\\/])\./.test(f) && !isGenerated(path.join(dir, f)))) trigger(); });
       w.on('error', () => {});
       watchers.push(w);
     }

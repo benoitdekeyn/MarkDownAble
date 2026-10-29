@@ -8,7 +8,8 @@
 //   "output_html": "C:/Sites/documents"              (absolu : Windows, « / » ou « \\ » acceptés)
 //   "output_pdf":  "D:\\Livrables\\PDF"              (absolu : les « \ » doivent être doublés dans du JSON)
 //
-// Règles : les trois dossiers doivent être distincts et aucun ne peut en contenir un autre ; aucun ne peut être le
+// Règles : les trois dossiers peuvent être identiques ou imbriqués (le mode dev ignore alors les fichiers qu'il génère) ;
+// aucun ne peut être le
 // dossier de l'outil, un de ses parents, ni se trouver dans scripts/, template/, node_modules/ ou .git/.
 // Les dossiers de sortie sont créés au besoin ; « npm run init » crée aussi le dossier "doc" s'il n'existe pas.
 {

@@ -60,13 +60,7 @@ function readPaths() {
     if (clash) throw new ConfigError(`paths.jsonc : "${key}" (${dir}) ne peut pas être dans ${rel(clash)}/ (dossier interne de l'outil)`);
     if (fs.existsSync(dir) && !fs.statSync(dir).isDirectory()) throw new ConfigError(`paths.jsonc : "${key}" (${dir}) existe mais n'est pas un dossier`);
   }
-  for (let i = 0; i < entries.length; i++) {
-    for (let j = i + 1; j < entries.length; j++) {
-      const [ka, a] = entries[i];
-      const [kb, b] = entries[j];
-      if (isInside(a, b) || isInside(b, a)) throw new ConfigError(`paths.jsonc : "${ka}" et "${kb}" doivent être trois dossiers distincts, aucun ne peut contenir un autre (${a} / ${b})`);
-    }
-  }
+  // Les trois dossiers peuvent être identiques ou imbriqués : le mode dev ignore alors les fichiers qu'il génère lui-même.
   return out;
 }
 
