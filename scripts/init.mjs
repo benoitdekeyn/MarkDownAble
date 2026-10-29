@@ -9,7 +9,7 @@ import { log } from './log.mjs';
 
 const HELP = `Usage : npm run init -- <nom> [options]
 
-Crée doc/<nom>.md (s'il n'existe pas) et doc/<nom>${CONFIG_SUFFIX} (configuration commentée).
+Crée ${rel(DOC_DIR)}/<nom>.md (s'il n'existe pas) et ${rel(DOC_DIR)}/<nom>${CONFIG_SUFFIX} (configuration commentée ; dossier réglé dans paths.jsonc).
 
 Options (toutes facultatives) :
   --title "Texte"        titre de l'onglet et du sommaire (défaut : nom du fichier)

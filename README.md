@@ -7,6 +7,8 @@ Cet outil transforme un ou plusieurs documents Markdown (`.md`) en :
 
 Il fournit aussi des commandes pour **numéroter les titres** et **générer la table des matières** directement dans le Markdown.
 
+👉 **Envie de voir le résultat avant d'installer quoi que ce soit ?** Un document d'exemple (source, configuration, page web et PDF) est présenté au [§1.4 Voir l'exemple](#14-voir-lexemple).
+
 Vous pouvez consulter le dépôt GitHub mais ce n'est pas nécessaire pour utiliser l'outil :   [https://github.com/benoitdekeyn/MarkDownAble](https://github.com/benoitdekeyn/MarkDownAble)
 
 ## Par où commencer ?
@@ -18,7 +20,7 @@ Vous pouvez consulter le dépôt GitHub mais ce n'est pas nécessaire pour utili
 | Je veux créer un nouveau document | [§3 Créer un nouveau document](#3-créer-un-nouveau-document) |
 | Je veux savoir ce que je peux écrire (formules, code, Mermaid, sauts de page…) | [§4 Écrire dans le Markdown](#4-écrire-dans-le-markdown) |
 | Je veux changer l'apparence, le PDF, la numérotation ou la table des matières | [§5 Personnaliser](#5-personnaliser--le-fichier-jsonc-et-le-dossier-template) |
-| Je cherche où sont (ou vont) mes fichiers | [§6 Organisation des dossiers](#6-organisation-des-dossiers) |
+| Je cherche où sont (ou vont) mes fichiers, ou je veux les placer ailleurs (`paths.jsonc`) | [§6 Organisation des dossiers](#6-organisation-des-dossiers) |
 | Un message d'erreur ou un avertissement s'affiche | [§7 Dépannage](#7-dépannage) |
 
 ---
@@ -79,6 +81,13 @@ npm run dev
 ```
 
 Le navigateur s'ouvre sur l'aperçu de `doc/exemple.md` (formules, code, Mermaid, images…). Chaque sauvegarde recharge la page. `Ctrl+C` arrête le serveur.
+
+Le même document d'exemple, tel qu'il est écrit puis tel qu'il est généré :
+
+- **Le texte** : [doc/exemple.md](https://github.com/benoitdekeyn/MarkDownAble/blob/main/doc/exemple.md), le Markdown que l'on écrit.
+- **Ses réglages** : [doc/exemple.jsonc](https://github.com/benoitdekeyn/MarkDownAble/blob/main/doc/exemple.jsonc), la configuration commentée qui pilote l'apparence, le PDF, la numérotation…
+- **La page web** : [exemple en HTML](https://htmlpreview.github.io/?https://github.com/benoitdekeyn/MarkDownAble/blob/main/output_html/exemple/index.html), le résultat affiché dans un navigateur (en local : `output_html/exemple/index.html`).
+- **Le PDF** : [exemple en PDF](https://github.com/benoitdekeyn/MarkDownAble/blob/main/output_pdf/exemple.pdf), le résultat avec signets (en local : `output_pdf/exemple.pdf`).
 
 ### 1.5 Démarrer votre propre document
 
@@ -205,11 +214,12 @@ Chaque document a son propre dossier `output_html/<nom>/`, donc plusieurs docume
   ```
   ````
 
-  `layout` : `dagre` (hiérarchique) ou `elk` (adaptatif). `direction` : `TB`, `BT`, `LR`, `RL` (flowchart / graph / stateDiagram).
+  `layout` : `dagre` (hiérarchique) ou `elk` (adaptatif). `direction` : `TB`, `BT`, `LR`, `RL` (flowchart / graph / stateDiagram). En HTML, un diagramme se déplace et se zoome (boutons ou molette) et peut passer en plein écran. Sur téléphone, si les contrôles masquent une partie du diagramme, ils sont remplacés par une colonne à droite avec la seule icône « agrandir » ; le plein écran affiche tous les contrôles.
 - **Saut de page (PDF uniquement)** : une ligne `\newpage` ou `<!-- newpage -->` (ignoré à l'écran). Il fonctionne aussi dans une liste, au milieu d'un paragraphe, dans la TOC, et **dans un tableau Markdown** : une ligne `\newpage` entre deux lignes du tableau n'est pas affichée et la ligne suivante commence une nouvelle page.
 - **Annuler un saut automatique** : `\samepage` (ou `<!-- samepage -->`) **juste avant un titre** dont le niveau figure dans `pdf.pageBreakBefore` supprime le saut de page imposé pour ce titre seul. Il est ignoré à l'écran ; placé ailleurs que devant un titre, il est signalé comme erreur.
 - **Page sans en-tête ni pied de page** (page de garde…) : `<!-- nohf -->` (ou `\nohf`) en **toute première ligne** du document, ou **juste après** un saut de page.
 - **Sauts de page automatiques** : `pdf.pageBreakBefore: [1, 2]` (niveaux de titres) ; `keepSectionsTogether` / `keepBlocksTogether` évitent de couper sections et blocs quand ils tiennent sur une page.
+- **Mention de fin** : chaque page HTML se termine par « Site généré avec MarkDownAble » et chaque PDF par « Document généré avec MarkDownAble », avec un lien vers <https://markdownable.benoitdekeyn.com>. Elle n'est pas désactivable par la configuration.
 - **En-têtes / pieds de page PDF** : variables `{page}`, `{pages}`, `{title}`, `{date}`, `{h1}`…`{h6}`, HTML autorisé (logo `<img src="media/logo.png">`).
 
 ---
@@ -622,6 +632,27 @@ Règles importantes :
 - Dans `output_html/<nom>/`, le livrable contient le HTML et un seul dossier `media/`. Les ressources référencées dans `doc/media/` gardent leur chemin ; les autres ressources locales (y compris les fichiers JSON liés) sont copiées dans `media/linked/`, et leurs URL sont réécrites dans le HTML. **Seules les ressources utilisées** sont copiées. Pour publier ou envoyer la page : donnez/ouvrez **tout le dossier `output_html/<nom>/`**.
 - Les fichiers qui ne sont plus utilisés sont supprimés de `output_html/<nom>/` au build suivant (uniquement ceux que l'outil y avait écrits). Les manifestes JSON qui mémorisent ces fichiers sont conservés dans `scripts/state/`, pas dans les sorties HTML. Les ressources JSON explicitement référencées dans un Markdown restent des ressources de document et peuvent, elles, être copiées avec les autres médias.
 - **Personnaliser l'apparence** : modifiez les fichiers de `template/` (voir §5) ; ils s'appliquent à tous les documents.
+
+### 6.1 Choisir où vivent `doc/`, `output_html/` et `output_pdf/` : `paths.jsonc`
+
+Le dépôt peut n'être qu'un dossier « d'installation » de l'outil (cloné une fois), pendant que vos documents et vos sorties vivent ailleurs (OneDrive, un autre projet…). Le fichier **`paths.jsonc`**, à la racine du dépôt, règle l'emplacement de ces trois dossiers :
+
+```jsonc
+{
+  "doc": "./doc",                      // vos .md et .jsonc (et leurs médias)
+  "output_html": "./output_html",      // sites HTML générés
+  "output_pdf": "./output_pdf"         // PDF générés
+}
+```
+
+- Un chemin **relatif** part du dossier où l'outil est cloné ; un chemin **absolu** peut pointer n'importe où (`"D:/Projets/rapports/doc"`). Sous Windows, écrivez `/` ou `\\` (backslash doublé).
+- Les trois clés sont facultatives (valeur par défaut = celle ci-dessus). Les commentaires `//` sont acceptés.
+- **Prise en compte immédiate** : le fichier est relu à chaque commande, et en direct pendant `npm run dev` (pas besoin de relancer). Si le JSON est invalide, l'ancienne configuration est conservée et l'erreur est affichée.
+- Les dossiers de sortie sont créés au besoin ; `npm run init` crée le dossier `doc`.
+- Garde-fous : clés inconnues, valeur vide, chemin pointant sur un fichier, sur la racine de l'outil (ou un de ses parents), dans `scripts/`, `template/`, `node_modules/` ou `.git/`, et **dossiers imbriqués ou identiques** sont refusés avec un message clair.
+- Les liens et images d'un `.md` restent relatifs au dossier `doc` choisi. Le lien `../README.md#…` de `exemple.md` n'a donc plus de cible si vous déplacez `doc` hors du dépôt : l'avertissement est normal (supprimez ce lien dans votre copie).
+- `npm run release` copie le `README.md` du dépôt dans le dossier `doc` choisi, puis génère dans les dossiers choisis ; `README.html` et `README.pdf` sont recopiés à la racine du dépôt.
+- `paths.jsonc` est versionné avec les valeurs par défaut : si vous le modifiez, une mise à jour du dépôt (`git pull`) peut entrer en conflit.
 
 ---
 

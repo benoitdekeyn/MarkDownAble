@@ -1,0 +1,23 @@
+// Emplacement des 3 dossiers utilisés par l'outil.
+// Chaque chemin est soit RELATIF au dossier où cet outil est cloné (là où se trouve ce fichier), soit ABSOLU.
+// Ce fichier accepte les commentaires (// …) ; il est relu à chaque commande (et en direct pendant « npm run dev »).
+// Sans ce fichier, ou pour une clé omise, les valeurs par défaut ci-dessous s'appliquent.
+//
+// Exemples :
+//   "doc":         "../MesDocuments/rapports"        (relatif : dossier voisin de l'outil)
+//   "output_html": "C:/Sites/documents"              (absolu : Windows, « / » ou « \\ » acceptés)
+//   "output_pdf":  "D:\\Livrables\\PDF"              (absolu : les « \ » doivent être doublés dans du JSON)
+//
+// Règles : les trois dossiers doivent être distincts et aucun ne peut en contenir un autre ; aucun ne peut être le
+// dossier de l'outil, un de ses parents, ni se trouver dans scripts/, template/, node_modules/ ou .git/.
+// Les dossiers de sortie sont créés au besoin ; « npm run init » crée aussi le dossier "doc" s'il n'existe pas.
+{
+  // Vos documents : <nom>.md + <nom>.jsonc, et leurs images (ex. media/…).
+  "doc": "./doc",
+
+  // Pages HTML générées : un sous-dossier par document (<nom>/index.html + médias utilisés).
+  "output_html": "./output_html",
+
+  // PDF générés : <nom>.pdf
+  "output_pdf": "./output_pdf"
+}

@@ -304,7 +304,36 @@
     exp.addEventListener('click', () => openFull(box));
     box.appendChild(exp);
     addControls(box, () => box._pz);
+    // Colonne latérale (mobile) : un simple bouton « agrandir » hors de la zone d'affichage du diagramme.
+    const col = document.createElement('div');
+    col.className = 'mm-side-col mm-ui';
+    const sideExp = mkBtn('mm-btn', '⤢', 'Plein écran');
+    sideExp.addEventListener('click', () => openFull(box));
+    col.appendChild(sideExp);
+    box.appendChild(col);
+    layoutBox(box);
   }
+  // Sur petit écran ou écran tactile, les contrôles (toujours visibles) peuvent masquer un bout du diagramme :
+  // dans ce cas on les remplace par une colonne à droite avec le seul bouton plein écran.
+  const compact = matchMedia('(hover: none), (max-width: 700px)');
+  function layoutBox(box) {
+    const pz = box._pz;
+    if (!pz) return;
+    const refit = () => { pz.resize(); pz.fit(); pz.center(); };
+    const wasSide = box.classList.contains('mm-side');
+    box.classList.remove('mm-side');
+    if (wasSide) refit();
+    if (!compact.matches) return;
+    const content = $('.svg-pan-zoom_viewport', box);
+    const hit = (a, b) => a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
+    const r = content.getBoundingClientRect();
+    const covered = ['.mm-controls', '.mm-expand'].some((s) => { const el = $(s, box); return el && hit(r, el.getBoundingClientRect()); });
+    if (covered) { box.classList.add('mm-side'); refit(); }
+  }
+  let layoutTimer;
+  const relayoutAll = () => { clearTimeout(layoutTimer); layoutTimer = setTimeout(() => $$('.mermaid-box').forEach(layoutBox), 150); };
+  window.addEventListener('resize', relayoutAll);
+  compact.addEventListener('change', relayoutAll);
   function openFull(box) {
     const ov = document.createElement('div');
     ov.className = 'mm-overlay';

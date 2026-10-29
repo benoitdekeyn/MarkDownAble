@@ -15,7 +15,7 @@ const docReadme = path.join(DOC_DIR, 'README.md');
 const docConfig = path.join(DOC_DIR, `README${CONFIG_SUFFIX}`);
 
 if (!fs.existsSync(readme)) die('README.md introuvable à la racine du dépôt');
-if (!fs.existsSync(docConfig)) die(`${rel(docConfig)} introuvable : sans lui, doc/README.md ne serait pas généré (créez-le avec « npm run init -- README --no-md »)`);
+if (!fs.existsSync(docConfig)) die(`${rel(docConfig)} introuvable : sans lui, ${rel(docReadme)} ne serait pas généré (créez-le avec « npm run init -- README --no-md »)`);
 
 fs.copyFileSync(readme, docReadme);
 log.info(`README.md → ${rel(docReadme)}`);

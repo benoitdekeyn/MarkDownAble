@@ -199,6 +199,16 @@ pre.mermaid { text-align: center; background: transparent; margin: 0; padding: 8
 .mermaid-box:hover .mm-expand, .mermaid-box:hover .mm-controls, .mermaid-box:focus-within .mm-expand,
 .mermaid-box:focus-within .mm-controls, .mm-overlay .mm-controls, .mm-overlay .mm-expand { opacity: 1; }
 @media (hover: none) { .mm-expand, .mm-controls { opacity: 1; } }
+.mm-side-col { display: none; }
+.mermaid-box.mm-side { display: flex; }
+.mermaid-box.mm-side pre.mermaid { flex: 1; min-width: 0; }
+.mermaid-box.mm-side .mm-expand, .mermaid-box.mm-side .mm-controls { display: none; }
+.mermaid-box.mm-side .mm-side-col {
+  display: flex; flex-direction: column; flex: none; padding: 6px; border-left: 1px solid var(--border);
+  background: color-mix(in srgb, var(--muted) 10%, transparent);
+}
+.mdable-credit { margin: 3em 0 1em; text-align: center; font: 12px/1.4 var(--font); color: var(--muted); }
+.mdable-credit a { color: inherit; text-decoration: underline; }
 .mm-overlay { position: fixed; inset: 0; z-index: 100; background: var(--bg); }
 .mm-overlay .mm-stage { position: absolute; inset: 0; }
 .mm-overlay .mm-stage svg { width: 100%; height: 100%; max-width: none !important; cursor: grab; }
@@ -221,7 +231,7 @@ body.mm-open { overflow: hidden; }
   .markdown-body .anchor { display: none; }
 }
 @media print {
-  #sidebar, #sidebar-toggle, #resizer, .code-actions, .code-side, .anchor, .mm-expand, .mm-controls { display: none !important; }
+  #sidebar, #sidebar-toggle, #resizer, .code-actions, .code-side, .anchor, .mm-expand, .mm-controls, .mm-side-col { display: none !important; }
   #content { margin: 0; padding: 0; }
   .markdown-body { width: 100%; }
 }
@@ -321,7 +331,7 @@ li.task-item { list-style: none; }
 <aside id="sidebar">
   <div class="sidebar-head"><div class="sidebar-title"><span>README</span></div><button id="theme-toggle" type="button" title="Changer le thème"></button></div>
   <input id="toc-filter" type="search" placeholder="Filtrer les titres…" autocomplete="off">
-  <nav id="toc"><div class="toc-node root has-kids"><div class="toc-row row-l1"><button class="toc-caret" type="button" tabindex="-1" aria-label="Déplier / replier"></button><a class="toc-l1" href="#markdownable" data-id="markdownable">MarkDownAble</a></div><div class="toc-children"><div class="toc-node"><div class="toc-row row-l2"><span class="toc-caret"></span><a class="toc-l2" href="#par-où-commencer-" data-id="par-où-commencer-">Par où commencer ?</a></div></div><div class="toc-node has-kids"><div class="toc-row row-l2"><button class="toc-caret" type="button" tabindex="-1" aria-label="Déplier / replier"></button><a class="toc-l2" href="#1-démarrage-rapide" data-id="1-démarrage-rapide">1. Démarrage rapide</a></div><div class="toc-children"><div class="toc-node"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#11-installer-nodejs" data-id="11-installer-nodejs">1.1 Installer Node.js</a></div></div><div class="toc-node"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#12-récupérer-le-projet" data-id="12-récupérer-le-projet">1.2 Récupérer le projet</a></div></div><div class="toc-node"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#13-installer-les-dépendances-de-loutil" data-id="13-installer-les-dépendances-de-loutil">1.3 Installer les dépendances de l'outil</a></div></div><div class="toc-node"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#14-voir-lexemple" data-id="14-voir-lexemple">1.4 Voir l'exemple</a></div></div><div class="toc-node"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#15-démarrer-votre-propre-document" data-id="15-démarrer-votre-propre-document">1.5 Démarrer votre propre document</a></div></div><div class="toc-node"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#16-pour-le-pdf--chrome-ou-edge" data-id="16-pour-le-pdf--chrome-ou-edge">1.6 Pour le PDF : Chrome ou Edge</a></div></div><div class="toc-node"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#17-un-projet-à-vous-sans-lien-avec-ce-dépôt-facultatif" data-id="17-un-projet-à-vous-sans-lien-avec-ce-dépôt-facultatif">1.7 Un projet à vous, sans lien avec ce dépôt (facultatif)</a></div></div></div></div><div class="toc-node has-kids"><div class="toc-row row-l2"><button class="toc-caret" type="button" tabindex="-1" aria-label="Déplier / replier"></button><a class="toc-l2" href="#2-utilisation-au-quotidien" data-id="2-utilisation-au-quotidien">2. Utilisation au quotidien</a></div><div class="toc-children"><div class="toc-node"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#lire-les-messages-du-terminal" data-id="lire-les-messages-du-terminal">Lire les messages du terminal</a></div></div><div class="toc-node"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#flux-de-travail-conseillé" data-id="flux-de-travail-conseillé">Flux de travail conseillé</a></div></div></div></div><div class="toc-node"><div class="toc-row row-l2"><span class="toc-caret"></span><a class="toc-l2" href="#3-créer-un-nouveau-document" data-id="3-créer-un-nouveau-document">3. Créer un nouveau document</a></div></div><div class="toc-node"><div class="toc-row row-l2"><span class="toc-caret"></span><a class="toc-l2" href="#4-écrire-dans-le-markdown" data-id="4-écrire-dans-le-markdown">4. Écrire dans le Markdown</a></div></div><div class="toc-node has-kids"><div class="toc-row row-l2"><button class="toc-caret" type="button" tabindex="-1" aria-label="Déplier / replier"></button><a class="toc-l2" href="#5-personnaliser--le-fichier-jsonc-et-le-dossier-template" data-id="5-personnaliser--le-fichier-jsonc-et-le-dossier-template">5. Personnaliser : le fichier .jsonc et le dossier template/</a></div><div class="toc-children"><div class="toc-node"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#51-principes" data-id="51-principes">5.1 Principes</a></div></div><div class="toc-node"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#52-général--fichiers-de-sortie-titre-icône-thème" data-id="52-général--fichiers-de-sortie-titre-icône-thème">5.2 Général : fichiers de sortie, titre, icône, thème</a></div></div><div class="toc-node"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#53-disposition-de-la-page-html--layout" data-id="53-disposition-de-la-page-html--layout">5.3 Disposition de la page HTML : layout</a></div></div><div class="toc-node"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#54-numérotation-des-titres--numbering" data-id="54-numérotation-des-titres--numbering">5.4 Numérotation des titres : numbering</a></div></div><div class="toc-node"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#55-table-des-matières-markdown--toc" data-id="55-table-des-matières-markdown--toc">5.5 Table des matières Markdown : toc</a></div></div><div class="toc-node"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#56-export-pdf--pdf" data-id="56-export-pdf--pdf">5.6 Export PDF : pdf</a></div></div><div class="toc-node has-kids"><div class="toc-row row-l3"><button class="toc-caret" type="button" tabindex="-1" aria-label="Déplier / replier"></button><a class="toc-l3" href="#57-apparence--style" data-id="57-apparence--style">5.7 Apparence : style</a></div><div class="toc-children"><div class="toc-node"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#distinguer-les-deux-modes-et-les-deux-palettes" data-id="distinguer-les-deux-modes-et-les-deux-palettes">Distinguer les deux modes et les deux palettes</a></div></div></div></div><div class="toc-node"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#58-anciennes-clés-et-erreurs-fréquentes" data-id="58-anciennes-clés-et-erreurs-fréquentes">5.8 Anciennes clés et erreurs fréquentes</a></div></div></div></div><div class="toc-node"><div class="toc-row row-l2"><span class="toc-caret"></span><a class="toc-l2" href="#6-organisation-des-dossiers" data-id="6-organisation-des-dossiers">6. Organisation des dossiers</a></div></div><div class="toc-node"><div class="toc-row row-l2"><span class="toc-caret"></span><a class="toc-l2" href="#7-dépannage" data-id="7-dépannage">7. Dépannage</a></div></div><div class="toc-node"><div class="toc-row row-l2"><span class="toc-caret"></span><a class="toc-l2" href="#8-limites-connues" data-id="8-limites-connues">8. Limites connues</a></div></div></div></div></nav>
+  <nav id="toc"><div class="toc-node root has-kids"><div class="toc-row row-l1"><button class="toc-caret" type="button" tabindex="-1" aria-label="Déplier / replier"></button><a class="toc-l1" href="#markdownable" data-id="markdownable">MarkDownAble</a></div><div class="toc-children"><div class="toc-node"><div class="toc-row row-l2"><span class="toc-caret"></span><a class="toc-l2" href="#par-où-commencer-" data-id="par-où-commencer-">Par où commencer ?</a></div></div><div class="toc-node has-kids"><div class="toc-row row-l2"><button class="toc-caret" type="button" tabindex="-1" aria-label="Déplier / replier"></button><a class="toc-l2" href="#1-démarrage-rapide" data-id="1-démarrage-rapide">1. Démarrage rapide</a></div><div class="toc-children"><div class="toc-node"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#11-installer-nodejs" data-id="11-installer-nodejs">1.1 Installer Node.js</a></div></div><div class="toc-node"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#12-récupérer-le-projet" data-id="12-récupérer-le-projet">1.2 Récupérer le projet</a></div></div><div class="toc-node"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#13-installer-les-dépendances-de-loutil" data-id="13-installer-les-dépendances-de-loutil">1.3 Installer les dépendances de l'outil</a></div></div><div class="toc-node"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#14-voir-lexemple" data-id="14-voir-lexemple">1.4 Voir l'exemple</a></div></div><div class="toc-node"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#15-démarrer-votre-propre-document" data-id="15-démarrer-votre-propre-document">1.5 Démarrer votre propre document</a></div></div><div class="toc-node"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#16-pour-le-pdf--chrome-ou-edge" data-id="16-pour-le-pdf--chrome-ou-edge">1.6 Pour le PDF : Chrome ou Edge</a></div></div><div class="toc-node"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#17-un-projet-à-vous-sans-lien-avec-ce-dépôt-facultatif" data-id="17-un-projet-à-vous-sans-lien-avec-ce-dépôt-facultatif">1.7 Un projet à vous, sans lien avec ce dépôt (facultatif)</a></div></div></div></div><div class="toc-node has-kids"><div class="toc-row row-l2"><button class="toc-caret" type="button" tabindex="-1" aria-label="Déplier / replier"></button><a class="toc-l2" href="#2-utilisation-au-quotidien" data-id="2-utilisation-au-quotidien">2. Utilisation au quotidien</a></div><div class="toc-children"><div class="toc-node"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#lire-les-messages-du-terminal" data-id="lire-les-messages-du-terminal">Lire les messages du terminal</a></div></div><div class="toc-node"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#flux-de-travail-conseillé" data-id="flux-de-travail-conseillé">Flux de travail conseillé</a></div></div></div></div><div class="toc-node"><div class="toc-row row-l2"><span class="toc-caret"></span><a class="toc-l2" href="#3-créer-un-nouveau-document" data-id="3-créer-un-nouveau-document">3. Créer un nouveau document</a></div></div><div class="toc-node"><div class="toc-row row-l2"><span class="toc-caret"></span><a class="toc-l2" href="#4-écrire-dans-le-markdown" data-id="4-écrire-dans-le-markdown">4. Écrire dans le Markdown</a></div></div><div class="toc-node has-kids"><div class="toc-row row-l2"><button class="toc-caret" type="button" tabindex="-1" aria-label="Déplier / replier"></button><a class="toc-l2" href="#5-personnaliser--le-fichier-jsonc-et-le-dossier-template" data-id="5-personnaliser--le-fichier-jsonc-et-le-dossier-template">5. Personnaliser : le fichier .jsonc et le dossier template/</a></div><div class="toc-children"><div class="toc-node"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#51-principes" data-id="51-principes">5.1 Principes</a></div></div><div class="toc-node"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#52-général--fichiers-de-sortie-titre-icône-thème" data-id="52-général--fichiers-de-sortie-titre-icône-thème">5.2 Général : fichiers de sortie, titre, icône, thème</a></div></div><div class="toc-node"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#53-disposition-de-la-page-html--layout" data-id="53-disposition-de-la-page-html--layout">5.3 Disposition de la page HTML : layout</a></div></div><div class="toc-node"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#54-numérotation-des-titres--numbering" data-id="54-numérotation-des-titres--numbering">5.4 Numérotation des titres : numbering</a></div></div><div class="toc-node"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#55-table-des-matières-markdown--toc" data-id="55-table-des-matières-markdown--toc">5.5 Table des matières Markdown : toc</a></div></div><div class="toc-node"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#56-export-pdf--pdf" data-id="56-export-pdf--pdf">5.6 Export PDF : pdf</a></div></div><div class="toc-node has-kids"><div class="toc-row row-l3"><button class="toc-caret" type="button" tabindex="-1" aria-label="Déplier / replier"></button><a class="toc-l3" href="#57-apparence--style" data-id="57-apparence--style">5.7 Apparence : style</a></div><div class="toc-children"><div class="toc-node"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#distinguer-les-deux-modes-et-les-deux-palettes" data-id="distinguer-les-deux-modes-et-les-deux-palettes">Distinguer les deux modes et les deux palettes</a></div></div></div></div><div class="toc-node"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#58-anciennes-clés-et-erreurs-fréquentes" data-id="58-anciennes-clés-et-erreurs-fréquentes">5.8 Anciennes clés et erreurs fréquentes</a></div></div></div></div><div class="toc-node has-kids"><div class="toc-row row-l2"><button class="toc-caret" type="button" tabindex="-1" aria-label="Déplier / replier"></button><a class="toc-l2" href="#6-organisation-des-dossiers" data-id="6-organisation-des-dossiers">6. Organisation des dossiers</a></div><div class="toc-children"><div class="toc-node"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#61-choisir-où-vivent-doc-output_html-et-output_pdf--pathsjsonc" data-id="61-choisir-où-vivent-doc-output_html-et-output_pdf--pathsjsonc">6.1 Choisir où vivent doc/, output_html/ et output_pdf/ : paths.jsonc</a></div></div></div></div><div class="toc-node"><div class="toc-row row-l2"><span class="toc-caret"></span><a class="toc-l2" href="#7-dépannage" data-id="7-dépannage">7. Dépannage</a></div></div><div class="toc-node"><div class="toc-row row-l2"><span class="toc-caret"></span><a class="toc-l2" href="#8-limites-connues" data-id="8-limites-connues">8. Limites connues</a></div></div></div></div></nav>
 </aside>
 <div id="resizer" role="separator" aria-orientation="vertical" title="Glisser pour redimensionner (double-clic : largeur initiale)"></div>
 <main id="content"><article class="markdown-body">
@@ -332,6 +342,7 @@ li.task-item { list-style: none; }
 <li><strong>un PDF</strong> avec signets (navigation par titres), en-têtes / pieds de page, sauts de page, thème clair ou sombre.</li>
 </ul>
 <p>Il fournit aussi des commandes pour <strong>numéroter les titres</strong> et <strong>générer la table des matières</strong> directement dans le Markdown.</p>
+<p>👉 <strong>Envie de voir le résultat avant d'installer quoi que ce soit ?</strong> Un document d'exemple (source, configuration, page web et PDF) est présenté au <a href="#14-voir-lexemple">§1.4 Voir l'exemple</a>.</p>
 <p>Vous pouvez consulter le dépôt GitHub mais ce n'est pas nécessaire pour utiliser l'outil :   <a href="https://github.com/benoitdekeyn/MarkDownAble" target="_blank" rel="noopener noreferrer">https://github.com/benoitdekeyn/MarkDownAble</a></p>
 <h2 id="par-où-commencer-">Par où commencer ?<a class="anchor" href="#par-où-commencer-" aria-label="Lien vers cette section">#</a></h2>
 <table>
@@ -363,7 +374,7 @@ li.task-item { list-style: none; }
 <td><a href="#5-personnaliser--le-fichier-jsonc-et-le-dossier-template">§5 Personnaliser</a></td>
 </tr>
 <tr>
-<td>Je cherche où sont (ou vont) mes fichiers</td>
+<td>Je cherche où sont (ou vont) mes fichiers, ou je veux les placer ailleurs (<code>paths.jsonc</code>)</td>
 <td><a href="#6-organisation-des-dossiers">§6 Organisation des dossiers</a></td>
 </tr>
 <tr>
@@ -419,6 +430,13 @@ npm <span class="hljs-literal">-v</span>
 <div class="code-block"><div class="code-frame side" data-lang="powershell"><pre><code class="hljs language-powershell">npm run dev
 </code></pre><div class="code-side"><div class="code-actions"><button class="copy-btn" type="button" title="Copier le code" aria-label="Copier le code"></button></div></div></div></div>
 <p>Le navigateur s'ouvre sur l'aperçu de <code>doc/exemple.md</code> (formules, code, Mermaid, images…). Chaque sauvegarde recharge la page. <code>Ctrl+C</code> arrête le serveur.</p>
+<p>Le même document d'exemple, tel qu'il est écrit puis tel qu'il est généré :</p>
+<ul>
+<li><strong>Le texte</strong> : <a href="https://github.com/benoitdekeyn/MarkDownAble/blob/main/doc/exemple.md" target="_blank" rel="noopener noreferrer">doc/exemple.md</a>, le Markdown que l'on écrit.</li>
+<li><strong>Ses réglages</strong> : <a href="https://github.com/benoitdekeyn/MarkDownAble/blob/main/doc/exemple.jsonc" target="_blank" rel="noopener noreferrer">doc/exemple.jsonc</a>, la configuration commentée qui pilote l'apparence, le PDF, la numérotation…</li>
+<li><strong>La page web</strong> : <a href="https://htmlpreview.github.io/?https://github.com/benoitdekeyn/MarkDownAble/blob/main/output_html/exemple/index.html" target="_blank" rel="noopener noreferrer">exemple en HTML</a>, le résultat affiché dans un navigateur (en local : <code>output_html/exemple/index.html</code>).</li>
+<li><strong>Le PDF</strong> : <a href="https://github.com/benoitdekeyn/MarkDownAble/blob/main/output_pdf/exemple.pdf" target="_blank" rel="noopener noreferrer">exemple en PDF</a>, le résultat avec signets (en local : <code>output_pdf/exemple.pdf</code>).</li>
+</ul>
 <h3 id="15-démarrer-votre-propre-document">1.5 Démarrer votre propre document<a class="anchor" href="#15-démarrer-votre-propre-document" aria-label="Lien vers cette section">#</a></h3>
 <p>La méthode la plus simple : une commande crée un <code>.md</code> et un <code>.jsonc</code> vierges, que vous pouvez écrire aussitôt.</p>
 <div class="code-block"><div class="code-frame side" data-lang="powershell"><pre><code class="hljs language-powershell">npm run init <span class="hljs-literal">--</span> MonDoc
@@ -591,7 +609,7 @@ graph TD
   A --&gt; B
 ```</span>
 </code></pre><div class="code-side"><div class="code-actions"><button class="copy-btn" type="button" title="Copier le code" aria-label="Copier le code"></button><button class="expand-btn" type="button" title="Agrandir le code" aria-label="Agrandir le code"></button><button class="download-btn" type="button" title="Télécharger le code" aria-label="Télécharger le code"></button></div></div></div></div>
-<p><code>layout</code> : <code>dagre</code> (hiérarchique) ou <code>elk</code> (adaptatif). <code>direction</code> : <code>TB</code>, <code>BT</code>, <code>LR</code>, <code>RL</code> (flowchart / graph / stateDiagram).</p>
+<p><code>layout</code> : <code>dagre</code> (hiérarchique) ou <code>elk</code> (adaptatif). <code>direction</code> : <code>TB</code>, <code>BT</code>, <code>LR</code>, <code>RL</code> (flowchart / graph / stateDiagram). En HTML, un diagramme se déplace et se zoome (boutons ou molette) et peut passer en plein écran. Sur téléphone, si les contrôles masquent une partie du diagramme, ils sont remplacés par une colonne à droite avec la seule icône « agrandir » ; le plein écran affiche tous les contrôles.</p>
 </li>
 <li>
 <p><strong>Saut de page (PDF uniquement)</strong> : une ligne <code>\newpage</code> ou <code>&lt;!-- newpage --&gt;</code> (ignoré à l'écran). Il fonctionne aussi dans une liste, au milieu d'un paragraphe, dans la TOC, et <strong>dans un tableau Markdown</strong> : une ligne <code>\newpage</code> entre deux lignes du tableau n'est pas affichée et la ligne suivante commence une nouvelle page.</p>
@@ -604,6 +622,9 @@ graph TD
 </li>
 <li>
 <p><strong>Sauts de page automatiques</strong> : <code>pdf.pageBreakBefore: [1, 2]</code> (niveaux de titres) ; <code>keepSectionsTogether</code> / <code>keepBlocksTogether</code> évitent de couper sections et blocs quand ils tiennent sur une page.</p>
+</li>
+<li>
+<p><strong>Mention de fin</strong> : chaque page HTML se termine par « Site généré avec MarkDownAble » et chaque PDF par « Document généré avec MarkDownAble », avec un lien vers <a href="https://markdownable.benoitdekeyn.com" target="_blank" rel="noopener noreferrer">https://markdownable.benoitdekeyn.com</a>. Elle n'est pas désactivable par la configuration.</p>
 </li>
 <li>
 <p><strong>En-têtes / pieds de page PDF</strong> : variables <code>{page}</code>, <code>{pages}</code>, <code>{title}</code>, <code>{date}</code>, <code>{h1}</code>…<code>{h6}</code>, HTML autorisé (logo <code>&lt;img src=&quot;media/logo.png&quot;&gt;</code>).</p>
@@ -1388,6 +1409,24 @@ graph TD
 <li>Les fichiers qui ne sont plus utilisés sont supprimés de <code>output_html/&lt;nom&gt;/</code> au build suivant (uniquement ceux que l'outil y avait écrits). Les manifestes JSON qui mémorisent ces fichiers sont conservés dans <code>scripts/state/</code>, pas dans les sorties HTML. Les ressources JSON explicitement référencées dans un Markdown restent des ressources de document et peuvent, elles, être copiées avec les autres médias.</li>
 <li><strong>Personnaliser l'apparence</strong> : modifiez les fichiers de <code>template/</code> (voir §5) ; ils s'appliquent à tous les documents.</li>
 </ul>
+<h3 id="61-choisir-où-vivent-doc-output_html-et-output_pdf--pathsjsonc">6.1 Choisir où vivent <code>doc/</code>, <code>output_html/</code> et <code>output_pdf/</code> : <code>paths.jsonc</code><a class="anchor" href="#61-choisir-où-vivent-doc-output_html-et-output_pdf--pathsjsonc" aria-label="Lien vers cette section">#</a></h3>
+<p>Le dépôt peut n'être qu'un dossier « d'installation » de l'outil (cloné une fois), pendant que vos documents et vos sorties vivent ailleurs (OneDrive, un autre projet…). Le fichier <strong><code>paths.jsonc</code></strong>, à la racine du dépôt, règle l'emplacement de ces trois dossiers :</p>
+<div class="code-block"><div class="code-frame side" data-lang="jsonc"><pre><code class="hljs language-jsonc"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;doc&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;./doc&quot;</span><span class="hljs-punctuation">,</span>                      <span class="hljs-comment">// vos .md et .jsonc (et leurs médias)</span>
+  <span class="hljs-attr">&quot;output_html&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;./output_html&quot;</span><span class="hljs-punctuation">,</span>      <span class="hljs-comment">// sites HTML générés</span>
+  <span class="hljs-attr">&quot;output_pdf&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;./output_pdf&quot;</span>         <span class="hljs-comment">// PDF générés</span>
+<span class="hljs-punctuation">}</span>
+</code></pre><div class="code-side"><div class="code-actions"><button class="copy-btn" type="button" title="Copier le code" aria-label="Copier le code"></button><button class="expand-btn" type="button" title="Agrandir le code" aria-label="Agrandir le code"></button><button class="download-btn" type="button" title="Télécharger le code" aria-label="Télécharger le code"></button></div></div></div></div>
+<ul>
+<li>Un chemin <strong>relatif</strong> part du dossier où l'outil est cloné ; un chemin <strong>absolu</strong> peut pointer n'importe où (<code>&quot;D:/Projets/rapports/doc&quot;</code>). Sous Windows, écrivez <code>/</code> ou <code>\\</code> (backslash doublé).</li>
+<li>Les trois clés sont facultatives (valeur par défaut = celle ci-dessus). Les commentaires <code>//</code> sont acceptés.</li>
+<li><strong>Prise en compte immédiate</strong> : le fichier est relu à chaque commande, et en direct pendant <code>npm run dev</code> (pas besoin de relancer). Si le JSON est invalide, l'ancienne configuration est conservée et l'erreur est affichée.</li>
+<li>Les dossiers de sortie sont créés au besoin ; <code>npm run init</code> crée le dossier <code>doc</code>.</li>
+<li>Garde-fous : clés inconnues, valeur vide, chemin pointant sur un fichier, sur la racine de l'outil (ou un de ses parents), dans <code>scripts/</code>, <code>template/</code>, <code>node_modules/</code> ou <code>.git/</code>, et <strong>dossiers imbriqués ou identiques</strong> sont refusés avec un message clair.</li>
+<li>Les liens et images d'un <code>.md</code> restent relatifs au dossier <code>doc</code> choisi. Le lien <code>../README.md#…</code> de <code>exemple.md</code> n'a donc plus de cible si vous déplacez <code>doc</code> hors du dépôt : l'avertissement est normal (supprimez ce lien dans votre copie).</li>
+<li><code>npm run release</code> copie le <code>README.md</code> du dépôt dans le dossier <code>doc</code> choisi, puis génère dans les dossiers choisis ; <code>README.html</code> et <code>README.pdf</code> sont recopiés à la racine du dépôt.</li>
+<li><code>paths.jsonc</code> est versionné avec les valeurs par défaut : si vous le modifiez, une mise à jour du dépôt (<code>git pull</code>) peut entrer en conflit.</li>
+</ul>
 <hr>
 <h2 id="7-dépannage">7. Dépannage<a class="anchor" href="#7-dépannage" aria-label="Lien vers cette section">#</a></h2>
 <table>
@@ -1448,7 +1487,7 @@ graph TD
 <li>Les sauts de page automatiques ne peuvent pas être parfaits : une section plus longue qu'une page est forcément coupée.</li>
 </ul>
 
-</article></main>
+</article><footer class="mdable-credit">Site généré avec <a href="https://markdownable.benoitdekeyn.com">MarkDownAble</a></footer></main>
 <script>window.__DOCUMENT__={"key":"markdown-doc:README","sidebarWidth":320,"sidebarMin":200,"sidebarMax":700,"codeThemeMode":"follow","mermaidTheme":"auto","mermaidCss":{"common":"/* Style des diagrammes Mermaid : ce fichier est injecté dans chaque diagramme (page et plein écran).\r\n   Les règles écrites ici s'appliquent aux deux thèmes. Pour en réserver à un thème, placez avant elles\r\n   une ligne marqueur « arobase light » ou « arobase dark » entre commentaires (voir en bas), et « arobase all » pour revenir aux règles communes.\r\n   Classes utiles : .node rect/polygon/circle (nœuds), .label (texte), .flowchart-link et .transition (liens),\r\n   .edgeLabel (étiquettes des flèches), .cluster rect (groupes), .actor (diagramme de séquence).\r\n   La palette de base vient de style.mermaidTheme dans la configuration JSONC. Exemples à décommenter : */\r\n\r\n/* .node rect, .node polygon, .node circle { rx: 8px; ry: 8px; stroke-width: 2px; } */\r\n/* .flowchart-link, .transition { stroke-width: 2px; } */\r\n/* .edgeLabel, .edgeLabel p { font-size: 13px; } */\r\n\r\n","light":"\r\n/* .node rect { fill: #eef6ff; stroke: #0969da; } */\r\n\r\n","dark":"\r\n/* .node rect { fill: #1b2a41; stroke: #4493f8; } */\r\n"}}</script>
 
 
@@ -1758,7 +1797,36 @@ graph TD
     exp.addEventListener('click', () => openFull(box));
     box.appendChild(exp);
     addControls(box, () => box._pz);
+    // Colonne latérale (mobile) : un simple bouton « agrandir » hors de la zone d'affichage du diagramme.
+    const col = document.createElement('div');
+    col.className = 'mm-side-col mm-ui';
+    const sideExp = mkBtn('mm-btn', '⤢', 'Plein écran');
+    sideExp.addEventListener('click', () => openFull(box));
+    col.appendChild(sideExp);
+    box.appendChild(col);
+    layoutBox(box);
   }
+  // Sur petit écran ou écran tactile, les contrôles (toujours visibles) peuvent masquer un bout du diagramme :
+  // dans ce cas on les remplace par une colonne à droite avec le seul bouton plein écran.
+  const compact = matchMedia('(hover: none), (max-width: 700px)');
+  function layoutBox(box) {
+    const pz = box._pz;
+    if (!pz) return;
+    const refit = () => { pz.resize(); pz.fit(); pz.center(); };
+    const wasSide = box.classList.contains('mm-side');
+    box.classList.remove('mm-side');
+    if (wasSide) refit();
+    if (!compact.matches) return;
+    const content = $('.svg-pan-zoom_viewport', box);
+    const hit = (a, b) => a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
+    const r = content.getBoundingClientRect();
+    const covered = ['.mm-controls', '.mm-expand'].some((s) => { const el = $(s, box); return el && hit(r, el.getBoundingClientRect()); });
+    if (covered) { box.classList.add('mm-side'); refit(); }
+  }
+  let layoutTimer;
+  const relayoutAll = () => { clearTimeout(layoutTimer); layoutTimer = setTimeout(() => $$('.mermaid-box').forEach(layoutBox), 150); };
+  window.addEventListener('resize', relayoutAll);
+  compact.addEventListener('change', relayoutAll);
   function openFull(box) {
     const ov = document.createElement('div');
     ov.className = 'mm-overlay';

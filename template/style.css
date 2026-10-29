@@ -188,6 +188,16 @@ pre.mermaid { text-align: center; background: transparent; margin: 0; padding: 8
 .mermaid-box:hover .mm-expand, .mermaid-box:hover .mm-controls, .mermaid-box:focus-within .mm-expand,
 .mermaid-box:focus-within .mm-controls, .mm-overlay .mm-controls, .mm-overlay .mm-expand { opacity: 1; }
 @media (hover: none) { .mm-expand, .mm-controls { opacity: 1; } }
+.mm-side-col { display: none; }
+.mermaid-box.mm-side { display: flex; }
+.mermaid-box.mm-side pre.mermaid { flex: 1; min-width: 0; }
+.mermaid-box.mm-side .mm-expand, .mermaid-box.mm-side .mm-controls { display: none; }
+.mermaid-box.mm-side .mm-side-col {
+  display: flex; flex-direction: column; flex: none; padding: 6px; border-left: 1px solid var(--border);
+  background: color-mix(in srgb, var(--muted) 10%, transparent);
+}
+.mdable-credit { margin: 3em 0 1em; text-align: center; font: 12px/1.4 var(--font); color: var(--muted); }
+.mdable-credit a { color: inherit; text-decoration: underline; }
 .mm-overlay { position: fixed; inset: 0; z-index: 100; background: var(--bg); }
 .mm-overlay .mm-stage { position: absolute; inset: 0; }
 .mm-overlay .mm-stage svg { width: 100%; height: 100%; max-width: none !important; cursor: grab; }
@@ -210,7 +220,7 @@ body.mm-open { overflow: hidden; }
   .markdown-body .anchor { display: none; }
 }
 @media print {
-  #sidebar, #sidebar-toggle, #resizer, .code-actions, .code-side, .anchor, .mm-expand, .mm-controls { display: none !important; }
+  #sidebar, #sidebar-toggle, #resizer, .code-actions, .code-side, .anchor, .mm-expand, .mm-controls, .mm-side-col { display: none !important; }
   #content { margin: 0; padding: 0; }
   .markdown-body { width: 100%; }
 }

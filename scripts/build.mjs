@@ -17,7 +17,7 @@ import hljs from 'highlight.js';
 import GithubSlugger from 'github-slugger';
 import { exportPdf, pdfGeometry, validatePdfConfig } from './pdf.mjs';
 import { isObj, merge } from './jsonc.mjs';
-import { DOC_DIR, TEMPLATE_DIR, HTML_OUTPUT_DIR, PDF_OUTPUT_DIR, STATE_DIR, CONFIG_SUFFIX, ConfigError, discoverDocs, rel } from './workspace.mjs';
+import { DOC_DIR, TEMPLATE_DIR, HTML_OUTPUT_DIR, PDF_OUTPUT_DIR, STATE_DIR, PATHS_FILE, CONFIG_SUFFIX, ConfigError, discoverDocs, reloadPaths, rel } from './workspace.mjs';
 import { log } from './log.mjs';
 
 const require = createRequire(import.meta.url);
@@ -175,6 +175,9 @@ function loadConfig(doc) {
 const modDir = (name) => path.dirname(require.resolve(`${name}/package.json`));
 const readAsset = (...p) => fs.readFileSync(path.join(...p), 'utf8');
 const esc = (s) => MarkdownIt().utils.escapeHtml(s);
+
+// Mention de fin de page / de document.
+const credit = (pdf) => `<footer class="mdable-credit">${pdf ? 'Document' : 'Site'} généré avec <a href="https://markdownable.benoitdekeyn.com">MarkDownAble</a></footer>`;
 
 // Nom de fichier proposé au téléchargement quand le texte de <!-- code:… --> ressemble à "chemin/main.cpp" ; sinon ''.
 function safeFileName(label) {
@@ -623,7 +626,7 @@ async function render(cfg, { pdf = false } = {}) {
   for (const m of body.matchAll(/\b(?:src|href)="([^"]+)"/g)) {
     const file = localFile(m[1]);
     if (file && !fs.existsSync(file)) {
-      warnings.push(`lien local introuvable : "${m[1]}" (résolu depuis ${rel(cfg.sourcePath)} vers ${rel(file)} ; les liens sont relatifs au dossier doc/)`);
+      warnings.push(`lien local introuvable : "${m[1]}" (résolu depuis ${rel(cfg.sourcePath)} vers ${rel(file)} ; les liens sont relatifs au dossier des documents, ${rel(DOC_DIR)}/)`);
     }
   }
   if (cfg.embedImages) {
@@ -644,7 +647,7 @@ async function render(cfg, { pdf = false } = {}) {
     const outputPath = outputAssetPath(relative);
     const existing = assets.get(outputPath);
     if (existing && existing !== relative) {
-      throw new ConfigError(`deux ressources locales entrent en conflit dans output_html/${cfg.docName}/${outputPath}`);
+      throw new ConfigError(`deux ressources locales entrent en conflit dans ${rel(cfg.outputDir)}/${outputPath}`);
     }
     assets.set(outputPath, relative);
     return outputPath;
@@ -654,7 +657,7 @@ async function render(cfg, { pdf = false } = {}) {
       const file = localFile(m[1]);
       if (!file || !fs.existsSync(file) || !fs.statSync(file).isFile() || /\.md$/i.test(file)) continue;
       const r = path.relative(baseDir, file);
-      if (r.startsWith('..') || path.isAbsolute(r)) warnings.push(`fichier situé hors de doc/, il ne sera pas copié dans output_html/ : ${m[1]}`);
+      if (r.startsWith('..') || path.isAbsolute(r)) warnings.push(`fichier situé hors de ${rel(DOC_DIR)}/, il ne sera pas copié dans ${rel(HTML_OUTPUT_DIR)}/ : ${m[1]}`);
       else addAsset(r);
     }
     body = body.replace(/(\b(?:src|href)=")([^"]+)(")/g, (all, before, ref, after) => {
@@ -676,7 +679,7 @@ async function render(cfg, { pdf = false } = {}) {
     const file = localFile(String(cfg.icon));
     const r = file && path.relative(baseDir, file);
     if (!file || !fs.existsSync(file) || !fs.statSync(file).isFile()) warnings.push(`icon : fichier introuvable : ${cfg.icon}`);
-    else if (r.startsWith('..') || path.isAbsolute(r)) warnings.push(`icon : le fichier doit se trouver dans doc/ : ${cfg.icon}`);
+    else if (r.startsWith('..') || path.isAbsolute(r)) warnings.push(`icon : le fichier doit se trouver dans ${rel(DOC_DIR)}/ : ${cfg.icon}`);
     else if (cfg.embedImages) iconSrc = dataUri(file);
     else { iconSrc = outputAssetPath(r); addAsset(r); }
   }
@@ -727,7 +730,7 @@ ${css}
 <body>
 <main id="content"><article class="markdown-body">
 ${body}
-</article></main>
+</article>${credit(true)}</main>
 <script>window.__DOCUMENT__=${json(clientCfg)};window.__PDF__=${json({ breakLevels: cfg.pdf.pageBreakBefore, hideToc: cfg.pdf.hideToc, keepSections: cfg.pdf.keepSectionsTogether, keepBlocks: cfg.pdf.keepBlocksTogether })}</script>
 ${mermaidScripts}
 ${elkScript}
@@ -762,7 +765,7 @@ ${css}
 <div id="resizer" role="separator" aria-orientation="vertical" title="Glisser pour redimensionner (double-clic : largeur initiale)"></div>
 <main id="content"><article class="markdown-body">
 ${body}
-</article></main>
+</article>${credit(false)}</main>
 <script>window.__DOCUMENT__=${json(clientCfg)}</script>
 ${hasMermaid ? `${mermaidScripts}\n<script>${safeScript(readAsset(modDir('svg-pan-zoom'), 'dist', 'svg-pan-zoom.min.js'))}</script>` : ''}
 ${elkScript}
@@ -833,7 +836,7 @@ function prepare() {
       issues.push(`${doc.name}${CONFIG_SUFFIX} : ${e.message} — document ignoré`);
     }
   }
-  if (!jobs.length) throw new ConfigError(`aucun document à générer : il faut doc/<nom>.md et doc/<nom>${CONFIG_SUFFIX} valide`);
+  if (!jobs.length) throw new ConfigError(`aucun document à générer : il faut ${rel(DOC_DIR)}/<nom>.md et ${rel(DOC_DIR)}/<nom>${CONFIG_SUFFIX} valide`);
   return { jobs, issues };
 }
 
@@ -1035,10 +1038,37 @@ async function serve() {
   let timer;
   const trigger = () => { clearTimeout(timer); timer = setTimeout(rebuild, 250); };
   // On surveille les dossiers : certains éditeurs remplacent le fichier à la sauvegarde.
-  for (const dir of [DOC_DIR, TEMPLATE_DIR]) {
-    fs.watch(dir, { recursive: true }, (_, f) => { if (!f || !/(^|[\\/])\./.test(f)) trigger(); });
-  }
+  const watchers = [];
+  const watchDirs = () => {
+    watchers.splice(0).forEach((w) => w.close());
+    for (const dir of [DOC_DIR, TEMPLATE_DIR]) {
+      if (!fs.existsSync(dir)) continue;
+      const w = fs.watch(dir, { recursive: true }, (_, f) => { if (!f || !/(^|[\\/])\./.test(f)) trigger(); });
+      w.on('error', () => {});
+      watchers.push(w);
+    }
+  };
+  watchDirs();
+  // Modifier paths.jsonc en cours d'aperçu : les nouveaux dossiers sont pris en compte sans redémarrer.
+  // Un paths.jsonc invalide est signalé et les chemins précédents sont conservés.
+  const pathsName = path.basename(PATHS_FILE);
+  fs.watch(path.dirname(PATHS_FILE), (_, f) => {
+    if (f !== pathsName) return;
+    clearTimeout(pathsTimer);
+    pathsTimer = setTimeout(() => {
+      const before = DOC_DIR;
+      try { reloadPaths(); } catch (e) {
+        if (!isConfigError(e)) throw e;
+        log.error(`${e.message} — anciens chemins conservés`);
+        return;
+      }
+      log.info(`paths.jsonc relu : documents dans ${rel(DOC_DIR)}/${before === DOC_DIR ? '' : ' (changement de dossier)'}`);
+      watchDirs();
+      trigger();
+    }, 250);
+  });
 }
+let pathsTimer;
 
 try {
   if (UNKNOWN_FLAGS.length) throw new ConfigError(`option(s) inconnue(s) : ${UNKNOWN_FLAGS.join(', ')}`);

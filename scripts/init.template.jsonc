@@ -1,6 +1,6 @@
 // Configuration du document doc/@@name@@.md (JSON avec commentaires autorisés).
 // Ce fichier porte le même nom que le .md (@@name@@.md ↔ @@name@@.jsonc) ; un .md sans .jsonc est ignoré.
-// Les chemins éventuels (icon, logo, customCss) sont relatifs à ce dossier (doc/). Toute clé omise prend sa valeur par défaut.
+// Les chemins éventuels (icon, logo, customCss) sont relatifs à ce dossier (doc/, ou le dossier réglé dans paths.jsonc). Toute clé omise prend sa valeur par défaut.
 // Référence complète de toutes les options : README.md à la racine du projet.
 {
   // ---------------------------------------------------------------- Général

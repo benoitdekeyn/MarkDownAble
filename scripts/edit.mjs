@@ -10,7 +10,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { replaceObjectAt } from './jsonc.mjs';
 import { resolveOutlineConfig, applyNumbering, applyToc, guessNumbering, normalizeLevels, noNumbering } from './outline.mjs';
-import { STATE_DIR, ConfigError, discoverDocs, rel } from './workspace.mjs';
+import { STATE_DIR, DOC_DIR, ConfigError, discoverDocs, rel } from './workspace.mjs';
 import { log } from './log.mjs';
 
 const args = process.argv.slice(2);
@@ -34,7 +34,7 @@ try {
   found.problems.forEach((p) => log.error(`${p.name} : ${p.message}`));
   if (found.docs.length > 1) die(`plusieurs documents (${found.docs.map((d) => d.name).join(', ')}) : précisez lequel, ex. node scripts/edit.mjs ${cmds[0]} ${found.docs[0].name}`);
   doc = found.docs[0];
-  if (!doc) die('aucun document valide (il faut doc/<nom>.md et doc/<nom>.jsonc)');
+  if (!doc) die(`aucun document valide (il faut ${rel(DOC_DIR)}/<nom>.md et ${rel(DOC_DIR)}/<nom>.jsonc)`);
 } catch (e) { if (e instanceof ConfigError) die(e.message); throw e; }
 const CONFIG_FILE = doc.configPath;
 const rawConfig = fs.readFileSync(CONFIG_FILE, 'utf8');
