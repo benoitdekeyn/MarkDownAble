@@ -221,7 +221,7 @@
 
   // --- Redimensionnement du sommaire par glisser-déposer de sa bordure ---
   const resizer = $('#resizer');
-  const clampW = (w) => Math.max(CFG.sidebarMin, Math.min(CFG.sidebarMax, Math.min(w, window.innerWidth * 0.8)));
+  const clampW = (w) => Math.max(CFG.sidebarMin, Math.min(CFG.sidebarMax, Math.min(w, window.innerWidth / (CFG.zoom || 1) * 0.8)));
   const setW = (w) => root.style.setProperty('--sidebar-w', `${Math.round(clampW(w))}px`);
   resizer.addEventListener('pointerdown', (e) => {
     resizer.setPointerCapture(e.pointerId);
@@ -229,7 +229,7 @@
     e.preventDefault();
   });
   resizer.addEventListener('pointermove', (e) => {
-    if (resizer.hasPointerCapture(e.pointerId)) setW(e.clientX);
+    if (resizer.hasPointerCapture(e.pointerId)) setW(e.clientX / (CFG.zoom || 1));
   });
   const endDrag = (e) => {
     if (!resizer.hasPointerCapture(e.pointerId)) return;

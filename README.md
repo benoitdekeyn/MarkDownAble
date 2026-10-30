@@ -263,7 +263,8 @@ Squelette complet (valeurs par défaut de l'outil, sauf indication) :
 
 ```jsonc
 {
-  "global": { "title": null, "icon": null, "language": "fr" },   // §5.2
+  "global": { "title": null, "icon": null, "language": "fr", "fontScale": 100, "zoom": 100,
+              "fonts": { "headings": null, "body": "…police système…", "code": "…police mono…", "math": null } },   // §5.2
   "html":   { "name": "index", "theme": "auto", "embedImages": false, "tocOpenLevel": 2,
               "sidebarWidth": 320, "sidebarMinWidth": 200, "sidebarMaxWidth": 700, "contentWidthPercent": 90 },   // §5.3
 
@@ -275,9 +276,6 @@ Squelette complet (valeurs par défaut de l'outil, sauf indication) :
 ```
 
 > Le fichier [doc/exemple.jsonc](https://github.com/benoitdekeyn/MarkDownAble/blob/main/doc/exemple.jsonc) est un exemple complet et commenté. `npm run init` génère le même type de fichier (§3).
->
-> **Ancien format** : `htmlName`, `title`, `icon`, `language`, `theme`, `embedImages` et `layout` n'existent plus à la racine. Déplacez-les : `title`, `icon`, `language` → `global` ; `htmlName` → `html.name` ; `theme`, `embedImages` → `html` ; le contenu de `layout` → directement dans `html`. L'outil s'arrête en indiquant la nouvelle place de chaque clé.
-
 ### 5.2 Options générales : `global`
 
 Valables pour tous les formats (HTML et PDF).
@@ -287,9 +285,28 @@ Valables pour tous les formats (HTML et PDF).
 | `title` | texte ou `null` | `null` | Titre de l'onglet, du sommaire latéral, variable `{title}` des en-têtes PDF et titre du PDF. `null` = nom du `.md`. |
 | `icon` | chemin ou `null` | `null` | Image **de `doc/`** utilisée comme favicon et comme logo devant le titre du sommaire (HTML / `dev`, pas le PDF). Copiée dans `output_html/<nom>/` (ou incorporée avec `html.embedImages`). Fichier introuvable ou hors de `doc/` → avertissement. |
 | `language` | code langue | `"fr"` | Attribut `lang` de la page et format de `{date}` dans le PDF (`"fr"` → `28/10/2026`, `"en"` → `10/28/2026`). |
+| `fontScale` | `100` (de 25 à 400) | Taille des polices, en %, **proportionnelle** : règle d'un seul coup toutes les polices (texte, titres, code, sommaire, boutons, en-têtes de PDF). `100` = rendu historique (16 px de base) ; `120` agrandit toutes les polices de 20 %. Les tailles relatives (`style.headings`, `toc.levels.N.size`, `codeFontSize`) suivent. |
+| `zoom` | `100` (de 10 à 200) | Zoom global, en % : agrandit ou réduit **tous les éléments** (texte, images, marges, sommaire) par rapport à l'espace d'affichage, c'est-à-dire la fenêtre du navigateur en HTML et la zone imprimable en PDF. Un zoom de 80 met plus de contenu à l'écran ou sur la page. |
+| `fonts` | voir ci-dessous | Police de chaque type de contenu. |
+
+`fonts` accepte une liste CSS `font-family` par type de contenu (ex. `"Georgia, 'Times New Roman', serif"`) ; la police doit être **installée sur l'appareil qui lit la page** (ou qui génère le PDF), sinon le navigateur utilise la suivante de la liste.
+
+| Clé de `fonts` | Défaut | Contenu |
+| --- | --- | --- |
+| `headings` | `null` | Titres. `null` = même police que `body`. |
+| `body` | police système (Segoe UI, Roboto, Arial…) | Texte courant, tableaux, sommaire, en-têtes et pieds de PDF. |
+| `code` | `ui-monospace, 'Cascadia Code', Consolas…` | Code en ligne et blocs de code. |
+| `math` | `null` | Formules LaTeX (KaTeX). `null` = polices KaTeX intégrées. Une valeur remplace les polices du texte mathématique (lettres, chiffres) ; les grands symboles et délimiteurs (∑, ∫, parenthèses extensibles…) gardent les polices KaTeX. |
+
+**Effet sur chaque format.** Le **HTML** applique `global.fontScale`, `global.zoom` et `global.fonts`. Le **PDF** applique d'abord ces mêmes réglages, puis les affine avec ses propres réglages dans `pdf` (§5.6) : taille de police = `global.fontScale` × `pdf.fontScale` / 100 ; zoom = `global.zoom` × `pdf.zoom` / 100 ; une police définie dans `pdf.fonts` remplace celle de `global.fonts`. En HTML, le zoom utilise la propriété CSS `zoom` (navigateurs récents : Chrome, Edge, Safari, Firefox 126+).
 
 ```jsonc
-"global": { "title": "Projet – Maison intelligente", "icon": "media/logo.png", "language": "fr" }
+"global": {
+  "title": "Projet – Maison intelligente", "icon": "media/logo.png", "language": "fr",
+  "fontScale": 110,
+  "zoom": 100,
+  "fonts": { "headings": "Georgia, serif", "body": "Calibri, Arial, sans-serif", "code": "Consolas, monospace", "math": null }
+}
 ```
 
 Les noms de PDF se règlent dans `pdf.name` (§5.6).
@@ -404,7 +421,7 @@ Options de chaque niveau de `levels` :
 | `symbol` | `•` `•` `◦` `–` `·` `·` (niv. 1 à 6) | Texte devant l'entrée (`""` = aucun). |
 | `indent` | `0, 0, 4, 8, 12, 16` | Retrait à gauche, en demi-cadratins (entier de 0 à 60) ; **0 = pas de retrait**. |
 | `bold` / `italic` | gras pour les niveaux 1 et 2 / non | Mise en forme du texte. |
-| `size` | `null` | Taille en em (0.3 à 4). `null` = taille normale. **GitHub ignore la taille** ; ce générateur l'applique. |
+| `size` | `null` | Taille en em (0.3 à 4). `null` = taille normale. **GitHub ignore la taille** ; ce générateur l'applique, et elle suit `global.fontScale` (c'est une taille relative au texte). |
 | `collapsible` | `false` | `true` : cette entrée se replie sur ses sous-entrées (blocs `<details>` imbriqués). HTML/Markdown seulement. Raccourci : `toc.collapsibleLevels`. |
 
 Exemple : TOC repliable, niveau 2 en gras avec puce, niveau 3 en italique et plus grand retrait, niveau 4 sans symbole.
@@ -435,7 +452,9 @@ Commande : `npm run build:pdf` (Chrome ou Edge requis). Le PDF contient les **si
 | `theme` | `"light"` | `"light"` ou `"dark"`. Le fond sombre couvre aussi les marges. |
 | `format` | `"A4"` | `A3`, `A4`, `A5`, `Letter`, `Legal`, `Tabloid` (insensible à la casse). |
 | `landscape` | `false` | `true` : orientation paysage. |
-| `zoom` | `100` | Pourcentage de 10 à 200. `100` = taille normale ; `80` rétrécit tout, `120` agrandit (moins de contenu par page). |
+| `zoom` | `100` | Pourcentage de 10 à 200 : **affinement** du zoom pour le PDF. Zoom effectif du PDF = `global.zoom` × `pdf.zoom` / 100 (doit rester entre 10 et 200). `100` = on garde `global.zoom` ; `80` rétrécit encore tout de 20 %. Un zoom plus faible met plus de contenu par page. |
+| `fontScale` | `100` | Pourcentage de 25 à 400 : **affinement** de la taille des polices pour le PDF, multiplié par `global.fontScale`. |
+| `fonts` | `{ "headings": null, "body": null, "code": null, "math": null }` | Affinement des polices pour le PDF : `null` reprend `global.fonts`, une valeur la remplace dans le PDF seulement. |
 | `margins` | `20mm` haut/bas, `18mm` gauche/droite | `{ "top", "right", "bottom", "left" }`, chacun avec une unité : `mm`, `cm`, `in`, `pt` ou `px`. L'en-tête vit dans la marge du haut, le pied dans la marge du bas : prévoyez au moins ~15 mm si vous en utilisez. |
 | `pageBreakBefore` | `[]` | Niveaux de titres qui **commencent une nouvelle page** : `[1, 2]` = chaque `#` et chaque `##`. Les niveaux **non listés** (ex. `###`) peuvent partager la même page. `[]` = aucun saut automatique. |
 | `hideToc` | `false` | `true` : retire du PDF la table des matières Markdown (entre `<!-- TOC -->` et `<!-- /TOC -->`) et son titre. |
@@ -484,10 +503,7 @@ Ce bloc agit sur la page HTML **et** sur le PDF (sauf mention contraire).
 
 | Clé | Défaut | Effet |
 | --- | --- | --- |
-| `fontFamily` | police système (Segoe UI, Roboto, Arial…) | Police du texte, syntaxe CSS `font-family`. |
-| `codeFontFamily` | `ui-monospace, 'Cascadia Code', Consolas…` | Police du code. |
-| `fontSize` | `"16px"` | Taille de base du texte. |
-| `codeFontSize` | `"85%"` | Taille du code, relative au texte. |
+| `codeFontSize` | `"85%"` | Taille du code, relative au texte. Polices et taille globale : voir `global.fonts` et `global.fontScale` (§5.2). |
 | `pageTheme` | `{ "light": "default", "dark": "default" }` | Palette de couleurs de la page choisie séparément pour le mode clair et le mode sombre. |
 | `pagePalettes` | `{}` | Palettes de page personnalisées, définies uniquement avec des couleurs. |
 | `codeTheme.mode` | `"follow"` | Mode de couleur propre au code : `follow`, `auto`, `light` ou `dark`. |
@@ -623,9 +639,8 @@ Valeurs par défaut :
 
 Exemple : `doc/exemple.jsonc` → `"customCss": "styles/document.css"` lit `doc/styles/document.css`. Après modification d'un fichier de `template/`, `npm run dev` recharge la page automatiquement.
 
-### 5.8 Anciennes clés et erreurs fréquentes
+### 5.8 Erreurs fréquentes
 
-- `source`, `mediaDirs`, `outputDir` et `pdf.output` **n'existent plus** : le document est déduit du nom (`exemple.md` ↔ `exemple.jsonc`), les médias sont lus dans `doc/`, les sorties vont dans `output_html/<nom>/` et `output_pdf/`. L'outil affiche un message explicite s'ils sont présents.
 - `"... : clé inconnue"` : faute de frappe dans un nom de clé de `numbering`, `toc` ou `header` / `footer` (les clés valides sont listées).
 - `JSON invalide` : virgule manquante ou en trop, guillemet oublié. Un `//` dans un texte entre guillemets est correctement ignoré (ce n'est pas un commentaire).
 - Un niveau de titre doit être un entier de 1 à 6 ; `range` doit respecter `min ≤ max`.

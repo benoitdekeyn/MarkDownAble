@@ -10,7 +10,23 @@
     // Icône de l'onglet (favicon) et logo affiché devant le titre du sommaire HTML : chemin d'une image de doc/ (ex. "media/logo.png"), null = aucune
     "icon": null,
     // Langue de la page et format de la date {date} du PDF
-    "language": "fr"
+    "language": "fr",
+
+    // POLICES. Taille : pourcentage proportionnel appliqué à TOUTES les polices du document (texte, titres, code, sommaire, boutons).
+    // 100 = taille actuelle (16 px de base) ; 120 agrandit tout de 20 %. Entre 25 et 400.
+    "fontScale": 100,
+    // Zoom global en % (10 à 200) : agrandit / réduit tous les éléments (texte, images, marges…) par rapport à l'espace d'affichage
+    // (fenêtre en HTML, zone imprimable en PDF). Le HTML applique global ; le PDF applique global puis pdf (voir plus bas).
+    "zoom": 100,
+    // Police de chaque type de contenu : liste CSS « font-family » (ex. "Georgia, serif"). La police doit être installée sur l'appareil qui lit la page.
+    //   headings : titres (null = même police que body) ;  body : texte ;  code : code ;
+    //   math : formules LaTeX (null = polices KaTeX intégrées ; les grands symboles et délimiteurs gardent toujours les polices KaTeX).
+    "fonts": {
+      "headings": null,
+      "body": "-apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
+      "code": "ui-monospace, 'Cascadia Code', Consolas, 'SFMono-Regular', monospace",
+      "math": null
+    }
   },
 
   // ---------------------------------------------------------------- Page HTML (`npm run build:html`, `npm run dev`)
@@ -60,8 +76,17 @@
     "range": [1, 2],    // [niveau min, niveau max] listés
     "collapsible": false,     // true : table repliable (HTML / Markdown uniquement)
     "summary": "Table des matières",
-    "open": false
-    // Options avancées par niveau ("levels" : symbol, indent, bold, italic, size, collapsible) : voir README.md
+    "open": false,
+    // Options par niveau (1 = « # »…) : symbol (texte devant), indent (demi-cadratins), bold, italic, size (em, null = taille du texte :
+    // suit donc global.fontScale), collapsible (repliable). Valeurs par défaut ci-dessous ; omettez un niveau ou une clé pour la garder.
+    "levels": {
+      "1": { "symbol": "•", "indent": 0,  "bold": true,  "italic": false, "size": null, "collapsible": false },
+      "2": { "symbol": "•", "indent": 0,  "bold": true,  "italic": false, "size": null, "collapsible": false },
+      "3": { "symbol": "◦", "indent": 4,  "bold": false, "italic": false, "size": null, "collapsible": false },
+      "4": { "symbol": "–", "indent": 8,  "bold": false, "italic": false, "size": null, "collapsible": false },
+      "5": { "symbol": "·", "indent": 12, "bold": false, "italic": false, "size": null, "collapsible": false },
+      "6": { "symbol": "·", "indent": 16, "bold": false, "italic": false, "size": null, "collapsible": false }
+    }
   },
 
   // ---------------------------------------------------------------- Export PDF (`npm run build:pdf`, Chrome ou Edge requis)
@@ -72,7 +97,11 @@
     "theme": "light",       // "light" ou "dark"
     "format": "A4",        // A3, A4, A5, Letter, Legal, Tabloid
     "landscape": false,
-    "zoom": 100,            // en % (10 à 200)
+    "zoom": 100,            // affinement du zoom en % (10 à 200), multiplié par global.zoom : 100 = identique au global, 90 = 10 % de moins que le global
+    // Affinement des polices pour le PDF seulement. fontScale : % multiplié par global.fontScale (100 = identique).
+    // fonts : null = reprend global.fonts ; une valeur la remplace pour le PDF (mêmes clés : headings, body, code, math).
+    "fontScale": 100,
+    "fonts": { "headings": null, "body": null, "code": null, "math": null },
     "margins": { "top": "20mm", "right": "18mm", "bottom": "20mm", "left": "18mm" },      // mm, cm, in, pt ou px
     "pageBreakBefore": [1, 2],   // niveaux de titres qui commencent une nouvelle page ; [] = aucun
     "hideToc": false,      // true : retire du PDF la table des matières du .md

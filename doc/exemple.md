@@ -220,6 +220,6 @@ Chaque document Markdown `nom.md` est associé à son fichier de configuration `
 - **Numérotation automatique** (`numbering`) : choix du style par niveau de titre (`decimal`, `roman`, `alpha`), du séparateur, et de la numérotation cumulative (ex. `2.1.`).
 - **Sommaire dans le document** (`toc`) : niveaux de titres à lister (`range: [1, 2]`), sommaire repliable (`collapsible`) et symboles personnalisés.
 - **Mise en page PDF** (`pdf`) : format de papier (`A4`, `A3`, `Letter`...), orientation portrait ou paysage (`landscape`), marges personnalisées, sauts de page automatiques avant certains niveaux (`pageBreakBefore`), et configuration dynamique des **en-têtes et pieds de page** (`header`, `footer`) avec des variables comme `{page}`, `{pages}`, `{title}`, `{h1}`, `{h2}`...
-- **Apparence visuelle** (`style`) : typographies, tailles de police, thèmes de coloration syntaxique du code source (`highlight.light` et `highlight.dark`), et moteur ou thèmes des diagrammes Mermaid (`mermaidTheme`, `mermaid.layout`).
+- **Apparence visuelle** : polices par type de contenu, taille des polices et zoom (`global`, affinables pour le PDF dans `pdf`) ; couleurs, thèmes de coloration syntaxique du code source (`highlight.light` et `highlight.dark`), et moteur ou thèmes des diagrammes Mermaid (`style`).
 
 Pour découvrir la liste complète de toutes les clés disponibles, leurs valeurs par défaut et des exemples prêts à l'emploi, consultez le <a href="../README.md#5-personnaliser--le-fichier-jsonc-et-le-dossier-template" target="_blank">paragraphe 5 du README</a>.

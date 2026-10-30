@@ -10,11 +10,13 @@
   --quote: #656d76;
   --sidebar-w: 320px;
   --content-pct: 90;
+  --fs: 1;
   --font: -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --heading-font: var(--font);
   --code-font: ui-monospace, "Cascadia Code", Consolas, monospace;
-  --font-size: 16px;
+  --font-size: calc(16px * var(--fs));
   --code-font-size: 85%;
-  --toc-size: 14px;
+  --toc-size: calc(14px * var(--fs));
   color-scheme: light;
 }
 :root[data-theme="dark"] {
@@ -49,15 +51,15 @@ body.resizing img { pointer-events: none; }
   overscroll-behavior: contain;
 }
 .sidebar-head { display: flex; align-items: flex-start; gap: 8px; padding: 14px 12px 8px 16px; }
-.sidebar-title { flex: 1; display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 15px; line-height: 1.35; }
+.sidebar-title { flex: 1; display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: calc(15px * var(--fs)); line-height: 1.35; }
 .sidebar-logo { height: 2em; width: auto; max-width: 3.5em; object-fit: contain; flex: none; }
 #theme-toggle {
   flex: none; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--fg);
-  font: inherit; font-size: 12px; padding: 3px 8px; cursor: pointer; white-space: nowrap;
+  font: inherit; font-size: calc(12px * var(--fs)); padding: 3px 8px; cursor: pointer; white-space: nowrap;
 }
 #toc-filter {
   margin: 0 12px 8px; padding: 6px 10px; border: 1px solid var(--border); border-radius: 6px;
-  background: var(--bg); color: var(--fg); font: inherit; font-size: 14px;
+  background: var(--bg); color: var(--fg); font: inherit; font-size: calc(14px * var(--fs));
 }
 /* Le défilement du sommaire reste dans le sommaire, sans entraîner la page */
 #toc {
@@ -66,7 +68,7 @@ body.resizing img { pointer-events: none; }
 }
 #toc a {
   display: block; padding: 3px 8px; color: var(--fg); text-decoration: none;
-  font-size: 14px; line-height: 1.4; border-radius: 6px; border-left: 3px solid transparent;
+  font-size: var(--toc-size); line-height: 1.4; border-radius: 6px; border-left: 3px solid transparent;
   overflow-wrap: anywhere;
 }
 #toc a:hover { background: color-mix(in srgb, var(--accent) 12%, transparent); }
@@ -105,7 +107,7 @@ body.resizing img { pointer-events: none; }
 #content { margin-left: var(--sidebar-w); padding: 32px 0 96px; }
 .markdown-body { width: calc(var(--content-pct) * 1%); margin: 0 auto; word-wrap: break-word; }
 .markdown-body h1, .markdown-body h2, .markdown-body h3, .markdown-body h4, .markdown-body h5, .markdown-body h6 {
-  margin: 1.6em 0 .6em; line-height: 1.25; font-weight: 600; position: relative;
+  margin: 1.6em 0 .6em; line-height: 1.25; font-weight: 600; position: relative; font-family: var(--heading-font);
 }
 .markdown-body h1 { padding-bottom: .3em; border-bottom: 1px solid var(--border); margin-top: 0; }
 .markdown-body h2 { padding-bottom: .3em; border-bottom: 1px solid var(--border); }
@@ -141,7 +143,7 @@ body.resizing img { pointer-events: none; }
 }
 .code-bar {
   display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 34px; padding: 4px 8px;
-  border-bottom: 1px solid var(--border); font: 12px/1.2 var(--font); color: var(--muted);
+  border-bottom: 1px solid var(--border); font: calc(12px * var(--fs))/1.2 var(--font); color: var(--muted);
   background: color-mix(in srgb, var(--muted) 10%, transparent);
 }
 .code-actions { display: flex; flex-wrap: wrap; gap: 6px; }
@@ -175,7 +177,7 @@ pre.mermaid { text-align: center; background: transparent; margin: 0; padding: 8
 .mm-btn {
   width: 28px; height: 28px; padding: 0; display: inline-flex; align-items: center; justify-content: center;
   border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--fg);
-  font: 600 15px/1 var(--font); cursor: pointer;
+  font: 600 calc(15px * var(--fs))/1 var(--font); cursor: pointer;
 }
 .mm-btn:hover { background: var(--sidebar-bg); color: var(--accent); }
 .mm-expand, .mm-controls { position: absolute; opacity: 0; transition: opacity .15s; z-index: 2; }
@@ -196,7 +198,7 @@ pre.mermaid { text-align: center; background: transparent; margin: 0; padding: 8
   display: flex; flex-direction: column; flex: none; padding: 6px; border-left: 1px solid var(--border);
   background: color-mix(in srgb, var(--muted) 10%, transparent);
 }
-.mdable-credit { margin: 3em 0 1em; text-align: center; font: 12px/1.4 var(--font); color: var(--muted); }
+.mdable-credit { margin: 3em 0 1em; text-align: center; font: calc(12px * var(--fs))/1.4 var(--font); color: var(--muted); }
 .mdable-credit a { color: inherit; text-decoration: underline; }
 .mm-overlay { position: fixed; inset: 0; z-index: 100; background: var(--bg); }
 .mm-overlay .mm-stage { position: absolute; inset: 0; }

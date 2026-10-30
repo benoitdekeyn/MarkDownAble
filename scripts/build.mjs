@@ -29,7 +29,19 @@ const FLAGS = new Set(['--watch', '--pdf', '--open', '--no-open']);
 const UNKNOWN_FLAGS = process.argv.slice(2).filter((a) => a.startsWith('--') && !FLAGS.has(a));
 
 const DEFAULTS = {
-  global: { title: null, icon: null, language: 'fr' },
+  global: {
+    title: null,
+    icon: null,
+    language: 'fr',
+    fontScale: 100,
+    zoom: 100,
+    fonts: {
+      headings: null,
+      body: "-apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
+      code: "ui-monospace, 'Cascadia Code', Consolas, 'SFMono-Regular', monospace",
+      math: null,
+    },
+  },
   html: {
     name: 'index',
     theme: 'auto',
@@ -46,6 +58,8 @@ const DEFAULTS = {
     format: 'A4',
     landscape: false,
     zoom: 100,
+    fontScale: 100,
+    fonts: { headings: null, body: null, code: null, math: null },
     margins: { top: '20mm', right: '18mm', bottom: '20mm', left: '18mm' },
     pageBreakBefore: [],
     hideToc: false,
@@ -56,9 +70,6 @@ const DEFAULTS = {
     footer: { center: '{page} / {pages}' },
   },
   style: {
-    fontFamily: "-apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
-    codeFontFamily: "ui-monospace, 'Cascadia Code', Consolas, 'SFMono-Regular', monospace",
-    fontSize: '16px',
     codeFontSize: '85%',
     highlight: { light: 'default', dark: 'default' },
     codeTheme: { mode: 'follow' },
@@ -100,6 +111,15 @@ const REMOVED_KEYS = {
   layout: 'sidebarWidth, sidebarMinWidth, sidebarMaxWidth et contentWidthPercent sont maintenant directement dans la section "html"',
 };
 
+const FONT_KINDS = ['headings', 'body', 'code', 'math'];
+
+// Clés de "style" déplacées dans "global" (polices et taille de base).
+const REMOVED_STYLE_KEYS = {
+  fontFamily: 'global.fonts.body (et global.fonts.headings pour les titres)',
+  codeFontFamily: 'global.fonts.code',
+  fontSize: 'global.fontScale (en %, 100 = 16 px)',
+};
+
 // Nom de fichier sans extension (htmlName, pdf.name) : pas de dossier ni de caractère interdit sous Windows.
 function fileStem(value, label, ext) {
   const v = String(value).replace(new RegExp(`\\${ext}$`, 'i'), '');
@@ -112,6 +132,9 @@ function loadConfig(doc) {
   const user = doc.user;
   for (const [k, hint] of Object.entries(REMOVED_KEYS)) if (k in user) throw new ConfigError(`"${k}" n'existe plus : ${hint}`);
   if (isObj(user.pdf) && 'output' in user.pdf) throw new ConfigError('"pdf.output" n\'existe plus : utilisez "pdf.name" (nom du fichier, le PDF est écrit dans output_pdf/)');
+  if (isObj(user.style)) {
+    for (const [k, hint] of Object.entries(REMOVED_STYLE_KEYS)) if (k in user.style) throw new ConfigError(`"style.${k}" n'existe plus : utilisez ${hint}`);
+  }
   const cfg = merge(DEFAULTS, user);
   cfg.docName = doc.name;
   cfg.sourcePath = doc.mdPath;
@@ -142,6 +165,22 @@ function loadConfig(doc) {
   for (const key of ['title', 'icon']) {
     if (cfg.global[key] != null && typeof cfg.global[key] !== 'string') throw new ConfigError(`global.${key} doit être un texte ou null`);
   }
+  const percent = (label, v, min, max) => {
+    if (!(typeof v === 'number' && Number.isFinite(v) && v >= min && v <= max)) throw new ConfigError(`${label} doit être un nombre en % entre ${min} et ${max} (reçu ${JSON.stringify(v)})`);
+  };
+  percent('global.fontScale', cfg.global.fontScale, 25, 400);
+  percent('global.zoom', cfg.global.zoom, 10, 200);
+  percent('pdf.fontScale', cfg.pdf.fontScale, 25, 400);
+  const checkFonts = (label, fonts, nullable) => {
+    if (!isObj(fonts)) throw new ConfigError(`${label} doit être un objet { headings, body, code, math }`);
+    for (const [k, v] of Object.entries(fonts)) {
+      if (!FONT_KINDS.includes(k)) throw new ConfigError(`${label} : clé inconnue "${k}" (valides : ${FONT_KINDS.join(', ')})`);
+      if (v == null && (nullable || k === 'headings' || k === 'math')) continue;
+      if (typeof v !== 'string' || !v.trim() || /[;{}<>\\]/.test(v)) throw new ConfigError(`${label}.${k} doit être une liste de polices CSS (ex. "Georgia, serif"), sans ; { } < > \\${nullable || k === 'headings' || k === 'math' ? ' ou null' : ''}`);
+    }
+  };
+  checkFonts('global.fonts', cfg.global.fonts, false);
+  checkFonts('pdf.fonts', cfg.pdf.fonts, true);
   if (!isObj(cfg.style)) throw new ConfigError('style doit être un objet');
   if (!['auto', 'light', 'dark'].includes(html.theme)) throw new ConfigError(`html.theme doit valoir auto, light ou dark (reçu "${html.theme}")`);
   for (const key of ['pageTheme', 'pagePalettes', 'codeTheme', 'highlight']) {
@@ -179,6 +218,15 @@ function loadConfig(doc) {
   cfg.outputDir = path.join(HTML_OUTPUT_DIR, doc.name);
   cfg.outputFile = path.join(cfg.outputDir, `${fileStem(cfg.html.name, 'html.name', '.html')}.html`);
   try { validatePdfConfig(cfg.pdf); } catch (e) { throw new ConfigError(e.message); }
+  // Réglages effectifs : le HTML suit global ; le PDF combine global et ses réglages d'affinement.
+  const pdfZoom = Math.round(cfg.global.zoom * cfg.pdf.zoom) / 100;
+  if (pdfZoom < 10 || pdfZoom > 200) throw new ConfigError(`zoom du PDF : global.zoom × pdf.zoom = ${pdfZoom} %, doit rester entre 10 et 200 % (global.zoom ${cfg.global.zoom} %, pdf.zoom ${cfg.pdf.zoom} %)`);
+  const pdfFonts = { ...cfg.global.fonts };
+  for (const k of FONT_KINDS) if (cfg.pdf.fonts[k] != null) pdfFonts[k] = cfg.pdf.fonts[k];
+  cfg.render = {
+    html: { fontScale: cfg.global.fontScale, zoom: cfg.global.zoom, fonts: cfg.global.fonts },
+    pdf: { fontScale: Math.round(cfg.global.fontScale * cfg.pdf.fontScale) / 100, zoom: pdfZoom, fonts: pdfFonts },
+  };
   cfg.pdfFile = path.join(PDF_OUTPUT_DIR, `${cfg.pdf.name == null ? doc.name : fileStem(cfg.pdf.name, 'pdf.name', '.pdf')}.pdf`);
   const bad = (m) => { throw new ConfigError(`style.mermaid : ${m}`); };
   cfg.style.mermaid = normalizeMermaidOptions(cfg.style.mermaid, bad);
@@ -714,7 +762,9 @@ async function render(cfg, { pdf = false } = {}) {
   const sidebar = pdf ? '' : renderSidebar(headings);
 
   const { style, html: layout } = cfg;
+  const render = pdf ? cfg.render.pdf : cfg.render.html;
   const clientCfg = {
+    zoom: pdf ? 1 : render.zoom / 100,
     key: `markdown-doc:${path.parse(cfg.sourcePath).name}`,
     sidebarWidth: layout.sidebarWidth, sidebarMin: layout.sidebarMinWidth, sidebarMax: layout.sidebarMaxWidth,
     tocOpenLevel: layout.tocOpenLevel,
@@ -734,7 +784,9 @@ async function render(cfg, { pdf = false } = {}) {
     pagePaletteRules(style),
     levelRules(style.headings, 'page'),
     levelRules(style.toc, 'nav'),
-    `:root{--sidebar-w:${layout.sidebarWidth}px;--content-pct:${layout.contentWidthPercent};--font:${style.fontFamily};--code-font:${style.codeFontFamily};--font-size:${style.fontSize};--code-font-size:${style.codeFontSize}${pdf ? `;--pdf-fig-h:${pdfGeometry(cfg.pdf).figHeight}px` : ''}}\n`,
+    `:root{--sidebar-w:${layout.sidebarWidth}px;--content-pct:${layout.contentWidthPercent};--fs:${render.fontScale / 100};--font:${render.fonts.body};--heading-font:${render.fonts.headings || 'var(--font)'};--code-font:${render.fonts.code};--code-font-size:${style.codeFontSize}${pdf ? `;--pdf-fig-h:${pdfGeometry(cfg.pdf, render.zoom).figHeight}px` : ''}}\n`,
+    render.fonts.math ? `.katex,.katex .mathnormal,.katex .mathit,.katex .mathrm,.katex .mathbf,.katex .textrm,.katex .textbf,.katex .textit{font-family:${render.fonts.math}}\n` : '',
+    !pdf && render.zoom !== 100 ? `html{zoom:${render.zoom / 100}}\n` : '',
     colorRules(style.colors.light, ':root'),
     colorRules(style.colors.dark, ':root[data-theme="dark"]'),
     style.customCss ? readAsset(path.resolve(path.dirname(cfg.configPath), style.customCss)) : '',

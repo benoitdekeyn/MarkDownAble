@@ -52,11 +52,11 @@ export function validatePdfConfig(p) {
 }
 
 // Dimensions utiles à la mise en page (px CSS, avant zoom).
-export function pdfGeometry(p) {
+export function pdfGeometry(p, zoom = p.zoom) {
   const [w, h] = FORMATS[String(p.format).toLowerCase()];
   const [pw, ph] = p.landscape ? [h, w] : [w, h];
   const innerH = ph * 96 - toPx(p.margins.top) - toPx(p.margins.bottom);
-  return { figHeight: Math.floor((innerH / (p.zoom / 100)) * 0.96) };
+  return { figHeight: Math.floor((innerH / (zoom / 100)) * 0.96) };
 }
 
 async function launch(chromium, browserPath) {
@@ -207,11 +207,11 @@ function overlayHtml({ cfg, baseDir, size, pages, sections, title, noHF, warn })
   return `<!DOCTYPE html><html><head><meta charset="utf-8"><style>
 @page{margin:0}
 html,body{margin:0;padding:0;background:transparent}
-body{font-family:${cfg.style.fontFamily};color:${pal.muted};-webkit-print-color-adjust:exact;print-color-adjust:exact}
+body{font-family:${cfg.render.pdf.fonts.body};color:${pal.muted};-webkit-print-color-adjust:exact;print-color-adjust:exact}
 .pg{position:relative;overflow:hidden;width:${size.w * 96 / 72}px;height:calc(${heightPx}px - 2px);break-after:page}
 .pg:last-child{break-after:auto}
 .bar{position:absolute;left:0;right:0;box-sizing:border-box;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;
-  padding:0 ${p.margins.right} 0 ${p.margins.left};font-size:9pt;line-height:1.3;color:${pal.muted}}
+  padding:0 ${p.margins.right} 0 ${p.margins.left};font-size:${9 * cfg.render.pdf.fontScale / 100}pt;line-height:1.3;color:${pal.muted}}
 .bar.header{top:0;height:${p.margins.top}}
 .bar.footer{bottom:0;height:${p.margins.bottom}}
 .bar>div{min-width:0}.bar .left{text-align:left}.bar .center{text-align:center}.bar .right{text-align:right}
@@ -238,7 +238,7 @@ export async function exportPdf({ cfg, html, ConfigError, warn }) {
     done.brokenImages.forEach((s) => warn(`image non chargée : ${s}`));
 
     const first = await page.pdf({
-      format: p.format, landscape: p.landscape, scale: p.zoom / 100, printBackground: true,
+      format: p.format, landscape: p.landscape, scale: cfg.render.pdf.zoom / 100, printBackground: true,
       margin: p.margins, outline: true, tagged: true, displayHeaderFooter: false,
     });
     const doc = await lib.PDFDocument.load(first);

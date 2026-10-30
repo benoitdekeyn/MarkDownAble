@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>README</title>
-<script>(function(){var c={"key":"markdown-doc:README","sidebarWidth":320,"sidebarMin":200,"sidebarMax":700,"tocOpenLevel":2,"codeThemeMode":"follow","mermaidTheme":"auto","mermaidCss":{"common":"/* Style des diagrammes Mermaid : ce fichier est injecté dans chaque diagramme (page et plein écran).\r\n   Les règles écrites ici s'appliquent aux deux thèmes. Pour en réserver à un thème, placez avant elles\r\n   une ligne marqueur « arobase light » ou « arobase dark » entre commentaires (voir en bas), et « arobase all » pour revenir aux règles communes.\r\n   Classes utiles : .node rect/polygon/circle (nœuds), .label (texte), .flowchart-link et .transition (liens),\r\n   .edgeLabel (étiquettes des flèches), .cluster rect (groupes), .actor (diagramme de séquence).\r\n   La palette de base vient de style.mermaidTheme dans la configuration JSONC. Exemples à décommenter : */\r\n\r\n/* .node rect, .node polygon, .node circle { rx: 8px; ry: 8px; stroke-width: 2px; } */\r\n/* .flowchart-link, .transition { stroke-width: 2px; } */\r\n/* .edgeLabel, .edgeLabel p { font-size: 13px; } */\r\n\r\n","light":"\r\n/* .node rect { fill: #eef6ff; stroke: #0969da; } */\r\n\r\n","dark":"\r\n/* .node rect { fill: #1b2a41; stroke: #4493f8; } */\r\n"}},r=document.documentElement,m="auto",w;try{m=localStorage.getItem(c.key+':theme')||m;w=localStorage.getItem(c.key+':sidebar')}catch(e){}
+<script>(function(){var c={"zoom":1,"key":"markdown-doc:README","sidebarWidth":320,"sidebarMin":200,"sidebarMax":700,"tocOpenLevel":2,"codeThemeMode":"follow","mermaidTheme":"auto","mermaidCss":{"common":"/* Style des diagrammes Mermaid : ce fichier est injecté dans chaque diagramme (page et plein écran).\r\n   Les règles écrites ici s'appliquent aux deux thèmes. Pour en réserver à un thème, placez avant elles\r\n   une ligne marqueur « arobase light » ou « arobase dark » entre commentaires (voir en bas), et « arobase all » pour revenir aux règles communes.\r\n   Classes utiles : .node rect/polygon/circle (nœuds), .label (texte), .flowchart-link et .transition (liens),\r\n   .edgeLabel (étiquettes des flèches), .cluster rect (groupes), .actor (diagramme de séquence).\r\n   La palette de base vient de style.mermaidTheme dans la configuration JSONC. Exemples à décommenter : */\r\n\r\n/* .node rect, .node polygon, .node circle { rx: 8px; ry: 8px; stroke-width: 2px; } */\r\n/* .flowchart-link, .transition { stroke-width: 2px; } */\r\n/* .edgeLabel, .edgeLabel p { font-size: 13px; } */\r\n\r\n","light":"\r\n/* .node rect { fill: #eef6ff; stroke: #0969da; } */\r\n\r\n","dark":"\r\n/* .node rect { fill: #1b2a41; stroke: #4493f8; } */\r\n"}},r=document.documentElement,m="auto",w;try{m=localStorage.getItem(c.key+':theme')||m;w=localStorage.getItem(c.key+':sidebar')}catch(e){}
 r.dataset.mode=m;r.dataset.theme=(m==='dark'||(m==='auto'&&matchMedia('(prefers-color-scheme: dark)').matches))?'dark':'light';
 var cm=c.codeThemeMode,cd=cm==='dark'||(cm==='follow'?r.dataset.theme==='dark':cm==='auto'&&matchMedia('(prefers-color-scheme: dark)').matches);r.dataset.codeTheme=cd?'dark':'light';
 if(w)r.style.setProperty('--sidebar-w',Math.max(c.sidebarMin,Math.min(c.sidebarMax,+w))+'px')})()</script>
@@ -21,11 +21,13 @@ if(w)r.style.setProperty('--sidebar-w',Math.max(c.sidebarMin,Math.min(c.sidebarM
   --quote: #656d76;
   --sidebar-w: 320px;
   --content-pct: 90;
+  --fs: 1;
   --font: -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --heading-font: var(--font);
   --code-font: ui-monospace, "Cascadia Code", Consolas, monospace;
-  --font-size: 16px;
+  --font-size: calc(16px * var(--fs));
   --code-font-size: 85%;
-  --toc-size: 14px;
+  --toc-size: calc(14px * var(--fs));
   color-scheme: light;
 }
 :root[data-theme="dark"] {
@@ -60,15 +62,15 @@ body.resizing img { pointer-events: none; }
   overscroll-behavior: contain;
 }
 .sidebar-head { display: flex; align-items: flex-start; gap: 8px; padding: 14px 12px 8px 16px; }
-.sidebar-title { flex: 1; display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 15px; line-height: 1.35; }
+.sidebar-title { flex: 1; display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: calc(15px * var(--fs)); line-height: 1.35; }
 .sidebar-logo { height: 2em; width: auto; max-width: 3.5em; object-fit: contain; flex: none; }
 #theme-toggle {
   flex: none; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--fg);
-  font: inherit; font-size: 12px; padding: 3px 8px; cursor: pointer; white-space: nowrap;
+  font: inherit; font-size: calc(12px * var(--fs)); padding: 3px 8px; cursor: pointer; white-space: nowrap;
 }
 #toc-filter {
   margin: 0 12px 8px; padding: 6px 10px; border: 1px solid var(--border); border-radius: 6px;
-  background: var(--bg); color: var(--fg); font: inherit; font-size: 14px;
+  background: var(--bg); color: var(--fg); font: inherit; font-size: calc(14px * var(--fs));
 }
 /* Le défilement du sommaire reste dans le sommaire, sans entraîner la page */
 #toc {
@@ -77,7 +79,7 @@ body.resizing img { pointer-events: none; }
 }
 #toc a {
   display: block; padding: 3px 8px; color: var(--fg); text-decoration: none;
-  font-size: 14px; line-height: 1.4; border-radius: 6px; border-left: 3px solid transparent;
+  font-size: var(--toc-size); line-height: 1.4; border-radius: 6px; border-left: 3px solid transparent;
   overflow-wrap: anywhere;
 }
 #toc a:hover { background: color-mix(in srgb, var(--accent) 12%, transparent); }
@@ -116,7 +118,7 @@ body.resizing img { pointer-events: none; }
 #content { margin-left: var(--sidebar-w); padding: 32px 0 96px; }
 .markdown-body { width: calc(var(--content-pct) * 1%); margin: 0 auto; word-wrap: break-word; }
 .markdown-body h1, .markdown-body h2, .markdown-body h3, .markdown-body h4, .markdown-body h5, .markdown-body h6 {
-  margin: 1.6em 0 .6em; line-height: 1.25; font-weight: 600; position: relative;
+  margin: 1.6em 0 .6em; line-height: 1.25; font-weight: 600; position: relative; font-family: var(--heading-font);
 }
 .markdown-body h1 { padding-bottom: .3em; border-bottom: 1px solid var(--border); margin-top: 0; }
 .markdown-body h2 { padding-bottom: .3em; border-bottom: 1px solid var(--border); }
@@ -152,7 +154,7 @@ body.resizing img { pointer-events: none; }
 }
 .code-bar {
   display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 34px; padding: 4px 8px;
-  border-bottom: 1px solid var(--border); font: 12px/1.2 var(--font); color: var(--muted);
+  border-bottom: 1px solid var(--border); font: calc(12px * var(--fs))/1.2 var(--font); color: var(--muted);
   background: color-mix(in srgb, var(--muted) 10%, transparent);
 }
 .code-actions { display: flex; flex-wrap: wrap; gap: 6px; }
@@ -186,7 +188,7 @@ pre.mermaid { text-align: center; background: transparent; margin: 0; padding: 8
 .mm-btn {
   width: 28px; height: 28px; padding: 0; display: inline-flex; align-items: center; justify-content: center;
   border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--fg);
-  font: 600 15px/1 var(--font); cursor: pointer;
+  font: 600 calc(15px * var(--fs))/1 var(--font); cursor: pointer;
 }
 .mm-btn:hover { background: var(--sidebar-bg); color: var(--accent); }
 .mm-expand, .mm-controls { position: absolute; opacity: 0; transition: opacity .15s; z-index: 2; }
@@ -207,7 +209,7 @@ pre.mermaid { text-align: center; background: transparent; margin: 0; padding: 8
   display: flex; flex-direction: column; flex: none; padding: 6px; border-left: 1px solid var(--border);
   background: color-mix(in srgb, var(--muted) 10%, transparent);
 }
-.mdable-credit { margin: 3em 0 1em; text-align: center; font: 12px/1.4 var(--font); color: var(--muted); }
+.mdable-credit { margin: 3em 0 1em; text-align: center; font: calc(12px * var(--fs))/1.4 var(--font); color: var(--muted); }
 .mdable-credit a { color: inherit; text-decoration: underline; }
 .mm-overlay { position: fixed; inset: 0; z-index: 100; background: var(--bg); }
 .mm-overlay .mm-stage { position: absolute; inset: 0; }
@@ -318,7 +320,9 @@ li.task-item { list-style: none; }
 #toc a.toc-l6{font-size:calc(var(--toc-size)*0.93)}
 #toc .row-l6{padding-left:calc(var(--toc-size)*4.5)}
 
-:root{--sidebar-w:320px;--content-pct:90;--font:-apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;--code-font:ui-monospace, 'Cascadia Code', Consolas, 'SFMono-Regular', monospace;--font-size:16px;--code-font-size:85%}
+:root{--sidebar-w:320px;--content-pct:90;--fs:1;--font:-apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;--heading-font:var(--font);--code-font:ui-monospace, 'Cascadia Code', Consolas, 'SFMono-Regular', monospace;--code-font-size:85%}
+
+
 
 
 
@@ -330,7 +334,7 @@ li.task-item { list-style: none; }
 <aside id="sidebar">
   <div class="sidebar-head"><div class="sidebar-title"><span>README</span></div><button id="theme-toggle" type="button" title="Changer le thème"></button></div>
   <input id="toc-filter" type="search" placeholder="Filtrer les titres…" autocomplete="off">
-  <nav id="toc"><div class="toc-node root has-kids" data-level="1"><div class="toc-row row-l1"><button class="toc-caret" type="button" tabindex="-1" aria-label="Déplier / replier"></button><a class="toc-l1" href="#markdownable" data-id="markdownable">MarkDownAble</a></div><div class="toc-children"><div class="toc-node" data-level="2"><div class="toc-row row-l2"><span class="toc-caret"></span><a class="toc-l2" href="#par-où-commencer-" data-id="par-où-commencer-">Par où commencer ?</a></div></div><div class="toc-node has-kids" data-level="2"><div class="toc-row row-l2"><button class="toc-caret" type="button" tabindex="-1" aria-label="Déplier / replier"></button><a class="toc-l2" href="#1-démarrage-rapide" data-id="1-démarrage-rapide">1. Démarrage rapide</a></div><div class="toc-children"><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#11-installer-nodejs" data-id="11-installer-nodejs">1.1 Installer Node.js</a></div></div><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#12-récupérer-le-projet" data-id="12-récupérer-le-projet">1.2 Récupérer le projet</a></div></div><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#13-installer-les-dépendances-de-loutil" data-id="13-installer-les-dépendances-de-loutil">1.3 Installer les dépendances de l'outil</a></div></div><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#14-voir-lexemple" data-id="14-voir-lexemple">1.4 Voir l'exemple</a></div></div><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#15-démarrer-votre-propre-document" data-id="15-démarrer-votre-propre-document">1.5 Démarrer votre propre document</a></div></div><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#16-pour-le-pdf--chrome-ou-edge" data-id="16-pour-le-pdf--chrome-ou-edge">1.6 Pour le PDF : Chrome ou Edge</a></div></div><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#17-un-projet-à-vous-avec-loutil-dans-un-sous-dossier-facultatif" data-id="17-un-projet-à-vous-avec-loutil-dans-un-sous-dossier-facultatif">1.7 Un projet à vous, avec l'outil dans un sous-dossier (facultatif)</a></div></div></div></div><div class="toc-node has-kids" data-level="2"><div class="toc-row row-l2"><button class="toc-caret" type="button" tabindex="-1" aria-label="Déplier / replier"></button><a class="toc-l2" href="#2-utilisation-au-quotidien" data-id="2-utilisation-au-quotidien">2. Utilisation au quotidien</a></div><div class="toc-children"><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#lire-les-messages-du-terminal" data-id="lire-les-messages-du-terminal">Lire les messages du terminal</a></div></div><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#flux-de-travail-conseillé" data-id="flux-de-travail-conseillé">Flux de travail conseillé</a></div></div></div></div><div class="toc-node" data-level="2"><div class="toc-row row-l2"><span class="toc-caret"></span><a class="toc-l2" href="#3-créer-un-nouveau-document" data-id="3-créer-un-nouveau-document">3. Créer un nouveau document</a></div></div><div class="toc-node" data-level="2"><div class="toc-row row-l2"><span class="toc-caret"></span><a class="toc-l2" href="#4-écrire-dans-le-markdown" data-id="4-écrire-dans-le-markdown">4. Écrire dans le Markdown</a></div></div><div class="toc-node has-kids" data-level="2"><div class="toc-row row-l2"><button class="toc-caret" type="button" tabindex="-1" aria-label="Déplier / replier"></button><a class="toc-l2" href="#5-personnaliser--le-fichier-jsonc-et-le-dossier-template" data-id="5-personnaliser--le-fichier-jsonc-et-le-dossier-template">5. Personnaliser : le fichier .jsonc et le dossier template/</a></div><div class="toc-children"><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#51-principes" data-id="51-principes">5.1 Principes</a></div></div><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#52-options-générales--global" data-id="52-options-générales--global">5.2 Options générales : global</a></div></div><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#53-page-html--html" data-id="53-page-html--html">5.3 Page HTML : html</a></div></div><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#54-numérotation-des-titres--numbering" data-id="54-numérotation-des-titres--numbering">5.4 Numérotation des titres : numbering</a></div></div><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#55-table-des-matières-markdown--toc" data-id="55-table-des-matières-markdown--toc">5.5 Table des matières Markdown : toc</a></div></div><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#56-export-pdf--pdf" data-id="56-export-pdf--pdf">5.6 Export PDF : pdf</a></div></div><div class="toc-node has-kids" data-level="3"><div class="toc-row row-l3"><button class="toc-caret" type="button" tabindex="-1" aria-label="Déplier / replier"></button><a class="toc-l3" href="#57-apparence--style" data-id="57-apparence--style">5.7 Apparence : style</a></div><div class="toc-children"><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#distinguer-les-deux-modes-et-les-deux-palettes" data-id="distinguer-les-deux-modes-et-les-deux-palettes">Distinguer les deux modes et les deux palettes</a></div></div></div></div><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#58-anciennes-clés-et-erreurs-fréquentes" data-id="58-anciennes-clés-et-erreurs-fréquentes">5.8 Anciennes clés et erreurs fréquentes</a></div></div></div></div><div class="toc-node has-kids" data-level="2"><div class="toc-row row-l2"><button class="toc-caret" type="button" tabindex="-1" aria-label="Déplier / replier"></button><a class="toc-l2" href="#6-organisation-des-dossiers" data-id="6-organisation-des-dossiers">6. Organisation des dossiers</a></div><div class="toc-children"><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#61-choisir-où-vivent-doc-output_html-et-output_pdf--pathsjsonc" data-id="61-choisir-où-vivent-doc-output_html-et-output_pdf--pathsjsonc">6.1 Choisir où vivent doc/, output_html/ et output_pdf/ : paths.jsonc</a></div></div></div></div><div class="toc-node" data-level="2"><div class="toc-row row-l2"><span class="toc-caret"></span><a class="toc-l2" href="#7-dépannage" data-id="7-dépannage">7. Dépannage</a></div></div><div class="toc-node" data-level="2"><div class="toc-row row-l2"><span class="toc-caret"></span><a class="toc-l2" href="#8-limites-connues" data-id="8-limites-connues">8. Limites connues</a></div></div></div></div></nav>
+  <nav id="toc"><div class="toc-node root has-kids" data-level="1"><div class="toc-row row-l1"><button class="toc-caret" type="button" tabindex="-1" aria-label="Déplier / replier"></button><a class="toc-l1" href="#markdownable" data-id="markdownable">MarkDownAble</a></div><div class="toc-children"><div class="toc-node" data-level="2"><div class="toc-row row-l2"><span class="toc-caret"></span><a class="toc-l2" href="#par-où-commencer-" data-id="par-où-commencer-">Par où commencer ?</a></div></div><div class="toc-node has-kids" data-level="2"><div class="toc-row row-l2"><button class="toc-caret" type="button" tabindex="-1" aria-label="Déplier / replier"></button><a class="toc-l2" href="#1-démarrage-rapide" data-id="1-démarrage-rapide">1. Démarrage rapide</a></div><div class="toc-children"><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#11-installer-nodejs" data-id="11-installer-nodejs">1.1 Installer Node.js</a></div></div><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#12-récupérer-le-projet" data-id="12-récupérer-le-projet">1.2 Récupérer le projet</a></div></div><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#13-installer-les-dépendances-de-loutil" data-id="13-installer-les-dépendances-de-loutil">1.3 Installer les dépendances de l'outil</a></div></div><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#14-voir-lexemple" data-id="14-voir-lexemple">1.4 Voir l'exemple</a></div></div><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#15-démarrer-votre-propre-document" data-id="15-démarrer-votre-propre-document">1.5 Démarrer votre propre document</a></div></div><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#16-pour-le-pdf--chrome-ou-edge" data-id="16-pour-le-pdf--chrome-ou-edge">1.6 Pour le PDF : Chrome ou Edge</a></div></div><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#17-un-projet-à-vous-avec-loutil-dans-un-sous-dossier-facultatif" data-id="17-un-projet-à-vous-avec-loutil-dans-un-sous-dossier-facultatif">1.7 Un projet à vous, avec l'outil dans un sous-dossier (facultatif)</a></div></div></div></div><div class="toc-node has-kids" data-level="2"><div class="toc-row row-l2"><button class="toc-caret" type="button" tabindex="-1" aria-label="Déplier / replier"></button><a class="toc-l2" href="#2-utilisation-au-quotidien" data-id="2-utilisation-au-quotidien">2. Utilisation au quotidien</a></div><div class="toc-children"><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#lire-les-messages-du-terminal" data-id="lire-les-messages-du-terminal">Lire les messages du terminal</a></div></div><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#flux-de-travail-conseillé" data-id="flux-de-travail-conseillé">Flux de travail conseillé</a></div></div></div></div><div class="toc-node" data-level="2"><div class="toc-row row-l2"><span class="toc-caret"></span><a class="toc-l2" href="#3-créer-un-nouveau-document" data-id="3-créer-un-nouveau-document">3. Créer un nouveau document</a></div></div><div class="toc-node" data-level="2"><div class="toc-row row-l2"><span class="toc-caret"></span><a class="toc-l2" href="#4-écrire-dans-le-markdown" data-id="4-écrire-dans-le-markdown">4. Écrire dans le Markdown</a></div></div><div class="toc-node has-kids" data-level="2"><div class="toc-row row-l2"><button class="toc-caret" type="button" tabindex="-1" aria-label="Déplier / replier"></button><a class="toc-l2" href="#5-personnaliser--le-fichier-jsonc-et-le-dossier-template" data-id="5-personnaliser--le-fichier-jsonc-et-le-dossier-template">5. Personnaliser : le fichier .jsonc et le dossier template/</a></div><div class="toc-children"><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#51-principes" data-id="51-principes">5.1 Principes</a></div></div><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#52-options-générales--global" data-id="52-options-générales--global">5.2 Options générales : global</a></div></div><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#53-page-html--html" data-id="53-page-html--html">5.3 Page HTML : html</a></div></div><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#54-numérotation-des-titres--numbering" data-id="54-numérotation-des-titres--numbering">5.4 Numérotation des titres : numbering</a></div></div><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#55-table-des-matières-markdown--toc" data-id="55-table-des-matières-markdown--toc">5.5 Table des matières Markdown : toc</a></div></div><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#56-export-pdf--pdf" data-id="56-export-pdf--pdf">5.6 Export PDF : pdf</a></div></div><div class="toc-node has-kids" data-level="3"><div class="toc-row row-l3"><button class="toc-caret" type="button" tabindex="-1" aria-label="Déplier / replier"></button><a class="toc-l3" href="#57-apparence--style" data-id="57-apparence--style">5.7 Apparence : style</a></div><div class="toc-children"><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#distinguer-les-deux-modes-et-les-deux-palettes" data-id="distinguer-les-deux-modes-et-les-deux-palettes">Distinguer les deux modes et les deux palettes</a></div></div></div></div><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#58-erreurs-fréquentes" data-id="58-erreurs-fréquentes">5.8 Erreurs fréquentes</a></div></div></div></div><div class="toc-node has-kids" data-level="2"><div class="toc-row row-l2"><button class="toc-caret" type="button" tabindex="-1" aria-label="Déplier / replier"></button><a class="toc-l2" href="#6-organisation-des-dossiers" data-id="6-organisation-des-dossiers">6. Organisation des dossiers</a></div><div class="toc-children"><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#61-choisir-où-vivent-doc-output_html-et-output_pdf--pathsjsonc" data-id="61-choisir-où-vivent-doc-output_html-et-output_pdf--pathsjsonc">6.1 Choisir où vivent doc/, output_html/ et output_pdf/ : paths.jsonc</a></div></div></div></div><div class="toc-node" data-level="2"><div class="toc-row row-l2"><span class="toc-caret"></span><a class="toc-l2" href="#7-dépannage" data-id="7-dépannage">7. Dépannage</a></div></div><div class="toc-node" data-level="2"><div class="toc-row row-l2"><span class="toc-caret"></span><a class="toc-l2" href="#8-limites-connues" data-id="8-limites-connues">8. Limites connues</a></div></div></div></div></nav>
 </aside>
 <div id="resizer" role="separator" aria-orientation="vertical" title="Glisser pour redimensionner (double-clic : largeur initiale)"></div>
 <main id="content"><article class="markdown-body">
@@ -659,7 +663,8 @@ graph TD
 </ul>
 <p>Squelette complet (valeurs par défaut de l'outil, sauf indication) :</p>
 <div class="code-block"><div class="code-frame" data-lang="jsonc"><div class="code-bar"><div class="code-actions"><button class="copy-btn" type="button" title="Copier le code" aria-label="Copier le code"></button><button class="expand-btn" type="button" title="Agrandir le code" aria-label="Agrandir le code"></button><button class="download-btn" type="button" title="Télécharger le code" aria-label="Télécharger le code"></button></div><span class="code-lang" title="jsonc">jsonc</span></div><pre><code class="hljs language-jsonc"><span class="hljs-punctuation">{</span>
-  <span class="hljs-attr">&quot;global&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;title&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">null</span></span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;icon&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">null</span></span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;language&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;fr&quot;</span> <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>   <span class="hljs-comment">// §5.2</span>
+  <span class="hljs-attr">&quot;global&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;title&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">null</span></span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;icon&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">null</span></span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;language&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;fr&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;fontScale&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">100</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;zoom&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">100</span><span class="hljs-punctuation">,</span>
+              <span class="hljs-attr">&quot;fonts&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;headings&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">null</span></span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;body&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;…police système…&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;code&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;…police mono…&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;math&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">null</span></span> <span class="hljs-punctuation">}</span> <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>   <span class="hljs-comment">// §5.2</span>
   <span class="hljs-attr">&quot;html&quot;</span><span class="hljs-punctuation">:</span>   <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;name&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;index&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;theme&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;auto&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;embedImages&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">false</span></span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;tocOpenLevel&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">2</span><span class="hljs-punctuation">,</span>
               <span class="hljs-attr">&quot;sidebarWidth&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">320</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;sidebarMinWidth&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">200</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;sidebarMaxWidth&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">700</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;contentWidthPercent&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">90</span> <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>   <span class="hljs-comment">// §5.3</span>
 
@@ -671,7 +676,6 @@ graph TD
 </code></pre></div></div>
 <blockquote>
 <p>Le fichier <a href="https://github.com/benoitdekeyn/MarkDownAble/blob/main/doc/exemple.jsonc" target="_blank" rel="noopener noreferrer">doc/exemple.jsonc</a> est un exemple complet et commenté. <code>npm run init</code> génère le même type de fichier (§3).</p>
-<p><strong>Ancien format</strong> : <code>htmlName</code>, <code>title</code>, <code>icon</code>, <code>language</code>, <code>theme</code>, <code>embedImages</code> et <code>layout</code> n'existent plus à la racine. Déplacez-les : <code>title</code>, <code>icon</code>, <code>language</code> → <code>global</code> ; <code>htmlName</code> → <code>html.name</code> ; <code>theme</code>, <code>embedImages</code> → <code>html</code> ; le contenu de <code>layout</code> → directement dans <code>html</code>. L'outil s'arrête en indiquant la nouvelle place de chaque clé.</p>
 </blockquote>
 <h3 id="52-options-générales--global">5.2 Options générales : <code>global</code><a class="anchor" href="#52-options-générales--global" aria-label="Lien vers cette section">#</a></h3>
 <p>Valables pour tous les formats (HTML et PDF).</p>
@@ -703,9 +707,65 @@ graph TD
 <td><code>&quot;fr&quot;</code></td>
 <td>Attribut <code>lang</code> de la page et format de <code>{date}</code> dans le PDF (<code>&quot;fr&quot;</code> → <code>28/10/2026</code>, <code>&quot;en&quot;</code> → <code>10/28/2026</code>).</td>
 </tr>
+<tr>
+<td><code>fontScale</code></td>
+<td><code>100</code> (de 25 à 400)</td>
+<td>Taille des polices, en %, <strong>proportionnelle</strong> : règle d'un seul coup toutes les polices (texte, titres, code, sommaire, boutons, en-têtes de PDF). <code>100</code> = rendu historique (16 px de base) ; <code>120</code> agrandit toutes les polices de 20 %. Les tailles relatives (<code>style.headings</code>, <code>toc.levels.N.size</code>, <code>codeFontSize</code>) suivent.</td>
+<td></td>
+</tr>
+<tr>
+<td><code>zoom</code></td>
+<td><code>100</code> (de 10 à 200)</td>
+<td>Zoom global, en % : agrandit ou réduit <strong>tous les éléments</strong> (texte, images, marges, sommaire) par rapport à l'espace d'affichage, c'est-à-dire la fenêtre du navigateur en HTML et la zone imprimable en PDF. Un zoom de 80 met plus de contenu à l'écran ou sur la page.</td>
+<td></td>
+</tr>
+<tr>
+<td><code>fonts</code></td>
+<td>voir ci-dessous</td>
+<td>Police de chaque type de contenu.</td>
+<td></td>
+</tr>
 </tbody>
 </table>
-<div class="code-block"><div class="code-frame" data-lang="jsonc"><div class="code-bar"><div class="code-actions"><button class="copy-btn" type="button" title="Copier le code" aria-label="Copier le code"></button><button class="expand-btn" type="button" title="Agrandir le code" aria-label="Agrandir le code"></button><button class="download-btn" type="button" title="Télécharger le code" aria-label="Télécharger le code"></button></div><span class="code-lang" title="jsonc">jsonc</span></div><pre><code class="hljs language-jsonc"><span class="hljs-attr">&quot;global&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;title&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Projet – Maison intelligente&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;icon&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;media/logo.png&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;language&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;fr&quot;</span> <span class="hljs-punctuation">}</span>
+<p><code>fonts</code> accepte une liste CSS <code>font-family</code> par type de contenu (ex. <code>&quot;Georgia, 'Times New Roman', serif&quot;</code>) ; la police doit être <strong>installée sur l'appareil qui lit la page</strong> (ou qui génère le PDF), sinon le navigateur utilise la suivante de la liste.</p>
+<table>
+<thead>
+<tr>
+<th>Clé de <code>fonts</code></th>
+<th>Défaut</th>
+<th>Contenu</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>headings</code></td>
+<td><code>null</code></td>
+<td>Titres. <code>null</code> = même police que <code>body</code>.</td>
+</tr>
+<tr>
+<td><code>body</code></td>
+<td>police système (Segoe UI, Roboto, Arial…)</td>
+<td>Texte courant, tableaux, sommaire, en-têtes et pieds de PDF.</td>
+</tr>
+<tr>
+<td><code>code</code></td>
+<td><code>ui-monospace, 'Cascadia Code', Consolas…</code></td>
+<td>Code en ligne et blocs de code.</td>
+</tr>
+<tr>
+<td><code>math</code></td>
+<td><code>null</code></td>
+<td>Formules LaTeX (KaTeX). <code>null</code> = polices KaTeX intégrées. Une valeur remplace les polices du texte mathématique (lettres, chiffres) ; les grands symboles et délimiteurs (∑, ∫, parenthèses extensibles…) gardent les polices KaTeX.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Effet sur chaque format.</strong> Le <strong>HTML</strong> applique <code>global.fontScale</code>, <code>global.zoom</code> et <code>global.fonts</code>. Le <strong>PDF</strong> applique d'abord ces mêmes réglages, puis les affine avec ses propres réglages dans <code>pdf</code> (§5.6) : taille de police = <code>global.fontScale</code> × <code>pdf.fontScale</code> / 100 ; zoom = <code>global.zoom</code> × <code>pdf.zoom</code> / 100 ; une police définie dans <code>pdf.fonts</code> remplace celle de <code>global.fonts</code>. En HTML, le zoom utilise la propriété CSS <code>zoom</code> (navigateurs récents : Chrome, Edge, Safari, Firefox 126+).</p>
+<div class="code-block"><div class="code-frame" data-lang="jsonc"><div class="code-bar"><div class="code-actions"><button class="copy-btn" type="button" title="Copier le code" aria-label="Copier le code"></button><button class="expand-btn" type="button" title="Agrandir le code" aria-label="Agrandir le code"></button><button class="download-btn" type="button" title="Télécharger le code" aria-label="Télécharger le code"></button></div><span class="code-lang" title="jsonc">jsonc</span></div><pre><code class="hljs language-jsonc"><span class="hljs-attr">&quot;global&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;title&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Projet – Maison intelligente&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;icon&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;media/logo.png&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;language&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;fr&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;fontScale&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">110</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;zoom&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">100</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;fonts&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;headings&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Georgia, serif&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;body&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Calibri, Arial, sans-serif&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;code&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Consolas, monospace&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;math&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">null</span></span> <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">}</span>
 </code></pre></div></div>
 <p>Les noms de PDF se règlent dans <code>pdf.name</code> (§5.6).</p>
 <h3 id="53-page-html--html">5.3 Page HTML : <code>html</code><a class="anchor" href="#53-page-html--html" aria-label="Lien vers cette section">#</a></h3>
@@ -939,7 +999,7 @@ graph TD
 <tr>
 <td><code>size</code></td>
 <td><code>null</code></td>
-<td>Taille en em (0.3 à 4). <code>null</code> = taille normale. <strong>GitHub ignore la taille</strong> ; ce générateur l'applique.</td>
+<td>Taille en em (0.3 à 4). <code>null</code> = taille normale. <strong>GitHub ignore la taille</strong> ; ce générateur l'applique, et elle suit <code>global.fontScale</code> (c'est une taille relative au texte).</td>
 </tr>
 <tr>
 <td><code>collapsible</code></td>
@@ -996,7 +1056,17 @@ graph TD
 <tr>
 <td><code>zoom</code></td>
 <td><code>100</code></td>
-<td>Pourcentage de 10 à 200. <code>100</code> = taille normale ; <code>80</code> rétrécit tout, <code>120</code> agrandit (moins de contenu par page).</td>
+<td>Pourcentage de 10 à 200 : <strong>affinement</strong> du zoom pour le PDF. Zoom effectif du PDF = <code>global.zoom</code> × <code>pdf.zoom</code> / 100 (doit rester entre 10 et 200). <code>100</code> = on garde <code>global.zoom</code> ; <code>80</code> rétrécit encore tout de 20 %. Un zoom plus faible met plus de contenu par page.</td>
+</tr>
+<tr>
+<td><code>fontScale</code></td>
+<td><code>100</code></td>
+<td>Pourcentage de 25 à 400 : <strong>affinement</strong> de la taille des polices pour le PDF, multiplié par <code>global.fontScale</code>.</td>
+</tr>
+<tr>
+<td><code>fonts</code></td>
+<td><code>{ &quot;headings&quot;: null, &quot;body&quot;: null, &quot;code&quot;: null, &quot;math&quot;: null }</code></td>
+<td>Affinement des polices pour le PDF : <code>null</code> reprend <code>global.fonts</code>, une valeur la remplace dans le PDF seulement.</td>
 </tr>
 <tr>
 <td><code>margins</code></td>
@@ -1097,24 +1167,9 @@ graph TD
 </thead>
 <tbody>
 <tr>
-<td><code>fontFamily</code></td>
-<td>police système (Segoe UI, Roboto, Arial…)</td>
-<td>Police du texte, syntaxe CSS <code>font-family</code>.</td>
-</tr>
-<tr>
-<td><code>codeFontFamily</code></td>
-<td><code>ui-monospace, 'Cascadia Code', Consolas…</code></td>
-<td>Police du code.</td>
-</tr>
-<tr>
-<td><code>fontSize</code></td>
-<td><code>&quot;16px&quot;</code></td>
-<td>Taille de base du texte.</td>
-</tr>
-<tr>
 <td><code>codeFontSize</code></td>
 <td><code>&quot;85%&quot;</code></td>
-<td>Taille du code, relative au texte.</td>
+<td>Taille du code, relative au texte. Polices et taille globale : voir <code>global.fonts</code> et <code>global.fontScale</code> (§5.2).</td>
 </tr>
 <tr>
 <td><code>pageTheme</code></td>
@@ -1393,9 +1448,8 @@ graph TD
 </tbody>
 </table>
 <p>Exemple : <code>doc/exemple.jsonc</code> → <code>&quot;customCss&quot;: &quot;styles/document.css&quot;</code> lit <code>doc/styles/document.css</code>. Après modification d'un fichier de <code>template/</code>, <code>npm run dev</code> recharge la page automatiquement.</p>
-<h3 id="58-anciennes-clés-et-erreurs-fréquentes">5.8 Anciennes clés et erreurs fréquentes<a class="anchor" href="#58-anciennes-clés-et-erreurs-fréquentes" aria-label="Lien vers cette section">#</a></h3>
+<h3 id="58-erreurs-fréquentes">5.8 Erreurs fréquentes<a class="anchor" href="#58-erreurs-fréquentes" aria-label="Lien vers cette section">#</a></h3>
 <ul>
-<li><code>source</code>, <code>mediaDirs</code>, <code>outputDir</code> et <code>pdf.output</code> <strong>n'existent plus</strong> : le document est déduit du nom (<code>exemple.md</code> ↔ <code>exemple.jsonc</code>), les médias sont lus dans <code>doc/</code>, les sorties vont dans <code>output_html/&lt;nom&gt;/</code> et <code>output_pdf/</code>. L'outil affiche un message explicite s'ils sont présents.</li>
 <li><code>&quot;... : clé inconnue&quot;</code> : faute de frappe dans un nom de clé de <code>numbering</code>, <code>toc</code> ou <code>header</code> / <code>footer</code> (les clés valides sont listées).</li>
 <li><code>JSON invalide</code> : virgule manquante ou en trop, guillemet oublié. Un <code>//</code> dans un texte entre guillemets est correctement ignoré (ce n'est pas un commentaire).</li>
 <li>Un niveau de titre doit être un entier de 1 à 6 ; <code>range</code> doit respecter <code>min ≤ max</code>.</li>
@@ -1508,7 +1562,7 @@ graph TD
 </ul>
 
 </article><footer class="mdable-credit">Site généré avec <a href="https://markdownable.benoitdekeyn.com">MarkDownAble</a></footer></main>
-<script>window.__DOCUMENT__={"key":"markdown-doc:README","sidebarWidth":320,"sidebarMin":200,"sidebarMax":700,"tocOpenLevel":2,"codeThemeMode":"follow","mermaidTheme":"auto","mermaidCss":{"common":"/* Style des diagrammes Mermaid : ce fichier est injecté dans chaque diagramme (page et plein écran).\r\n   Les règles écrites ici s'appliquent aux deux thèmes. Pour en réserver à un thème, placez avant elles\r\n   une ligne marqueur « arobase light » ou « arobase dark » entre commentaires (voir en bas), et « arobase all » pour revenir aux règles communes.\r\n   Classes utiles : .node rect/polygon/circle (nœuds), .label (texte), .flowchart-link et .transition (liens),\r\n   .edgeLabel (étiquettes des flèches), .cluster rect (groupes), .actor (diagramme de séquence).\r\n   La palette de base vient de style.mermaidTheme dans la configuration JSONC. Exemples à décommenter : */\r\n\r\n/* .node rect, .node polygon, .node circle { rx: 8px; ry: 8px; stroke-width: 2px; } */\r\n/* .flowchart-link, .transition { stroke-width: 2px; } */\r\n/* .edgeLabel, .edgeLabel p { font-size: 13px; } */\r\n\r\n","light":"\r\n/* .node rect { fill: #eef6ff; stroke: #0969da; } */\r\n\r\n","dark":"\r\n/* .node rect { fill: #1b2a41; stroke: #4493f8; } */\r\n"}}</script>
+<script>window.__DOCUMENT__={"zoom":1,"key":"markdown-doc:README","sidebarWidth":320,"sidebarMin":200,"sidebarMax":700,"tocOpenLevel":2,"codeThemeMode":"follow","mermaidTheme":"auto","mermaidCss":{"common":"/* Style des diagrammes Mermaid : ce fichier est injecté dans chaque diagramme (page et plein écran).\r\n   Les règles écrites ici s'appliquent aux deux thèmes. Pour en réserver à un thème, placez avant elles\r\n   une ligne marqueur « arobase light » ou « arobase dark » entre commentaires (voir en bas), et « arobase all » pour revenir aux règles communes.\r\n   Classes utiles : .node rect/polygon/circle (nœuds), .label (texte), .flowchart-link et .transition (liens),\r\n   .edgeLabel (étiquettes des flèches), .cluster rect (groupes), .actor (diagramme de séquence).\r\n   La palette de base vient de style.mermaidTheme dans la configuration JSONC. Exemples à décommenter : */\r\n\r\n/* .node rect, .node polygon, .node circle { rx: 8px; ry: 8px; stroke-width: 2px; } */\r\n/* .flowchart-link, .transition { stroke-width: 2px; } */\r\n/* .edgeLabel, .edgeLabel p { font-size: 13px; } */\r\n\r\n","light":"\r\n/* .node rect { fill: #eef6ff; stroke: #0969da; } */\r\n\r\n","dark":"\r\n/* .node rect { fill: #1b2a41; stroke: #4493f8; } */\r\n"}}</script>
 
 
 <script>(() => {
@@ -1734,7 +1788,7 @@ graph TD
 
   // --- Redimensionnement du sommaire par glisser-déposer de sa bordure ---
   const resizer = $('#resizer');
-  const clampW = (w) => Math.max(CFG.sidebarMin, Math.min(CFG.sidebarMax, Math.min(w, window.innerWidth * 0.8)));
+  const clampW = (w) => Math.max(CFG.sidebarMin, Math.min(CFG.sidebarMax, Math.min(w, window.innerWidth / (CFG.zoom || 1) * 0.8)));
   const setW = (w) => root.style.setProperty('--sidebar-w', `${Math.round(clampW(w))}px`);
   resizer.addEventListener('pointerdown', (e) => {
     resizer.setPointerCapture(e.pointerId);
@@ -1742,7 +1796,7 @@ graph TD
     e.preventDefault();
   });
   resizer.addEventListener('pointermove', (e) => {
-    if (resizer.hasPointerCapture(e.pointerId)) setW(e.clientX);
+    if (resizer.hasPointerCapture(e.pointerId)) setW(e.clientX / (CFG.zoom || 1));
   });
   const endDrag = (e) => {
     if (!resizer.hasPointerCapture(e.pointerId)) return;
