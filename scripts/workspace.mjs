@@ -35,6 +35,10 @@ const isInside = (child, parent) => {
   return r === '' || (r !== '..' && !r.startsWith(`..${path.sep}`) && !path.isAbsolute(r));
 };
 
+// Quand un dossier choisi (ex. "doc") est un parent de l'outil, le dossier de l'outil (scripts, node_modules, .git…)
+// est ignoré par le mode dev et le serveur d'aperçu.
+export const isToolFile = (baseDir, abs) => norm(baseDir) !== norm(WORKSPACE) && isInside(WORKSPACE, baseDir) && isInside(abs, WORKSPACE);
+
 // Lit paths.jsonc (JSON avec commentaires autorisés), résout les chemins relatifs depuis la racine du dépôt et
 // vérifie qu'ils sont utilisables. Lève une ConfigError explicite sinon.
 function readPaths() {
@@ -55,7 +59,7 @@ function readPaths() {
   const reserved = [SCRIPTS_DIR, TEMPLATE_DIR, path.join(WORKSPACE, 'node_modules'), path.join(WORKSPACE, '.git')];
   const entries = Object.entries(out);
   for (const [key, dir] of entries) {
-    if (isInside(WORKSPACE, dir)) throw new ConfigError(`paths.jsonc : "${key}" (${dir}) ne peut pas être le dossier de l'outil ni l'un de ses parents`);
+    if (norm(dir) === norm(WORKSPACE)) throw new ConfigError(`paths.jsonc : "${key}" (${dir}) ne peut pas être le dossier de l'outil lui-même (un de ses parents est accepté : le dossier de l'outil est alors ignoré)`);
     const clash = reserved.find((r) => isInside(dir, r));
     if (clash) throw new ConfigError(`paths.jsonc : "${key}" (${dir}) ne peut pas être dans ${rel(clash)}/ (dossier interne de l'outil)`);
     if (fs.existsSync(dir) && !fs.statSync(dir).isDirectory()) throw new ConfigError(`paths.jsonc : "${key}" (${dir}) existe mais n'est pas un dossier`);

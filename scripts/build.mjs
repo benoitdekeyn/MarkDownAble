@@ -17,7 +17,7 @@ import hljs from 'highlight.js';
 import GithubSlugger from 'github-slugger';
 import { exportPdf, pdfGeometry, validatePdfConfig } from './pdf.mjs';
 import { isObj, merge } from './jsonc.mjs';
-import { DOC_DIR, TEMPLATE_DIR, HTML_OUTPUT_DIR, PDF_OUTPUT_DIR, STATE_DIR, PATHS_FILE, CONFIG_SUFFIX, ConfigError, discoverDocs, reloadPaths, rel } from './workspace.mjs';
+import { DOC_DIR, TEMPLATE_DIR, HTML_OUTPUT_DIR, PDF_OUTPUT_DIR, STATE_DIR, PATHS_FILE, CONFIG_SUFFIX, ConfigError, discoverDocs, reloadPaths, rel, isToolFile } from './workspace.mjs';
 import { log } from './log.mjs';
 
 const require = createRequire(import.meta.url);
@@ -1009,7 +1009,7 @@ async function serve() {
     const file = path.resolve(DOC_DIR, '.' + rest);
     const type = MIME[path.extname(file).toLowerCase()];
     const ok = file.startsWith(DOC_DIR + path.sep) && type && fs.existsSync(file) && fs.statSync(file).isFile()
-      && !/node_modules|(^|[\\/])\./.test(path.relative(DOC_DIR, file));
+      && !/node_modules|(^|[\\/])\./.test(path.relative(DOC_DIR, file)) && !isToolFile(DOC_DIR, file);
     if (!ok) return send(res, 404, 'text/plain', '404');
     res.setHeader('Content-Type', type);
     fs.createReadStream(file).pipe(res);
@@ -1054,7 +1054,11 @@ async function serve() {
     watchers.splice(0).forEach((w) => w.close());
     for (const dir of [DOC_DIR, TEMPLATE_DIR]) {
       if (!fs.existsSync(dir)) continue;
-      const w = fs.watch(dir, { recursive: true }, (_, f) => { if (!f || (!/(^|[\\/])\./.test(f) && !isGenerated(path.join(dir, f)))) trigger(); });
+      const w = fs.watch(dir, { recursive: true }, (_, f) => {
+        if (!f) return trigger();
+        const abs = path.join(dir, f);
+        if (!/(^|[\\/])\./.test(f) && !isToolFile(dir, abs) && !isGenerated(abs)) trigger();
+      });
       w.on('error', () => {});
       watchers.push(w);
     }

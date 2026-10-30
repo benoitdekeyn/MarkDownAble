@@ -7,7 +7,7 @@ Cet outil transforme un ou plusieurs documents Markdown (`.md`) en :
 
 Il fournit aussi des commandes pour **numéroter les titres** et **générer la table des matières** directement dans le Markdown.
 
-👉 **Envie de voir le résultat avant d'installer quoi que ce soit ?** Un document d'exemple (source, configuration, page web et PDF) est présenté au [§1.4 Voir l'exemple](#14-voir-lexemple).
+> **Envie de voir le résultat avant d'installer quoi que ce soit ?** Un document d'exemple (source, configuration, page web et PDF) est présenté au [§1.4 Voir l'exemple](#14-voir-lexemple).
 
 Vous pouvez consulter le dépôt GitHub mais ce n'est pas nécessaire pour utiliser l'outil :   [https://github.com/benoitdekeyn/MarkDownAble](https://github.com/benoitdekeyn/MarkDownAble)
 
@@ -106,9 +106,32 @@ Pour les livrables : `npm run edit:outline` (numérotation + table des matières
 
 L'export PDF utilise le navigateur déjà installé sur la machine (Google Chrome ou Microsoft Edge, détecté automatiquement). Rien à télécharger de plus ; si la détection échoue, indiquez son chemin avec `pdf.browser` (§5.6).
 
-### 1.7 Un projet à vous, sans lien avec ce dépôt (facultatif)
+### 1.7 Un projet à vous, avec l'outil dans un sous-dossier (facultatif)
 
-Après le clone, supprimez le dossier `.git` (`Remove-Item -Recurse -Force .git` sous PowerShell) puis faites `git init`. Pour recevoir plus tard les améliorations de l'outil, gardez plutôt le dépôt d'origine comme remote (`git remote add outil https://github.com/benoitdekeyn/MarkDownAble` puis `git pull outil main`) et ne modifiez pas `scripts/`.
+Cas d'usage : vous avez **votre** dépôt (rapport, tutoriel…) et vous voulez y mettre l'outil sans le mélanger avec votre historique Git.
+
+```powershell
+cd MonProjet                                                      # votre dépôt
+git clone https://github.com/benoitdekeyn/MarkDownAble markdownable
+cd markdownable
+npm install
+npm run ghost                                                     # ajoute « markdownable/ » au .gitignore de MonProjet
+```
+
+Le dossier `markdownable/` garde son propre `.git` : `git pull` y reste possible pour recevoir les mises à jour de l'outil, et votre dépôt ne le suit pas. Puis, dans `markdownable/paths.jsonc`, pointez vers votre projet (chemins relatifs à `markdownable/`) :
+
+```jsonc
+{
+  "doc": "../",                  // vos .md + .jsonc à la racine de MonProjet
+  "output_html": "../html",
+  "output_pdf": "../pdf"
+}
+```
+
+Les chemins peuvent être le dossier parent lui-même : le dossier de l'outil (`markdownable/`) est alors ignoré (pas de rebuild en boucle, pas servi par `npm run dev`). Ne modifiez pas `scripts/` pour que les mises à jour restent sans conflit (voir §6.1 pour `paths.jsonc`).
+
+Pour un projet totalement indépendant, supprimez plutôt le dossier `.git` du clone (`Remove-Item -Recurse -Force .git`) puis `git init`.
+
 
 ---
 
@@ -649,10 +672,11 @@ Le dépôt peut n'être qu'un dossier « d'installation » de l'outil (cloné un
 - Les trois clés sont facultatives (valeur par défaut = celle ci-dessus). Les commentaires `//` sont acceptés.
 - **Prise en compte immédiate** : le fichier est relu à chaque commande, et en direct pendant `npm run dev` (pas besoin de relancer). Si le JSON est invalide, l'ancienne configuration est conservée et l'erreur est affichée.
 - Les dossiers de sortie sont créés au besoin ; `npm run init` crée le dossier `doc`.
-- Garde-fous : clés inconnues, valeur vide, chemin pointant sur un fichier, sur la racine de l'outil (ou un de ses parents), dans `scripts/`, `template/`, `node_modules/` ou `.git/`sont refusés avec un message clair. En revanche les trois dossiers **peuvent être identiques ou imbriqués** (ex. `output_html` dans `doc`) : le HTML va dans `<output_html>/<nom>/` et le PDF dans `<output_pdf>/<nom>.pdf`, et `npm run dev` ignore ces fichiers générés pour ne pas se relancer en boucle. Évitez seulement de nommer un document comme un sous-dossier de `doc` (ex. un document `media` si `output_html` = `doc`).
+- Garde-fous : clés inconnues, valeur vide, chemin pointant sur un fichier, sur la racine de l'outil elle-même, dans `scripts/`, `template/`, `node_modules/` ou `.git/` sont refusés avec un message clair. Un **parent** de l'outil est accepté (voir §1.7) : le dossier de l'outil y est ignoré par `npm run dev`. En revanche les trois dossiers **peuvent être identiques ou imbriqués** (ex. `output_html` dans `doc`) : le HTML va dans `<output_html>/<nom>/` et le PDF dans `<output_pdf>/<nom>.pdf`, et `npm run dev` ignore ces fichiers générés pour ne pas se relancer en boucle. Évitez seulement de nommer un document comme un sous-dossier de `doc` (ex. un document `media` si `output_html` = `doc`).
 - Les liens et images d'un `.md` restent relatifs au dossier `doc` choisi. Le lien `../README.md#…` de `exemple.md` n'a donc plus de cible si vous déplacez `doc` hors du dépôt : l'avertissement est normal (supprimez ce lien dans votre copie).
 - `npm run release` copie le `README.md` du dépôt dans le dossier `doc` choisi, puis génère dans les dossiers choisis ; `README.html` et `README.pdf` sont recopiés à la racine du dépôt.
-- `paths.jsonc` est versionné avec les valeurs par défaut : si vous le modifiez, une mise à jour du dépôt (`git pull`) peut entrer en conflit.
+- `paths.jsonc` est versionné avec les valeurs par défaut : si vous le modifiez, une mise à jour du dépôt (`git pull`) peut entrer en conflit (`git stash` avant, `git stash pop` après).
+- `npm run ghost` ajoute le dossier de l'outil au `.gitignore` du dépôt qui le contient (§1.7).
 
 ---
 
