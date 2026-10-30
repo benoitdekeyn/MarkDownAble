@@ -3,23 +3,38 @@
 // Les chemins éventuels (icon, logo, customCss) sont relatifs à ce dossier (doc/, ou le dossier réglé dans paths.jsonc). Toute clé omise prend sa valeur par défaut.
 // Référence complète de toutes les options : README.md à la racine du projet.
 {
-  // ---------------------------------------------------------------- Général
-  // Nom du fichier HTML généré (sans extension), dans output_html/@@name@@/. Défaut : "index" => output_html/@@name@@/index.html
-  "htmlName": @@htmlName@@,
+  // ---------------------------------------------------------------- Général (tous les formats : HTML, PDF)
+  // Titre de l'onglet / du sommaire HTML, de l'en-tête PDF ({title}) et des métadonnées du PDF (null = nom du fichier .md)
+  "global": {
+    "title": @@title@@,
+    // Icône de l'onglet (favicon) et logo affiché devant le titre du sommaire HTML : chemin d'une image de doc/ (ex. "media/logo.png"), null = aucune
+    "icon": @@icon@@,
+    // Langue de la page et format de la date {date} du PDF
+    "language": @@language@@
+  },
 
-  // Titre de l'onglet et du sommaire (null = nom du fichier .md)
-  "title": @@title@@,
-  // Icône de l'onglet (favicon) et logo affiché devant le titre du sommaire : chemin d'une image de doc/ (ex. "media/logo.png"), null = aucune
-  "icon": @@icon@@,
-  "language": @@language@@,
+  // ---------------------------------------------------------------- Page HTML (`npm run build:html`, `npm run dev`)
+  "html": {
+    // Nom du fichier HTML généré (sans extension), dans output_html/@@name@@/. Défaut : "index" => output_html/@@name@@/index.html
+    "name": @@htmlName@@,
 
-  // MODE DE LA PAGE (pas celui du code) : "auto" suit le système, "light" reste clair, "dark" reste sombre.
-  // Le bouton de la page permet aussi de passer manuellement de Auto à Clair ou Sombre.
-  "theme": @@theme@@,
+    // MODE DE LA PAGE (pas celui du code) : "auto" suit le système, "light" reste clair, "dark" reste sombre.
+    // Le bouton de la page permet aussi de passer manuellement de Auto à Clair ou Sombre.
+    "theme": @@theme@@,
 
-  // true : les images sont incorporées dans le HTML (fichier autonome mais lourd, rien à copier).
-  // false : les images utilisées sont copiées dans output_html/@@name@@/ avec la même arborescence que dans doc/ (HTML léger).
-  "embedImages": @@embedImages@@,
+    // true : les images sont incorporées dans le HTML (fichier autonome mais lourd, rien à copier).
+    // false : les images utilisées sont copiées dans output_html/@@name@@/ avec la même arborescence que dans doc/ (HTML léger).
+    "embedImages": @@embedImages@@,
+
+    // Sommaire latéral : jusqu'à quel niveau de titre il est déplié à l'ouverture de la page (1 à 6).
+    // 2 = les titres « # » et « ## » sont visibles, les « ### » restent repliés ; 6 = tout déplié.
+    "tocOpenLevel": 2,
+
+    "sidebarWidth": 320,         // largeur initiale du sommaire en px (glisser sa bordure pour ajuster)
+    "sidebarMinWidth": 200,      // bornes du redimensionnement, en px
+    "sidebarMaxWidth": 700,
+    "contentWidthPercent": 90    // part de la largeur restante occupée par le contenu
+  },
 
   // ---------------------------------------------------------------- Numérotation des titres
   // `npm run edit:numbering` applique ce schéma au .md ; `edit:numbering:guess` le déduit du .md ; `edit:numbering:reset` l'enlève.
@@ -64,12 +79,7 @@
     "footer": @@footer@@
   },
 
-  // ---------------------------------------------------------------- Page HTML
-  "layout": {
-    "sidebarWidth": 320,         // largeur initiale du sommaire en px (glisser sa bordure pour ajuster)
-    "contentWidthPercent": 90    // part de la largeur restante occupée par le contenu
-  },
-
+  // ---------------------------------------------------------------- Style (apparence HTML et PDF)
   "style": {
     "fontSize": "16px",
     // Couleurs de la page : choix indépendant pour le mode clair / sombre.

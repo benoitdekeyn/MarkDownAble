@@ -143,6 +143,9 @@
   function applyOpen() {
     tocNodes.forEach((n) => n.classList.toggle('open', (manual.has(n) || auto.has(n)) && !closed.has(n)));
   }
+  // Ouverture de la page : les titres de niveau inférieur à html.tocOpenLevel sont dépliés (ce niveau-là reste visible, replié).
+  tocNodes.forEach((n) => { if (n.classList.contains('has-kids') && +n.dataset.level < CFG.tocOpenLevel) manual.add(n); });
+  applyOpen();
   // Déplier n'ouvre que ce titre : ses sous-titres restent dans leur état.
   function expand(n) { manual.add(n); closed.delete(n); applyOpen(); }
   // Replier remet aussi à zéro tous les sous-titres : le prochain dépliage repart d'un arbre condensé.

@@ -183,7 +183,7 @@ function inlineImages(html, baseDir, warn) {
 function overlayHtml({ cfg, baseDir, size, pages, sections, title, noHF, warn }) {
   const p = cfg.pdf;
   const pal = { ...PALETTE[p.theme], ...(cfg.style.colors[p.theme] || {}) };
-  const date = new Date().toLocaleDateString(cfg.language || 'fr');
+  const date = new Date().toLocaleDateString(cfg.global.language || 'fr');
   const zones = {};
   for (const part of ['header', 'footer']) {
     const z = p[part];
@@ -247,7 +247,7 @@ export async function exportPdf({ cfg, html, ConfigError, warn }) {
     if (p.header || p.footer) {
       const { width: w, height: h } = doc.getPage(0).getSize();
       const sections = alignSections(outline, done.headings, warn);
-      const title = cfg.title || path.parse(cfg.sourcePath).name;
+      const title = cfg.global.title || path.parse(cfg.sourcePath).name;
       const noHF = new Set(done.noHF.first ? [0] : []);
       const named = namedPages(doc, lib, done.noHF.ids);
       done.noHF.ids.forEach((id, k) => {
@@ -269,7 +269,7 @@ export async function exportPdf({ cfg, html, ConfigError, warn }) {
         pg.drawPage(embedded[i], { x: 0, y: 0, width: s.width, height: s.height });
       });
     }
-    doc.setTitle(cfg.title || path.parse(cfg.sourcePath).name);
+    doc.setTitle(cfg.global.title || path.parse(cfg.sourcePath).name);
     const out = await doc.save();
     fs.mkdirSync(path.dirname(cfg.pdfFile), { recursive: true });
     fs.writeFileSync(cfg.pdfFile, out);

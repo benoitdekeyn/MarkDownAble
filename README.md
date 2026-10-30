@@ -143,7 +143,7 @@ Toutes les commandes se lancent depuis le terminal, dans ce dossier.
 | --- | --- |
 | `npm run init -- MonDoc` | Crée `doc/MonDoc.md` et `doc/MonDoc.jsonc` (config commentée). Voir §3. |
 | `npm run dev` | Serveur local avec **rechargement automatique** à chaque sauvegarde (ouvre le navigateur sur http://localhost:4173). Ctrl+C pour arrêter. |
-| `npm run build:html` | Écrit `output_html/<nom>/<htmlName>.html` + médias utilisés, et l'ouvre dans le navigateur par défaut avec `--open`. |
+| `npm run build:html` | Écrit `output_html/<nom>/<html.name>.html` + médias utilisés, et l'ouvre dans le navigateur par défaut avec `--open`. |
 | `npm run build:pdf` | Écrit `output_pdf/<nom>.pdf` (l'ouvre avec `--open`). |
 | `npm run edit:numbering` | Numérote les titres du `.md` selon `numbering`. |
 | `npm run edit:numbering:guess` | Détecte la numérotation **déjà présente** et réécrit `numbering.levels` dans la config. |
@@ -204,7 +204,7 @@ npm run init -- --help        # liste complète des options
 
 Vous pouvez aussi le faire à la main : créez `doc/MonDoc.md` et `doc/MonDoc.jsonc` (même `{}` suffit, tout a une valeur par défaut).
 
-Chaque document a son propre dossier `output_html/<nom>/`, donc plusieurs documents peuvent garder `htmlName: "index"` sans conflit. Seuls deux **PDF** de même nom entrent en conflit (l'outil s'arrête alors en le signalant : changez `pdf.name`).
+Chaque document a son propre dossier `output_html/<nom>/`, donc plusieurs documents peuvent garder `html.name: "index"` sans conflit. Seuls deux **PDF** de même nom entrent en conflit (l'outil s'arrête alors en le signalant : changez `pdf.name`).
 
 ---
 
@@ -263,57 +263,63 @@ Squelette complet (valeurs par défaut de l'outil, sauf indication) :
 
 ```jsonc
 {
-  "htmlName": "index",          // → output_html/<nom>/index.html
-  "title": null,                // null = nom du .md
-  "icon": null,                 // ex. "media/logo.png"
-  "language": "fr",
-  "theme": "auto",              // auto | light | dark
-  "embedImages": false,
+  "global": { "title": null, "icon": null, "language": "fr" },   // §5.2
+  "html":   { "name": "index", "theme": "auto", "embedImages": false, "tocOpenLevel": 2,
+              "sidebarWidth": 320, "sidebarMinWidth": 200, "sidebarMaxWidth": 700, "contentWidthPercent": 90 },   // §5.3
 
   "numbering": { "levels": { /* §5.4 */ } },
   "toc":       { "range": [2, 3], "collapsible": false, "summary": "Table des matières", "open": false, "levels": { /* §5.5 */ } },
   "pdf":       { /* §5.6 */ },
-  "layout":    { "sidebarWidth": 320, "sidebarMinWidth": 200, "sidebarMaxWidth": 700, "contentWidthPercent": 90 },
   "style":     { /* §5.7 */ }
 }
 ```
 
 > Le fichier [doc/exemple.jsonc](https://github.com/benoitdekeyn/MarkDownAble/blob/main/doc/exemple.jsonc) est un exemple complet et commenté. `npm run init` génère le même type de fichier (§3).
+>
+> **Ancien format** : `htmlName`, `title`, `icon`, `language`, `theme`, `embedImages` et `layout` n'existent plus à la racine. Déplacez-les : `title`, `icon`, `language` → `global` ; `htmlName` → `html.name` ; `theme`, `embedImages` → `html` ; le contenu de `layout` → directement dans `html`. L'outil s'arrête en indiquant la nouvelle place de chaque clé.
 
-### 5.2 Général : fichiers de sortie, titre, icône, thème
+### 5.2 Options générales : `global`
+
+Valables pour tous les formats (HTML et PDF).
 
 | Clé | Type / valeurs | Défaut | Effet |
 | --- | --- | --- | --- |
-| `htmlName` | texte sans extension | `"index"` | Nom du HTML : `output_html/<nom>/<htmlName>.html`. Ni `/`, `\`, `:`, `*`, `?`, `"`, `<`, `>`, `\|`. Un `.html` écrit par erreur est retiré. |
-| `title` | texte ou `null` | `null` | Titre de l'onglet, du sommaire latéral et variable `{title}` des en-têtes PDF. `null` = nom du `.md`. |
-| `icon` | chemin ou `null` | `null` | Image **de `doc/`** utilisée comme favicon et comme logo devant le titre du sommaire (HTML / `dev`, pas le PDF). Copiée dans `output_html/<nom>/` (ou incorporée avec `embedImages`). Fichier introuvable ou hors de `doc/` → avertissement. |
+| `title` | texte ou `null` | `null` | Titre de l'onglet, du sommaire latéral, variable `{title}` des en-têtes PDF et titre du PDF. `null` = nom du `.md`. |
+| `icon` | chemin ou `null` | `null` | Image **de `doc/`** utilisée comme favicon et comme logo devant le titre du sommaire (HTML / `dev`, pas le PDF). Copiée dans `output_html/<nom>/` (ou incorporée avec `html.embedImages`). Fichier introuvable ou hors de `doc/` → avertissement. |
 | `language` | code langue | `"fr"` | Attribut `lang` de la page et format de `{date}` dans le PDF (`"fr"` → `28/10/2026`, `"en"` → `10/28/2026`). |
-| `theme` | `"auto"`, `"light"`, `"dark"` | `"auto"` | Mode initial de la page HTML (clair/sombre), pas le thème de coloration du code. `auto` suit le système. Le bouton de la page change de mode et mémorise le choix dans le navigateur. N'affecte pas le PDF (voir `pdf.theme`). |
-| `embedImages` | `true` / `false` | `false` | `true` : images en base64 dans le HTML, un seul fichier autonome mais lourd, rien à copier. `false` : HTML léger, images copiées dans `output_html/<nom>/`. |
 
 ```jsonc
-{
-  "htmlName": "document-final",  // output_html/<nom>/document-final.html
-  "title": "Projet – Maison intelligente",
-  "icon": "media/logo.png",
-  "theme": "dark",
-  "embedImages": true            // un seul fichier à envoyer par mail
-}
+"global": { "title": "Projet – Maison intelligente", "icon": "media/logo.png", "language": "fr" }
 ```
 
 Les noms de PDF se règlent dans `pdf.name` (§5.6).
 
-### 5.3 Disposition de la page HTML : `layout`
+### 5.3 Page HTML : `html`
+
+Ces réglages ne concernent que le HTML (`build:html` et `dev`), jamais le PDF.
 
 | Clé | Défaut | Effet |
 | --- | --- | --- |
+| `name` | `"index"` | Nom du HTML : `output_html/<nom>/<name>.html`. Texte sans extension, ni `/`, `\`, `:`, `*`, `?`, `"`, `<`, `>`, `\|`. Un `.html` écrit par erreur est retiré. |
+| `theme` | `"auto"` | `"auto"`, `"light"` ou `"dark"` : mode initial de la page (clair/sombre), pas le thème de coloration du code. `auto` suit le système. Le bouton de la page change de mode et mémorise le choix dans le navigateur. N'affecte pas le PDF (voir `pdf.theme`). |
+| `embedImages` | `false` | `true` : images en base64 dans le HTML, un seul fichier autonome mais lourd, rien à copier. `false` : HTML léger, images copiées dans `output_html/<nom>/`. |
+| `tocOpenLevel` | `2` | Entier de 1 à 6 : niveau de titre jusqu'auquel le sommaire latéral est **déplié à l'ouverture** de la page. `2` : les titres `#` et `##` sont visibles, les `###` restent repliés ; `1` : tout replié ; `6` : tout déplié. Ensuite le sommaire suit la lecture et reste repliable à la main. |
 | `sidebarWidth` | `320` | Largeur initiale du sommaire latéral, en px. L'utilisateur peut la changer en glissant la bordure (double-clic : retour à cette valeur) ; son choix est mémorisé. |
-| `sidebarMinWidth` / `sidebarMaxWidth` | `200` / `700` | Bornes de ce redimensionnement, en px. |
-| `contentWidthPercent` | `90` | Part de la largeur **restante** (à droite du sommaire) occupée par le texte. |
+| `sidebarMinWidth` / `sidebarMaxWidth` | `200` / `700` | Bornes de ce redimensionnement, en px. Il faut `min ≤ sidebarWidth ≤ max`. |
+| `contentWidthPercent` | `90` | Part de la largeur **restante** (à droite du sommaire) occupée par le texte (0 à 100). |
 
 ```jsonc
-"layout": { "sidebarWidth": 380, "contentWidthPercent": 80 }
+"html": {
+  "name": "document-final",     // output_html/<nom>/document-final.html
+  "theme": "dark",
+  "embedImages": true,          // un seul fichier à envoyer par mail
+  "tocOpenLevel": 3,
+  "sidebarWidth": 380,
+  "contentWidthPercent": 80
+}
 ```
+
+Une clé inconnue dans `global` ou `html` arrête la génération avec la liste des clés valides.
 
 ### 5.4 Numérotation des titres : `numbering`
 
@@ -443,8 +449,8 @@ Commande : `npm run build:pdf` (Chrome ou Edge requis). Le PDF contient les **si
 | Variable | Valeur |
 | --- | --- |
 | `{page}` / `{pages}` | Numéro de la page / nombre total de pages. |
-| `{title}` | Valeur de `title` (ou nom du `.md`). |
-| `{date}` | Date de génération, au format de `language`. |
+| `{title}` | Valeur de `global.title` (ou nom du `.md`). |
+| `{date}` | Date de génération, au format de `global.language`. |
 | `{h1}` … `{h6}` | Titre de niveau N : celui qui **commence sur la page**, sinon celui **en cours au début de la page**. Vide s'il n'y en a pas encore. |
 
 ```jsonc
@@ -470,7 +476,7 @@ Remarques :
 
 - Les images des en-têtes / pieds sont **incorporées** au PDF ; un chemin introuvable donne un avertissement.
 - **Pas d'en-tête sur une page** (page de garde, annexe…) : écrivez `<!-- nohf -->` (ou `\nohf`) **en toute première ligne** du `.md` (pour la 1re page) ou **juste après** un saut de page (pour une autre). Ailleurs, il est ignoré avec un avertissement.
-- Ces réglages sont **indépendants** du HTML : `theme`, `layout` et `embedImages` ne concernent pas le PDF, et inversement.
+- Ces réglages sont **indépendants** du HTML : `html.theme`, les réglages de `html` (sommaire, largeur) et `html.embedImages` ne concernent pas le PDF, et inversement.
 
 ### 5.7 Apparence : `style`
 
@@ -498,7 +504,7 @@ Ce bloc agit sur la page HTML **et** sur le PDF (sauf mention contraire).
 
 Il y a **deux choix distincts** :
 
-1. **`theme` à la racine** décide du mode de la page : `auto` (suit le système), `light` (clair) ou `dark` (sombre). Sur la page HTML, le bouton permet aussi de passer entre ces modes.
+1. **`html.theme`** décide du mode de la page : `auto` (suit le système), `light` (clair) ou `dark` (sombre). Sur la page HTML, le bouton permet aussi de passer entre ces modes.
 2. **`style.codeTheme.mode`** décide du mode des couleurs de code :
    - `follow` : suit le mode actuellement affiché par la page, bouton compris (conseillé) ;
    - `auto` : suit directement le mode clair/sombre du système, indépendamment du choix de la page ;
@@ -512,7 +518,7 @@ Les palettes associées sont elles aussi séparées :
 Voici un exemple complet : la page utilise une palette formelle en mode clair et une palette néon en mode sombre ; le code suit le mode de la page et utilise ses deux feuilles CSS personnalisées.
 
 ```jsonc
-"theme": "auto",
+"html": { "theme": "auto" },
 "style": {
   "pageTheme": { "light": "formal", "dark": "neon" },
   "pagePalettes": {},

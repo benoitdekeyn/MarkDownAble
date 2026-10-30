@@ -29,12 +29,17 @@ const FLAGS = new Set(['--watch', '--pdf', '--open', '--no-open']);
 const UNKNOWN_FLAGS = process.argv.slice(2).filter((a) => a.startsWith('--') && !FLAGS.has(a));
 
 const DEFAULTS = {
-  htmlName: 'index',
-  embedImages: false,
-  icon: null,
-  title: null,
-  language: 'fr',
-  theme: 'auto',
+  global: { title: null, icon: null, language: 'fr' },
+  html: {
+    name: 'index',
+    theme: 'auto',
+    embedImages: false,
+    tocOpenLevel: 2,
+    sidebarWidth: 320,
+    sidebarMinWidth: 200,
+    sidebarMaxWidth: 700,
+    contentWidthPercent: 90,
+  },
   pdf: {
     name: null,
     theme: 'light',
@@ -50,7 +55,6 @@ const DEFAULTS = {
     header: null,
     footer: { center: '{page} / {pages}' },
   },
-  layout: { sidebarWidth: 320, sidebarMinWidth: 200, sidebarMaxWidth: 700, contentWidthPercent: 90 },
   style: {
     fontFamily: "-apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
     codeFontFamily: "ui-monospace, 'Cascadia Code', Consolas, 'SFMono-Regular', monospace",
@@ -87,6 +91,13 @@ const REMOVED_KEYS = {
   source: 'le document est désormais déduit du nom : doc/<nom>.jsonc ↔ doc/<nom>.md',
   mediaDirs: 'les médias sont lus à côté du .md (doc/) et seuls ceux utilisés sont copiés dans output_html/<nom>/',
   outputDir: 'les sorties vont dans output_html/<nom>/ (HTML) et output_pdf/ (PDF)',
+  title: 'déplacé dans la section "global" : global.title',
+  icon: 'déplacé dans la section "global" : global.icon',
+  language: 'déplacé dans la section "global" : global.language',
+  htmlName: 'déplacé dans la section "html" : html.name',
+  theme: 'déplacé dans la section "html" : html.theme',
+  embedImages: 'déplacé dans la section "html" : html.embedImages',
+  layout: 'sidebarWidth, sidebarMinWidth, sidebarMaxWidth et contentWidthPercent sont maintenant directement dans la section "html"',
 };
 
 // Nom de fichier sans extension (htmlName, pdf.name) : pas de dossier ni de caractère interdit sous Windows.
@@ -105,19 +116,34 @@ function loadConfig(doc) {
   cfg.docName = doc.name;
   cfg.sourcePath = doc.mdPath;
   cfg.configPath = doc.configPath;
-  if (!isObj(cfg.layout)) throw new ConfigError('layout doit être un objet');
+  for (const key of ['global', 'html']) if (!isObj(cfg[key])) throw new ConfigError(`${key} doit être un objet`);
+  const unknownKeys = (section) => {
+    const extra = Object.keys(cfg[section]).filter((k) => !(k in DEFAULTS[section]));
+    if (extra.length) throw new ConfigError(`${section} : clé(s) inconnue(s) : ${extra.join(', ')} (valides : ${Object.keys(DEFAULTS[section]).join(', ')})`);
+  };
+  unknownKeys('global');
+  unknownKeys('html');
+  const { html } = cfg;
   for (const key of ['sidebarWidth', 'sidebarMinWidth', 'sidebarMaxWidth', 'contentWidthPercent']) {
-    if (typeof cfg.layout[key] !== 'number' || !Number.isFinite(cfg.layout[key])) {
-      throw new ConfigError(`layout.${key} doit être un nombre fini`);
+    if (typeof html[key] !== 'number' || !Number.isFinite(html[key])) {
+      throw new ConfigError(`html.${key} doit être un nombre fini`);
     }
   }
-  if (cfg.layout.sidebarMinWidth < 0 || cfg.layout.sidebarWidth < cfg.layout.sidebarMinWidth
-    || cfg.layout.sidebarMaxWidth < cfg.layout.sidebarWidth || cfg.layout.contentWidthPercent < 0
-    || cfg.layout.contentWidthPercent > 100) {
-    throw new ConfigError('layout : vérifiez les bornes sidebarMinWidth ≤ sidebarWidth ≤ sidebarMaxWidth et contentWidthPercent entre 0 et 100');
+  if (html.sidebarMinWidth < 0 || html.sidebarWidth < html.sidebarMinWidth
+    || html.sidebarMaxWidth < html.sidebarWidth || html.contentWidthPercent < 0
+    || html.contentWidthPercent > 100) {
+    throw new ConfigError('html : vérifiez les bornes sidebarMinWidth ≤ sidebarWidth ≤ sidebarMaxWidth et contentWidthPercent entre 0 et 100');
+  }
+  if (!Number.isInteger(html.tocOpenLevel) || html.tocOpenLevel < 1 || html.tocOpenLevel > 6) {
+    throw new ConfigError(`html.tocOpenLevel doit être un entier de 1 à 6 (reçu ${JSON.stringify(html.tocOpenLevel)})`);
+  }
+  if (typeof html.embedImages !== 'boolean') throw new ConfigError(`html.embedImages doit valoir true ou false (reçu ${JSON.stringify(html.embedImages)})`);
+  if (typeof cfg.global.language !== 'string' || !cfg.global.language.trim()) throw new ConfigError('global.language doit être un code langue (ex. "fr")');
+  for (const key of ['title', 'icon']) {
+    if (cfg.global[key] != null && typeof cfg.global[key] !== 'string') throw new ConfigError(`global.${key} doit être un texte ou null`);
   }
   if (!isObj(cfg.style)) throw new ConfigError('style doit être un objet');
-  if (!['auto', 'light', 'dark'].includes(cfg.theme)) throw new ConfigError(`theme doit valoir auto, light ou dark (reçu "${cfg.theme}")`);
+  if (!['auto', 'light', 'dark'].includes(html.theme)) throw new ConfigError(`html.theme doit valoir auto, light ou dark (reçu "${html.theme}")`);
   for (const key of ['pageTheme', 'pagePalettes', 'codeTheme', 'highlight']) {
     if (!isObj(cfg.style[key])) throw new ConfigError(`style.${key} doit être un objet`);
   }
@@ -151,7 +177,7 @@ function loadConfig(doc) {
     }
   }
   cfg.outputDir = path.join(HTML_OUTPUT_DIR, doc.name);
-  cfg.outputFile = path.join(cfg.outputDir, `${fileStem(cfg.htmlName, 'htmlName', '.html')}.html`);
+  cfg.outputFile = path.join(cfg.outputDir, `${fileStem(cfg.html.name, 'html.name', '.html')}.html`);
   try { validatePdfConfig(cfg.pdf); } catch (e) { throw new ConfigError(e.message); }
   cfg.pdfFile = path.join(PDF_OUTPUT_DIR, `${cfg.pdf.name == null ? doc.name : fileStem(cfg.pdf.name, 'pdf.name', '.pdf')}.pdf`);
   const bad = (m) => { throw new ConfigError(`style.mermaid : ${m}`); };
@@ -629,7 +655,7 @@ async function render(cfg, { pdf = false } = {}) {
       warnings.push(`lien local introuvable : "${m[1]}" (résolu depuis ${rel(cfg.sourcePath)} vers ${rel(file)} ; les liens sont relatifs au dossier des documents, ${rel(DOC_DIR)}/)`);
     }
   }
-  if (cfg.embedImages) {
+  if (cfg.html.embedImages) {
     body = body.replace(/(<img\b[^>]*?\bsrc=")([^"]+)(")/g, (all, a, ref, z) => {
       const file = localFile(ref);
       if (!file || !fs.existsSync(file)) return all;
@@ -675,22 +701,23 @@ async function render(cfg, { pdf = false } = {}) {
 
   // Icône (favicon + logo du sommaire) : fichier de doc/ (ex. media/logo.png), copié avec les autres médias.
   let iconSrc = null;
-  if (cfg.icon && !pdf) {
-    const file = localFile(String(cfg.icon));
+  if (cfg.global.icon && !pdf) {
+    const file = localFile(String(cfg.global.icon));
     const r = file && path.relative(baseDir, file);
-    if (!file || !fs.existsSync(file) || !fs.statSync(file).isFile()) warnings.push(`icon : fichier introuvable : ${cfg.icon}`);
-    else if (r.startsWith('..') || path.isAbsolute(r)) warnings.push(`icon : le fichier doit se trouver dans ${rel(DOC_DIR)}/ : ${cfg.icon}`);
-    else if (cfg.embedImages) iconSrc = dataUri(file);
+    if (!file || !fs.existsSync(file) || !fs.statSync(file).isFile()) warnings.push(`global.icon : fichier introuvable : ${cfg.global.icon}`);
+    else if (r.startsWith('..') || path.isAbsolute(r)) warnings.push(`global.icon : le fichier doit se trouver dans ${rel(DOC_DIR)}/ : ${cfg.global.icon}`);
+    else if (cfg.html.embedImages) iconSrc = dataUri(file);
     else { iconSrc = outputAssetPath(r); addAsset(r); }
   }
 
-  const title = cfg.title || path.parse(cfg.sourcePath).name;
+  const title = cfg.global.title || path.parse(cfg.sourcePath).name;
   const sidebar = pdf ? '' : renderSidebar(headings);
 
-  const { style, layout } = cfg;
+  const { style, html: layout } = cfg;
   const clientCfg = {
     key: `markdown-doc:${path.parse(cfg.sourcePath).name}`,
     sidebarWidth: layout.sidebarWidth, sidebarMin: layout.sidebarMinWidth, sidebarMax: layout.sidebarMaxWidth,
+    tocOpenLevel: layout.tocOpenLevel,
     codeThemeMode: style.codeTheme.mode,
     mermaidTheme: style.mermaidTheme,
     mermaidCss: mermaidCssSections(),
@@ -719,7 +746,7 @@ async function render(cfg, { pdf = false } = {}) {
 
   if (pdf) {
     const html = `<!DOCTYPE html>
-<html lang="${esc(cfg.language)}" class="pdf" data-theme="${cfg.pdf.theme}" data-mode="${cfg.pdf.theme}" data-code-mode="${style.codeTheme.mode}" data-code-theme="${style.codeTheme.mode === 'dark' ? 'dark' : style.codeTheme.mode === 'light' ? 'light' : cfg.pdf.theme}">
+<html lang="${esc(cfg.global.language)}" class="pdf" data-theme="${cfg.pdf.theme}" data-mode="${cfg.pdf.theme}" data-code-mode="${style.codeTheme.mode}" data-code-theme="${style.codeTheme.mode === 'dark' ? 'dark' : style.codeTheme.mode === 'light' ? 'light' : cfg.pdf.theme}">
 <head>
 <meta charset="utf-8">
 <title>${esc(title)}</title>
@@ -742,12 +769,12 @@ ${elkScript}
   }
 
   const html = `<!DOCTYPE html>
-<html lang="${esc(cfg.language)}" data-theme="light" data-mode="${cfg.theme}" data-code-mode="${style.codeTheme.mode}" data-code-theme="light">
+<html lang="${esc(cfg.global.language)}" data-theme="light" data-mode="${cfg.html.theme}" data-code-mode="${style.codeTheme.mode}" data-code-theme="light">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${esc(title)}</title>
-${iconSrc ? `<link rel="icon" href="${esc(iconSrc)}">\n` : ''}<script>(function(){var c=${json(clientCfg)},r=document.documentElement,m=${json(cfg.theme)},w;try{m=localStorage.getItem(c.key+':theme')||m;w=localStorage.getItem(c.key+':sidebar')}catch(e){}
+${iconSrc ? `<link rel="icon" href="${esc(iconSrc)}">\n` : ''}<script>(function(){var c=${json(clientCfg)},r=document.documentElement,m=${json(cfg.html.theme)},w;try{m=localStorage.getItem(c.key+':theme')||m;w=localStorage.getItem(c.key+':sidebar')}catch(e){}
 r.dataset.mode=m;r.dataset.theme=(m==='dark'||(m==='auto'&&matchMedia('(prefers-color-scheme: dark)').matches))?'dark':'light';
 var cm=c.codeThemeMode,cd=cm==='dark'||(cm==='follow'?r.dataset.theme==='dark':cm==='auto'&&matchMedia('(prefers-color-scheme: dark)').matches);r.dataset.codeTheme=cd?'dark':'light';
 if(w)r.style.setProperty('--sidebar-w',Math.max(c.sidebarMin,Math.min(c.sidebarMax,+w))+'px')})()</script>
@@ -787,7 +814,7 @@ function renderSidebar(items) {
     stack.push(node);
   }
   const caret = '<button class="toc-caret" type="button" tabindex="-1" aria-label="Déplier / replier"></button>';
-  const html = (n, root) => `<div class="toc-node${root ? ' root' : ''}${n.kids.length ? ' has-kids' : ''}"><div class="toc-row row-l${n.level}">${n.kids.length ? caret : '<span class="toc-caret"></span>'}<a class="toc-l${n.level}" href="#${n.id}" data-id="${n.id}">${esc(n.text)}</a></div>${n.kids.length ? `<div class="toc-children">${n.kids.map((k) => html(k, false)).join('')}</div>` : ''}</div>`;
+  const html = (n, root) => `<div class="toc-node${root ? ' root' : ''}${n.kids.length ? ' has-kids' : ''}" data-level="${n.level}"><div class="toc-row row-l${n.level}">${n.kids.length ? caret : '<span class="toc-caret"></span>'}<a class="toc-l${n.level}" href="#${n.id}" data-id="${n.id}">${esc(n.text)}</a></div>${n.kids.length ? `<div class="toc-children">${n.kids.map((k) => html(k, false)).join('')}</div>` : ''}</div>`;
   return roots.map((n) => html(n, true)).join('');
 }
 
@@ -836,7 +863,7 @@ function prepare() {
       issues.push(`${doc.name}${CONFIG_SUFFIX} : ${e.message} — document ignoré`);
     }
   }
-  if (!jobs.length) throw new ConfigError(`aucun document à générer : il faut ${rel(DOC_DIR)}/<nom>.md et ${rel(DOC_DIR)}/<nom>${CONFIG_SUFFIX} valide`);
+  if (!jobs.length) throw new ConfigError(issues.length ? `aucun document valide :\n  ${issues.join('\n  ')}` : `aucun document à générer : il faut ${rel(DOC_DIR)}/<nom>.md et ${rel(DOC_DIR)}/<nom>${CONFIG_SUFFIX} valide`);
   return { jobs, issues };
 }
 
