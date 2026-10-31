@@ -908,8 +908,10 @@ async function generate(cfg, opts = {}) {
 // ---------- ouverture automatique ----------
 // Les builds n'ouvrent rien par défaut : --open (ou MARKDOWN_OPEN=1) ouvre le résultat.
 // Le mode --watch ouvre le navigateur par défaut ; --no-open (ou MARKDOWN_NO_OPEN=1) l'en empêche.
-const NO_OPEN = process.argv.includes('--no-open') || Boolean(process.env.MARKDOWN_NO_OPEN);
-const OPEN = !NO_OPEN && (process.argv.includes('--open') || Boolean(process.env.MARKDOWN_OPEN) || WATCH);
+// Avec « npm run build:pdf --open », npm intercepte le flag et le transmet via npm_config_open (idem pour --no-open → open=false).
+const npmFlag = (name) => process.env[`npm_config_${name}`] === 'true';
+const NO_OPEN = process.argv.includes('--no-open') || npmFlag('no_open') || process.env.npm_config_open === 'false' || Boolean(process.env.MARKDOWN_NO_OPEN);
+const OPEN = !NO_OPEN && (process.argv.includes('--open') || npmFlag('open') || Boolean(process.env.MARKDOWN_OPEN) || WATCH);
 function openTarget(target) {
   if (!OPEN) return;
   let cmd;
