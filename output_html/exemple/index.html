@@ -258,8 +258,9 @@ li.task-item { list-style: none; }
   .pb { break-before: page; }
   :is(h1, h2, h3, h4, h5, h6) { break-after: avoid; }
   :is(tr, img, .mermaid-box, blockquote, .katex-display) { break-inside: avoid; }
-  .pdf-seg { break-inside: avoid; }
-  :root.keep-blocks :is(p, pre, li, figure, .code-block, .markdown-alert, dl) { break-inside: avoid; }
+  .pdf-seg:not(.split-ok) { break-inside: avoid; }
+  :root.keep-blocks :is(p, pre, li, figure, .code-block, .markdown-alert, dl):not(.split-ok) { break-inside: avoid; }
+  pre.split-ok, pre.split-ok code { orphans: 4; widows: 4; }
   details > summary { list-style: none; }
   details > summary::-webkit-details-marker { display: none; }
   p { orphans: 3; widows: 3; }

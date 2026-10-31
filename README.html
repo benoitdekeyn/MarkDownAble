@@ -258,8 +258,9 @@ li.task-item { list-style: none; }
   .pb { break-before: page; }
   :is(h1, h2, h3, h4, h5, h6) { break-after: avoid; }
   :is(tr, img, .mermaid-box, blockquote, .katex-display) { break-inside: avoid; }
-  .pdf-seg { break-inside: avoid; }
-  :root.keep-blocks :is(p, pre, li, figure, .code-block, .markdown-alert, dl) { break-inside: avoid; }
+  .pdf-seg:not(.split-ok) { break-inside: avoid; }
+  :root.keep-blocks :is(p, pre, li, figure, .code-block, .markdown-alert, dl):not(.split-ok) { break-inside: avoid; }
+  pre.split-ok, pre.split-ok code { orphans: 4; widows: 4; }
   details > summary { list-style: none; }
   details > summary::-webkit-details-marker { display: none; }
   p { orphans: 3; widows: 3; }
@@ -602,7 +603,7 @@ npm run init <span class="hljs-literal">--</span> <span class="hljs-literal">--h
 <p><strong>Liens vers un autre fichier</strong> : les chemins sont relatifs au <code>.md</code> (donc <code>media/…</code>, pas <code>doc/media/…</code>).</p>
 </li>
 <li>
-<p><strong>Formules LaTeX</strong> : <code>$x^2$</code> en ligne, <code>$$ \int_0^1 f(x)\,dx $$</code> en bloc.</p>
+<p><strong>Formules LaTeX</strong> : <code>$x^2$</code> en ligne, <code>$$ \int_0^1 f(x)\,dx $$</code> en bloc. Une formule invalide (erreur KaTeX) ou un <code>$</code> d'ouverture suivi d'un espace (<code>$ x$</code>, non reconnu comme formule) est signalé en avertissement avec son numéro de ligne ; un simple <code>$</code> utilisé comme texte peut être ignoré.</p>
 </li>
 <li>
 <p><strong>Code coloré</strong> : <code><code>c&lt;/code&gt;, &lt;code&gt;</code>python</code>, etc. Deux présentations, au choix (réglage global <code>style.codeLanguage</code>, §5.7) :</p>

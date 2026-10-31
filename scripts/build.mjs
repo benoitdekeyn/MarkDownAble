@@ -472,6 +472,36 @@ async function render(cfg, { pdf = false } = {}) {
     if (rule) md.renderer.rules[name] = (...a) => rule(...a).replace(/^<section><eqn>([\s\S]*)<\/eqn><\/section>$/, '<span class="eqn-display">$1</span>');
   }
 
+  // Avertissements sur les formules : erreur KaTeX (la formule serait affichée en rouge) et « $ » d'ouverture suivi d'un
+  // espace (KaTeX ne reconnaît alors pas la formule, qui reste en texte brut). Simples avertissements : « $ » peut servir à autre chose.
+  md.core.ruler.push('math_checks', (state) => {
+    const short = (s) => { const t = s.replace(/\s+/g, ' ').trim(); return t.length > 50 ? `${t.slice(0, 47)}…` : t; };
+    const checkMath = (tok, line) => {
+      if (!tok.content.trim()) return;
+      try { katex.renderToString(tok.content, { displayMode: tok.type !== 'math_inline', throwOnError: true, strict: 'ignore' }); }
+      catch (e) { warnings.push(`ligne ${line} : vérifier les formules KaTeX autour de cette ligne (« $ » mal placé ou formule invalide) : « ${short(tok.content)} » : ${String(e.message).replace(/^KaTeX parse error:\s*/, '')}`); }
+    };
+    for (const t of state.tokens) {
+      if (t.type.startsWith('math_') && t.block) { checkMath(t, (t.map?.[0] ?? 0) + 1); continue; }
+      if (t.type !== 'inline' || !t.children) continue;
+      const first = (t.map?.[0] ?? 0) + 1;
+      let line = first;
+      for (const c of t.children) {
+        if (c.type === 'math_inline' || c.type === 'math_inline_double') checkMath(c, line);
+        else if (c.type === 'softbreak' || c.type === 'hardbreak') line++;
+        else if (c.type === 'text') line += (c.content.match(/\n/g) || []).length;
+      }
+      // Recherche dans le texte source (et non les tokens) : un « $ » suivi d'un espace fait que le « $ » suivant est pris
+      // pour l'ouverture, et la vraie formule est alors avalée dans un token math erroné.
+      const flat = t.content.replace(/`[^`\n]*`/g, (s) => ' '.repeat(s.length));
+      const re = /(^|[\s(])\$[ \t]+[^\s$][^$\n]*\$/g;
+      for (let m; (m = re.exec(flat));) {
+        const at = first + (flat.slice(0, m.index).match(/\n/g) || []).length;
+        warnings.push(`ligne ${at} : « ${short(m[0].trimStart())} » : espace après le « $ » d'ouverture, la formule ne sera pas reconnue (écrire $x$, sans espace ; ignorer si ce « $ » n'est pas une formule)`);
+      }
+    }
+  });
+
   // Listes de tâches « - [ ] » / « - [x] » : case à cocher non interactive, sans puce.
   md.core.ruler.push('task_lists', (state) => {
     const t = state.tokens;

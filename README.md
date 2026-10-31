@@ -212,7 +212,7 @@ Chaque document a son propre dossier `output_html/<nom>/`, donc plusieurs docume
 
 - **Titres, tableaux, listes de tâches, liens internes** `[voir](#titre-de-la-section)` comme sur GitHub (ancres générées comme GitHub).
 - **Liens vers un autre fichier** : les chemins sont relatifs au `.md` (donc `media/…`, pas `doc/media/…`).
-- **Formules LaTeX** : `$x^2$` en ligne, `$$ \int_0^1 f(x)\,dx $$` en bloc.
+- **Formules LaTeX** : `$x^2$` en ligne, `$$ \int_0^1 f(x)\,dx $$` en bloc. Une formule invalide (erreur KaTeX) ou un `$` d'ouverture suivi d'un espace (`$ x$`, non reconnu comme formule) est signalé en avertissement avec son numéro de ligne ; un simple `$` utilisé comme texte peut être ignoré.
 - **Code coloré** : <code>```c</code>, <code>```python</code>, etc. Deux présentations, au choix (réglage global `style.codeLanguage`, §5.7) :
   - **avec le langage** (par défaut) : une barre au-dessus du code affiche le langage à droite ; en HTML elle porte à gauche les boutons **copier**, **agrandir** (quasi plein écran, `Échap` pour fermer) et **télécharger** (extension déduite du langage, `.txt` sinon) ; en PDF, la barre ne contient que le langage ;
   - **sans le langage** (`"codeLanguage": false`) : en PDF on ne voit que le code ; en HTML les boutons forment une colonne à droite du bloc. Sur un code très court, seuls les boutons utiles sont affichés : 1 ligne → copier ; 2 lignes → copier + agrandir ; 3 lignes et plus → les trois.

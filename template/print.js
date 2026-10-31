@@ -122,6 +122,25 @@
     }
   }
 
+  // Un bloc de code qui tient sur une page reste d'un seul tenant (il passe à la page suivante si besoin).
+  // Seul un bloc plus haut qu'une page est autorisé à être coupé, ainsi que les sections qui le contiennent.
+  if (P.keepBlocks || P.keepSections) {
+    const pageH = parseFloat(getComputedStyle(root).getPropertyValue('--pdf-fig-h')) || 0;
+    if (pageH) {
+      for (const pre of $$('pre:not(.mermaid)', article)) {
+        const code = pre.querySelector('code') || pre;
+        const cs = getComputedStyle(code);
+        const lh = parseFloat(cs.lineHeight) || parseFloat(cs.fontSize) * 1.5;
+        const lines = code.textContent.replace(/\n$/, '').split('\n').length;
+        if (Math.max(pre.getBoundingClientRect().height, lines * lh) <= pageH) continue;
+        pre.classList.add('split-ok');
+        for (let el = pre; el && el !== article; el = el.parentElement) {
+          if (el.classList.contains('code-block') || el.classList.contains('code-frame') || el.classList.contains('pdf-seg')) el.classList.add('split-ok');
+        }
+      }
+    }
+  }
+
   // Diagrammes Mermaid, un par un pour isoler les erreurs.
   const nodes = $$('pre.mermaid');
   if (nodes.length && window.mermaid) {
