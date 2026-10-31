@@ -117,7 +117,7 @@ function readOutline(doc, lib) {
       if (!d) { const a = n.lookupMaybe(N('A'), PDFDict); d = a && a.lookup(N('D')); }
       const nm = text(d);
       if (nm != null) d = findNamed(nm);
-      out.push({ title: text(n.lookup(N('Title'))) ?? '', depth, page: fromDest(d) });
+      out.push({ title: text(n.lookup(N('Title'))) ?? '', depth, page: fromDest(d), node: n });
       const kid = n.lookupMaybe(N('First'), PDFDict);
       if (kid) walk(kid, depth + 1);
     }
@@ -128,6 +128,30 @@ function readOutline(doc, lib) {
 }
 
 const norm = (s) => String(s).replace(/\s+/g, ' ').trim().toLowerCase();
+
+// Chromium duplique parfois le texte d'un titre dans son signet (« 1.2 Titre1.2 Titre », « Titre1.2 Titre »...).
+// Le texte réel du titre est connu (DOM) : on ne garde que son éventuel numéro (« 1.2 ») suivi du texte, une seule fois.
+function fixOutlineTitles(outline, domHeadings, lib) {
+  if (outline.length !== domHeadings.length) return;
+  const { PDFName, PDFHexString } = lib;
+  outline.forEach((o, i) => {
+    const want = domHeadings[i].text;
+    const at = o.title.lastIndexOf(want);
+    let fixed;
+    if (want && at > 0 && at + want.length === o.title.length) {
+      const num = /(\d+(?:\.\d+)*\.?\s+)$/.exec(o.title.slice(0, at));
+      fixed = num && !want.startsWith(num[1]) ? `${num[1]}${want}` : want;
+    } else if (want) {
+      // Duplication fragmentée (titre contenant du code en ligne) : texte du DOM, précédé du numéro d'origine.
+      const num = /^(\d+(?:\.\d+)*\.?\s+)/.exec(o.title);
+      if (o.title.length <= want.length + (num ? num[1].length : 0)) return;
+      fixed = num && !want.startsWith(num[1]) ? `${num[1]}${want}` : want;
+    } else return;
+    if (fixed === o.title) return;
+    o.node.set(PDFName.of('Title'), PDFHexString.fromText(fixed));
+    o.title = fixed;
+  });
+}
 
 // Associe chaque signet à un titre du document (donc à son vrai niveau h1..h6).
 function alignSections(outline, domHeadings, warn) {
@@ -244,6 +268,7 @@ export async function exportPdf({ cfg, html, ConfigError, warn }) {
     const doc = await lib.PDFDocument.load(first);
     const count = doc.getPageCount();
     const outline = readOutline(doc, lib);
+    fixOutlineTitles(outline, done.headings, lib);
     if (p.header || p.footer) {
       const { width: w, height: h } = doc.getPage(0).getSize();
       const sections = alignSections(outline, done.headings, warn);
