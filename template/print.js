@@ -151,7 +151,28 @@
     for (const [i, n] of nodes.entries()) {
       try {
         await mermaid.run({ nodes: [n] });
-        if (!n.querySelector('svg')) errors.push(`diagramme Mermaid n°${i + 1} : aucun rendu`);
+        const svg = n.querySelector('svg');
+        if (!svg) errors.push(`diagramme Mermaid n°${i + 1} : aucun rendu`);
+        else {
+          const box = n.parentElement;
+          const z = Number((box && box.dataset.zoom) || 100) / 100;
+          if (z !== 1) {
+            const r = svg.getBoundingClientRect();
+            const maxW = box ? box.clientWidth : r.width;
+            const maxH = parseFloat(getComputedStyle(svg).maxHeight);
+            if (r.width > 0 && r.height > 0) {
+              let targetW = Math.min(maxW, r.width * z);
+              let targetH = r.height * (targetW / r.width);
+              if (Number.isFinite(maxH) && targetH > maxH) {
+                targetH = maxH;
+                targetW = targetH * (r.width / r.height);
+              }
+              svg.style.maxWidth = `${targetW.toFixed(1)}px`;
+              svg.style.width = `${targetW.toFixed(1)}px`;
+              svg.style.height = `${targetH.toFixed(1)}px`;
+            }
+          }
+        }
       } catch (e) {
         errors.push(`diagramme Mermaid n°${i + 1} : ${e && e.message ? e.message : e}`);
       }

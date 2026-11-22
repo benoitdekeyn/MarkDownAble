@@ -301,7 +301,19 @@
     const svg = $('svg', box);
     if (!svg || !window.svgPanZoom) return;
     box._raw = svg.outerHTML;
-    svg.style.height = `${svg.getBoundingClientRect().height}px`; // hauteur figée : svg-pan-zoom en a besoin
+    const z = Number(box.dataset.zoom || 100) / 100;
+    const r = svg.getBoundingClientRect();
+    if (z !== 1 && r.width > 0) {
+      const maxW = Math.max(80, box.clientWidth - 16);
+      const targetW = Math.min(maxW, r.width * z);
+      const targetH = r.height * (targetW / r.width);
+      svg.style.maxWidth = `${targetW.toFixed(1)}px`;
+      svg.style.width = `${targetW.toFixed(1)}px`;
+      svg.style.height = `${targetH.toFixed(1)}px`;
+      box.style.maxWidth = `${Math.ceil(targetW + 18)}px`;
+    } else {
+      svg.style.height = `${r.height}px`; // hauteur figée : svg-pan-zoom en a besoin
+    }
     box._pz = newPz(svg, false);
     const exp = mkBtn('mm-btn mm-expand mm-ui', '⤢', 'Plein écran');
     exp.addEventListener('click', () => openFull(box));
@@ -379,6 +391,7 @@
       nodes.forEach((n) => {
         const box = n.parentElement;
         if (box._pz) { try { box._pz.destroy(); } catch (_) {} box._pz = null; }
+        box.style.maxWidth = '';
         $$('.mm-ui', box).forEach((x) => x.remove());
         n.textContent = n.dataset.src;
         n.removeAttribute('data-processed');

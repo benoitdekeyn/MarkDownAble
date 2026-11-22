@@ -77,7 +77,7 @@ const DEFAULTS = {
     pageTheme: { light: 'default', dark: 'default' },
     pagePalettes: {},
     mermaidTheme: 'auto',
-    mermaid: { layout: 'dagre', direction: null },
+    mermaid: { layout: 'dagre', direction: null, zoom: 100 },
     // Unité : em (multiple de la taille de base ; 1 = taille du texte).
     headings: {
       1: { size: 2, indent: 0, color: null }, 2: { size: 1.5, indent: 0, color: null }, 3: { size: 1.25, indent: 0, color: null },
@@ -392,9 +392,19 @@ function pagePaletteRules(style) {
   return css;
 }
 
-// ---------- Mermaid : mise en page et direction ----------
+// ---------- Mermaid : mise en page, direction et zoom ----------
 const MERMAID_LAYOUTS = { dagre: 'dagre', hierarchical: 'dagre', hierarchique: 'dagre', hiérarchique: 'dagre', elk: 'elk', adaptive: 'elk', adaptatif: 'elk' };
 const MERMAID_DIRECTIONS = { tb: 'TB', td: 'TB', bt: 'BT', lr: 'LR', rl: 'RL' };
+
+function normalizeMermaidZoom(raw, onError) {
+  const s = String(raw).trim().replace(/%$/, '');
+  const n = Number(s);
+  if (!Number.isFinite(n) || n < 10 || n > 200) {
+    onError(`zoom "${raw}" invalide (nombre entre 10 et 200, ex. zoom=75 ou zoom=75%)`);
+    return undefined;
+  }
+  return n;
+}
 
 function normalizeMermaidOptions(raw, onError) {
   const out = {};
@@ -406,48 +416,92 @@ function normalizeMermaidOptions(raw, onError) {
     out.direction = MERMAID_DIRECTIONS[String(raw.direction).toLowerCase()];
     if (!out.direction) { onError(`direction "${raw.direction}" inconnue (TB, BT, LR, RL)`); delete out.direction; }
   }
+  if (raw.zoom != null) {
+    const z = normalizeMermaidZoom(raw.zoom, onError);
+    if (z !== undefined) out.zoom = z;
+  }
   return out;
 }
 
 function parseMermaidOptions(words, defaults, onError) {
   const raw = {};
   for (const w of words) {
-    const m = /^(layout|direction)=(.+)$/i.exec(w);
-    if (m) raw[m[1].toLowerCase()] = m[2];
-    else onError(`option "${w}" ignorée (attendu layout=… ou direction=…)`);
+    const m = /^zoom=(.+)$/i.exec(w);
+    if (m) raw.zoom = m[1];
+    else if (/^direction=/i.test(w)) onError(`option "${w}" ignorée : la direction se définit directement dans le diagramme Mermaid (ex. "flowchart LR" ou "direction TB")`);
+    else if (/^layout=/i.test(w)) onError(`option "${w}" ignorée : le layout se définit directement dans le diagramme Mermaid (frontmatter "config: layout: …" ou "%%{init: {\\"layout\\": \\"…\\"}}%%")`);
+    else onError(`option "${w}" ignorée (attendu zoom=…)`);
   }
   return { ...normalizeMermaidOptions(defaults, () => {}), ...normalizeMermaidOptions(raw, onError) };
 }
 
-function applyMermaidOptions(src, opts, onWarn) {
+function detectNativeMermaidLayout(lines, fmEnd) {
+  if (fmEnd > 0) {
+    for (let i = 1; i < fmEnd; i++) {
+      const m = /^\s*layout\s*:\s*['"]?([a-zA-Z0-9_-]+)['"]?\s*(?:#.*)?$/.exec(lines[i]);
+      if (m) return MERMAID_LAYOUTS[m[1].toLowerCase()] || m[1].toLowerCase();
+    }
+  }
+  for (let i = fmEnd > 0 ? fmEnd + 1 : 0; i < lines.length; i++) {
+    const m = /%%\{\s*init\s*:([\s\S]*?)\}%%/i.exec(lines[i]);
+    if (m) {
+      const lm = /['"]?layout['"]?\s*:\s*['"]([a-zA-Z0-9_-]+)['"]/i.exec(m[1]);
+      if (lm) return MERMAID_LAYOUTS[lm[1].toLowerCase()] || lm[1].toLowerCase();
+    }
+  }
+  return null;
+}
+
+function injectDefaultLayout(lines, fmEnd, layout) {
+  if (fmEnd > 0) {
+    const cfgIdx = lines.findIndex((l, i) => i > 0 && i < fmEnd && /^\s*config\s*:\s*$/.test(l));
+    if (cfgIdx >= 0) {
+      const baseIndent = (lines[cfgIdx].match(/^\s*/) || [''])[0];
+      lines.splice(cfgIdx + 1, 0, `${baseIndent}  layout: ${layout}`);
+    } else {
+      lines.splice(fmEnd, 0, 'config:', `  layout: ${layout}`);
+    }
+  } else {
+    lines.splice(0, 0, `%%{init: {"layout": "${layout}"}}%%`);
+  }
+}
+
+function applyMermaidOptions(src, opts) {
   const lines = src.replace(/\r\n/g, '\n').split('\n');
+  let fmEnd = -1;
   let start = 0;
   if (lines[0].trim() === '---') { // frontmatter YAML éventuel
     const end = lines.indexOf('---', 1);
-    if (end > 0) start = end + 1;
+    if (end > 0) { fmEnd = end; start = end + 1; }
   }
+  // Direction : priorité à la syntaxe naturelle du diagramme ; opts.direction sert uniquement de défaut.
   if (opts.direction) {
     const h = lines.findIndex((l, i) => i >= start && l.trim() && !/^\s*%%/.test(l));
     const type = h >= 0 ? lines[h].trim() : '';
     if (/^(flowchart|graph)\b/.test(type)) {
-      lines[h] = lines[h].replace(/^(\s*(?:flowchart|graph))(?:\s+(?:TB|TD|BT|LR|RL))?/, `$1 ${opts.direction === 'TB' ? 'TD' : opts.direction}`);
-    } else if (/^stateDiagram(-v2)?\b/.test(type)) {
-      const indent = (lines[h + 1] || '').match(/^\s*/)[0] || '    ';
-      // Une ligne "direction" au premier niveau (hors état composite) est remplacée, sinon ajoutée.
-      let depth = 0, top = -1;
+      if (!/^(?:flowchart|graph)\s+(?:TB|TD|BT|LR|RL)\b/.test(type)) {
+        lines[h] = lines[h].replace(/^(\s*(?:flowchart|graph))\b/, `$1 ${opts.direction === 'TB' ? 'TD' : opts.direction}`);
+      }
+    } else if (/^(stateDiagram(?:-v2)?|classDiagram)\b/.test(type)) {
+      let depth = 0, hasTopDir = false;
       for (let i = h + 1; i < lines.length; i++) {
-        if (depth === 0 && /^\s*direction\s+\w+\s*$/.test(lines[i])) { top = i; break; }
+        if (depth === 0 && /^\s*direction\s+(?:TB|TD|BT|LR|RL)\s*$/.test(lines[i])) { hasTopDir = true; break; }
         if (/\{\s*$/.test(lines[i])) depth++;
         if (/^\s*\}/.test(lines[i])) depth--;
       }
-      if (top >= 0) lines[top] = `${indent}direction ${opts.direction}`;
-      else lines.splice(h + 1, 0, `${indent}direction ${opts.direction}`);
-    } else {
-      onWarn(`direction ignorée (types gérés : flowchart/graph, stateDiagram) ; type : "${type.split(/\s+/)[0]}"`);
+      if (!hasTopDir) {
+        const indent = (lines[h + 1] || '').match(/^\s*/)[0] || '    ';
+        lines.splice(h + 1, 0, `${indent}direction ${opts.direction}`);
+      }
     }
   }
-  if (opts.layout === 'elk') lines.splice(start, 0, '%%{init: {"layout": "elk"}}%%');
-  return lines.join('\n');
+  // Layout : priorité au layout natif (frontmatter ou %%{init}%%) ; opts.layout sert uniquement de défaut.
+  const nativeLayout = detectNativeMermaidLayout(lines, fmEnd);
+  const effectiveLayout = nativeLayout || opts.layout || 'dagre';
+  if (!nativeLayout && opts.layout === 'elk') {
+    injectDefaultLayout(lines, fmEnd, 'elk');
+  }
+  return { code: lines.join('\n'), usesElk: effectiveLayout === 'elk' };
 }
 
 // Les modules ESM du plugin ELK sont regroupés en un script autonome (chargé seulement si un diagramme l'utilise).
@@ -640,8 +694,10 @@ async function render(cfg, { pdf = false } = {}) {
       hasMermaid = true;
       const where = `diagramme Mermaid n°${++mermaidCount}`;
       const opts = parseMermaidOptions(token.info.trim().split(/\s+/).slice(1), cfg.style.mermaid, (m) => warnings.push(`${where} : ${m}`));
-      if (opts.layout === 'elk') usesElk = true;
-      return `<div class="mermaid-box"><pre class="mermaid">${esc(applyMermaidOptions(token.content, opts, (m) => warnings.push(`${where} : ${m}`)))}</pre></div>\n`;
+      const applied = applyMermaidOptions(token.content, opts);
+      if (applied.usesElk) usesElk = true;
+      const zoomAttr = opts.zoom && opts.zoom !== 100 ? ` data-zoom="${opts.zoom}"` : '';
+      return `<div class="mermaid-box"${zoomAttr}><pre class="mermaid">${esc(applied.code)}</pre></div>\n`;
     }
     let body;
     if (lang && hljs.getLanguage(lang)) body = hljs.highlight(token.content, { language: lang, ignoreIllegals: true }).value;

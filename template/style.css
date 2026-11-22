@@ -173,6 +173,7 @@ pre.mermaid { text-align: center; background: transparent; margin: 0; padding: 8
 
 /* Diagrammes : cadre, boutons plein écran et pan/zoom, comme sur GitHub */
 .mermaid-box { position: relative; margin: 1em 0; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+.mermaid-box[data-zoom] { margin-left: auto; margin-right: auto; }
 .mermaid-box svg { cursor: grab; }
 .mm-btn {
   width: 28px; height: 28px; padding: 0; display: inline-flex; align-items: center; justify-content: center;

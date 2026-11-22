@@ -228,16 +228,20 @@ Chaque document a son propre dossier `output_html/<nom>/`, donc plusieurs docume
   ````
 
   `lang` et `nolang` sont réservés ; tout autre texte devient l'étiquette. Si ce texte ressemble à un nom de fichier (`main.cpp`), le bouton télécharger l'utilise (nom de fichier seul, sans dossier). Une balise mal placée (pas suivie d'un bloc de code, devant un diagramme Mermaid, `code:lang` sur un bloc sans langage) est ignorée et signalée en avertissement.
-- **Mermaid** : bloc <code>```mermaid</code>. Options par diagramme sur la même ligne :
+- **Mermaid** : bloc <code>```mermaid</code>. La `direction` (`flowchart LR`, `direction TB`…) et le `layout` (frontmatter YAML `config: layout: dagre|elk` ou `%%{init: {"layout": "dagre"}}%%`) s'écrivent directement avec la syntaxe native de Mermaid (les valeurs de `style.mermaid` dans le `.jsonc` ne servent que de défaut si le diagramme n'en indique pas). Seul le **`zoom`** (en %, de `10` à `200`), qui n'a pas de syntaxe native Mermaid, se précise sur la balise d'ouverture :
 
   ````markdown
-  ```mermaid layout=elk direction=LR
-  graph TD
+  ```mermaid zoom=75
+  ---
+  config:
+    layout: elk
+  ---
+  flowchart LR
     A --> B
   ```
   ````
 
-  `layout` : `dagre` (hiérarchique) ou `elk` (adaptatif). `direction` : `TB`, `BT`, `LR`, `RL` (flowchart / graph / stateDiagram). En HTML, un diagramme se déplace et se zoome (boutons ou molette) et peut passer en plein écran. Sur téléphone, si les contrôles masquent une partie du diagramme, ils sont remplacés par une colonne à droite avec la seule icône « agrandir » ; le plein écran affiche tous les contrôles.
+  En HTML, un diagramme se déplace et se zoome (boutons ou molette) et peut passer en plein écran (toujours à taille pleine). Sur téléphone, si les contrôles masquent une partie du diagramme, ils sont remplacés par une colonne à droite avec la seule icône « agrandir » ; le plein écran affiche tous les contrôles.
 - **Saut de page (PDF uniquement)** : une ligne `\newpage` ou `<!-- newpage -->` (ignoré à l'écran). Il fonctionne aussi dans une liste, au milieu d'un paragraphe, dans la TOC, et **dans un tableau Markdown** : une ligne `\newpage` entre deux lignes du tableau n'est pas affichée et la ligne suivante commence une nouvelle page.
 - **Annuler un saut automatique** : `\samepage` (ou `<!-- samepage -->`) **juste avant un titre** dont le niveau figure dans `pdf.pageBreakBefore` supprime le saut de page imposé pour ce titre seul. Il est ignoré à l'écran ; placé ailleurs que devant un titre, il est signalé comme erreur.
 - **Page sans en-tête ni pied de page** (page de garde…) : `<!-- nohf -->` (ou `\nohf`) en **toute première ligne** du document, ou **juste après** un saut de page.
@@ -564,17 +568,16 @@ Les couleurs disponibles sont `bg`, `fg`, `muted`, `border`, `sidebarBg`, `accen
 
 Les palettes `default`, `formal` et `neon` changent **les couleurs uniquement**. Polices, tailles, coins arrondis et autres choix de présentation restent aux valeurs par défaut dans l'exemple. Il n'y a pas encore de sélecteur JSONC de thèmes complets pour ces réglages ; leur personnalisation globale passe par les fichiers CSS de `template/`.
 
-**Mermaid : `layout` et `direction`.**
+**Mermaid : `layout`, `direction` et `zoom` (valeurs par défaut).**
 
-| `layout` | Effet |
-| --- | --- |
-| `"dagre"` | « Hiérarchique » : le moteur historique de Mermaid. |
-| `"elk"` | « Adaptatif » : plus compact et lisible sur les gros schémas ; ajoute ~2,4 Mo au HTML. |
-
-`direction` : `null` (celle écrite dans le diagramme), `"TB"` (haut → bas), `"BT"`, `"LR"` (gauche → droite), `"RL"`. Seuls `flowchart`/`graph` et `stateDiagram` acceptent une direction.
+| Option | Valeurs | Effet |
+| --- | --- | --- |
+| `"layout"` | `"dagre"` ou `"elk"` | Moteur par défaut si le diagramme ne déclare pas son propre `layout` (frontmatter ou `%%{init}%%`). `elk` ajoute ~2,4 Mo au HTML. |
+| `"direction"` | `null`, `"TB"`, `"BT"`, `"LR"`, `"RL"` | Direction par défaut si le diagramme (`flowchart`/`graph`, `stateDiagram`, `classDiagram`) n'en précise pas. |
+| `"zoom"` | `10` à `200` (défaut `100`) | Zoom par défaut en % ; surchargeable par diagramme avec ```` ```mermaid zoom=75 ````. |
 
 ```jsonc
-"mermaid": { "layout": "elk", "direction": "TB" }
+"mermaid": { "layout": "elk", "direction": "TB", "zoom": 100 }
 ```
 
 **Titres et sommaire : `headings` et `toc`.** Pour chaque niveau `"1"` à `"6"` : `size` (taille, en **em**, 0 à 20 ; 1 = taille du texte ; dans `toc` l'em vaut 14 px), `indent` (retrait à gauche en em, 0 à 20), `color` (`null`, une couleur CSS `"#c0392b"`, ou `{ "light": "…", "dark": "…" }` pour une couleur par thème).
