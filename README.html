@@ -184,6 +184,7 @@ pre.mermaid { text-align: center; background: transparent; margin: 0; padding: 8
 
 /* Diagrammes : cadre, boutons plein écran et pan/zoom, comme sur GitHub */
 .mermaid-box { position: relative; margin: 1em 0; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+.mermaid-box[data-zoom] { margin-left: auto; margin-right: auto; }
 .mermaid-box svg { cursor: grab; }
 .mm-btn {
   width: 28px; height: 28px; padding: 0; display: inline-flex; align-items: center; justify-content: center;
@@ -624,13 +625,17 @@ int main() {}
 <p><code>lang</code> et <code>nolang</code> sont réservés ; tout autre texte devient l'étiquette. Si ce texte ressemble à un nom de fichier (<code>main.cpp</code>), le bouton télécharger l'utilise (nom de fichier seul, sans dossier). Une balise mal placée (pas suivie d'un bloc de code, devant un diagramme Mermaid, <code>code:lang</code> sur un bloc sans langage) est ignorée et signalée en avertissement.</p>
 </li>
 <li>
-<p><strong>Mermaid</strong> : bloc <code>```mermaid</code>. Options par diagramme sur la même ligne :</p>
-<div class="code-block"><div class="code-frame" data-lang="markdown"><div class="code-bar"><div class="code-actions"><button class="copy-btn" type="button" title="Copier le code" aria-label="Copier le code"></button><button class="expand-btn" type="button" title="Agrandir le code" aria-label="Agrandir le code"></button><button class="download-btn" type="button" title="Télécharger le code" aria-label="Télécharger le code"></button></div><span class="code-lang" title="markdown">markdown</span></div><pre><code class="hljs language-markdown"><span class="hljs-code">```mermaid layout=elk direction=LR
-graph TD
+<p><strong>Mermaid</strong> : bloc <code>```mermaid</code>. La <code>direction</code> (<code>flowchart LR</code>, <code>direction TB</code>…) et le <code>layout</code> (frontmatter YAML <code>config: layout: dagre|elk</code> ou <code>%%{init: {&quot;layout&quot;: &quot;dagre&quot;}}%%</code>) s'écrivent directement avec la syntaxe native de Mermaid (les valeurs de <code>style.mermaid</code> dans le <code>.jsonc</code> ne servent que de défaut si le diagramme n'en indique pas). Seul le <strong><code>zoom</code></strong> (en %, de <code>10</code> à <code>200</code>), qui n'a pas de syntaxe native Mermaid, se précise sur la balise d'ouverture :</p>
+<div class="code-block"><div class="code-frame" data-lang="markdown"><div class="code-bar"><div class="code-actions"><button class="copy-btn" type="button" title="Copier le code" aria-label="Copier le code"></button><button class="expand-btn" type="button" title="Agrandir le code" aria-label="Agrandir le code"></button><button class="download-btn" type="button" title="Télécharger le code" aria-label="Télécharger le code"></button></div><span class="code-lang" title="markdown">markdown</span></div><pre><code class="hljs language-markdown"><span class="hljs-section">```mermaid zoom=75
+---</span>
+config:
+<span class="hljs-section">  layout: elk
+---</span>
+flowchart LR
   A --&gt; B
-```</span>
-</code></pre></div></div>
-<p><code>layout</code> : <code>dagre</code> (hiérarchique) ou <code>elk</code> (adaptatif). <code>direction</code> : <code>TB</code>, <code>BT</code>, <code>LR</code>, <code>RL</code> (flowchart / graph / stateDiagram). En HTML, un diagramme se déplace et se zoome (boutons ou molette) et peut passer en plein écran. Sur téléphone, si les contrôles masquent une partie du diagramme, ils sont remplacés par une colonne à droite avec la seule icône « agrandir » ; le plein écran affiche tous les contrôles.</p>
+<span class="hljs-code">```
+</span></code></pre></div></div>
+<p>En HTML, un diagramme se déplace et se zoome (boutons ou molette) et peut passer en plein écran (toujours à taille pleine). Sur téléphone, si les contrôles masquent une partie du diagramme, ils sont remplacés par une colonne à droite avec la seule icône « agrandir » ; le plein écran affiche tous les contrôles.</p>
 </li>
 <li>
 <p><strong>Saut de page (PDF uniquement)</strong> : une ligne <code>\newpage</code> ou <code>&lt;!-- newpage --&gt;</code> (ignoré à l'écran). Il fonctionne aussi dans une liste, au milieu d'un paragraphe, dans la TOC, et <strong>dans un tableau Markdown</strong> : une ligne <code>\newpage</code> entre deux lignes du tableau n'est pas affichée et la ligne suivante commence une nouvelle page.</p>
@@ -1271,27 +1276,34 @@ graph TD
 </code></pre></div></div>
 <p>Les couleurs disponibles sont <code>bg</code>, <code>fg</code>, <code>muted</code>, <code>border</code>, <code>sidebarBg</code>, <code>accent</code>, <code>codeBg</code> et <code>quote</code>. Les couleurs non indiquées gardent leur valeur par défaut. La palette du code peut utiliser <code>default</code> (thèmes intégrés GitHub clair/sombre), le nom d'un thème <code>highlight.js</code> (<code>vs</code>, <code>vs2015</code>, <code>github-dark</code>, <code>nord</code>…) ou un fichier <code>.css</code> placé dans <code>template/</code> ou <code>doc/</code>. Un thème de code ne change que les couleurs de syntaxe, pas la police ni la forme du bloc ; les fichiers personnalisés de l'exemple sont <code>template/highlight-formal.css</code> et <code>template/highlight-neon.css</code>.</p>
 <p>Les palettes <code>default</code>, <code>formal</code> et <code>neon</code> changent <strong>les couleurs uniquement</strong>. Polices, tailles, coins arrondis et autres choix de présentation restent aux valeurs par défaut dans l'exemple. Il n'y a pas encore de sélecteur JSONC de thèmes complets pour ces réglages ; leur personnalisation globale passe par les fichiers CSS de <code>template/</code>.</p>
-<p><strong>Mermaid : <code>layout</code> et <code>direction</code>.</strong></p>
+<p><strong>Mermaid : <code>layout</code>, <code>direction</code> et <code>zoom</code> (valeurs par défaut).</strong></p>
 <table>
 <thead>
 <tr>
-<th><code>layout</code></th>
+<th>Option</th>
+<th>Valeurs</th>
 <th>Effet</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><code>&quot;dagre&quot;</code></td>
-<td>« Hiérarchique » : le moteur historique de Mermaid.</td>
+<td><code>&quot;layout&quot;</code></td>
+<td><code>&quot;dagre&quot;</code> ou <code>&quot;elk&quot;</code></td>
+<td>Moteur par défaut si le diagramme ne déclare pas son propre <code>layout</code> (frontmatter ou <code>%%{init}%%</code>). <code>elk</code> ajoute ~2,4 Mo au HTML.</td>
 </tr>
 <tr>
-<td><code>&quot;elk&quot;</code></td>
-<td>« Adaptatif » : plus compact et lisible sur les gros schémas ; ajoute ~2,4 Mo au HTML.</td>
+<td><code>&quot;direction&quot;</code></td>
+<td><code>null</code>, <code>&quot;TB&quot;</code>, <code>&quot;BT&quot;</code>, <code>&quot;LR&quot;</code>, <code>&quot;RL&quot;</code></td>
+<td>Direction par défaut si le diagramme (<code>flowchart</code>/<code>graph</code>, <code>stateDiagram</code>, <code>classDiagram</code>) n'en précise pas.</td>
+</tr>
+<tr>
+<td><code>&quot;zoom&quot;</code></td>
+<td><code>10</code> à <code>200</code> (défaut <code>100</code>)</td>
+<td>Zoom par défaut en % ; surchargeable par diagramme avec <code>```mermaid zoom=75</code>.</td>
 </tr>
 </tbody>
 </table>
-<p><code>direction</code> : <code>null</code> (celle écrite dans le diagramme), <code>&quot;TB&quot;</code> (haut → bas), <code>&quot;BT&quot;</code>, <code>&quot;LR&quot;</code> (gauche → droite), <code>&quot;RL&quot;</code>. Seuls <code>flowchart</code>/<code>graph</code> et <code>stateDiagram</code> acceptent une direction.</p>
-<div class="code-block"><div class="code-frame" data-lang="jsonc"><div class="code-bar"><div class="code-actions"><button class="copy-btn" type="button" title="Copier le code" aria-label="Copier le code"></button><button class="expand-btn" type="button" title="Agrandir le code" aria-label="Agrandir le code"></button><button class="download-btn" type="button" title="Télécharger le code" aria-label="Télécharger le code"></button></div><span class="code-lang" title="jsonc">jsonc</span></div><pre><code class="hljs language-jsonc"><span class="hljs-attr">&quot;mermaid&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;layout&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;elk&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;direction&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;TB&quot;</span> <span class="hljs-punctuation">}</span>
+<div class="code-block"><div class="code-frame" data-lang="jsonc"><div class="code-bar"><div class="code-actions"><button class="copy-btn" type="button" title="Copier le code" aria-label="Copier le code"></button><button class="expand-btn" type="button" title="Agrandir le code" aria-label="Agrandir le code"></button><button class="download-btn" type="button" title="Télécharger le code" aria-label="Télécharger le code"></button></div><span class="code-lang" title="jsonc">jsonc</span></div><pre><code class="hljs language-jsonc"><span class="hljs-attr">&quot;mermaid&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;layout&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;elk&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;direction&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;TB&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;zoom&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">100</span> <span class="hljs-punctuation">}</span>
 </code></pre></div></div>
 <p><strong>Titres et sommaire : <code>headings</code> et <code>toc</code>.</strong> Pour chaque niveau <code>&quot;1&quot;</code> à <code>&quot;6&quot;</code> : <code>size</code> (taille, en <strong>em</strong>, 0 à 20 ; 1 = taille du texte ; dans <code>toc</code> l'em vaut 14 px), <code>indent</code> (retrait à gauche en em, 0 à 20), <code>color</code> (<code>null</code>, une couleur CSS <code>&quot;#c0392b&quot;</code>, ou <code>{ &quot;light&quot;: &quot;…&quot;, &quot;dark&quot;: &quot;…&quot; }</code> pour une couleur par thème).</p>
 <p>Valeurs par défaut :</p>
@@ -1869,7 +1881,19 @@ graph TD
     const svg = $('svg', box);
     if (!svg || !window.svgPanZoom) return;
     box._raw = svg.outerHTML;
-    svg.style.height = `${svg.getBoundingClientRect().height}px`; // hauteur figée : svg-pan-zoom en a besoin
+    const z = Number(box.dataset.zoom || 100) / 100;
+    const r = svg.getBoundingClientRect();
+    if (z !== 1 && r.width > 0) {
+      const maxW = Math.max(80, box.clientWidth - 16);
+      const targetW = Math.min(maxW, r.width * z);
+      const targetH = r.height * (targetW / r.width);
+      svg.style.maxWidth = `${targetW.toFixed(1)}px`;
+      svg.style.width = `${targetW.toFixed(1)}px`;
+      svg.style.height = `${targetH.toFixed(1)}px`;
+      box.style.maxWidth = `${Math.ceil(targetW + 18)}px`;
+    } else {
+      svg.style.height = `${r.height}px`; // hauteur figée : svg-pan-zoom en a besoin
+    }
     box._pz = newPz(svg, false);
     const exp = mkBtn('mm-btn mm-expand mm-ui', '⤢', 'Plein écran');
     exp.addEventListener('click', () => openFull(box));
@@ -1947,6 +1971,7 @@ graph TD
       nodes.forEach((n) => {
         const box = n.parentElement;
         if (box._pz) { try { box._pz.destroy(); } catch (_) {} box._pz = null; }
+        box.style.maxWidth = '';
         $$('.mm-ui', box).forEach((x) => x.remove());
         n.textContent = n.dataset.src;
         n.removeAttribute('data-processed');

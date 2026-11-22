@@ -138,9 +138,9 @@
 
     // Thème des diagrammes Mermaid : "auto", default, dark, forest ou neutral
     "mermaidTheme": "auto",
-    // layout : "dagre" (hiérarchique) ou "elk" (adaptatif) ; direction : null, "TB", "BT", "LR" ou "RL".
-    // Modifiable par diagramme dans le .md : ```mermaid layout=elk direction=LR
-    "mermaid": { "layout": "elk", "direction": "TB" },
+    // Défauts Mermaid : layout ("dagre" ou "elk"), direction (null, "TB", "BT", "LR", "RL"), zoom (10 à 200, en %).
+    // Par diagramme : direction et layout s'écrivent nativement dans Mermaid ; seul zoom=… s'ajoute sur ```mermaid zoom=75
+    "mermaid": { "layout": "elk", "direction": "TB", "zoom": 100 },
     // Taille / retrait / couleur de chaque niveau de titre (« headings ») et du sommaire (« toc ») : voir README.md
     "customCss": null            // fichier CSS supplémentaire (relatif à doc/), appliqué en dernier
   }

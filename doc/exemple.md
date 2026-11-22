@@ -175,7 +175,11 @@ $$
 
 Boucle de régulation avec correcteur, perturbation et capteur dans la chaîne de retour :
 
-```mermaid layout=elk direction=LR
+```mermaid
+---
+config:
+  layout: elk
+---
 flowchart LR
   R(["Consigne r(t)"]) --> S(("+ / −"))
   S -->|"ε(t)"| C["Correcteur C(p)"]
@@ -192,7 +196,11 @@ flowchart LR
 
 Algorithme du « suiveur de mur droit » : losange = décision, rectangle = action, bulle = début / fin.
 
-```mermaid layout=dagre direction=TB
+```mermaid
+---
+config:
+  layout: dagre
+---
 flowchart TD
   DEB(["Début : robot à l'entrée"]) --> ARR{"Arrivée<br/>atteinte ?"}
   ARR -->|oui| FIN(["Fin : sortie trouvée"])
