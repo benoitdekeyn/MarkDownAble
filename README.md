@@ -241,6 +241,17 @@ Chaque document a son propre dossier `output_html/<nom>/`, donc plusieurs docume
   ```
   ````
 
+  Pour adapter le `zoom` et/ou la `direction` **uniquement pour le web (`web`) ou uniquement pour le PDF (`pdf`)**, placez un commentaire HTML seul sur sa ligne juste avant le bloc (1 ou 2 spécifications séparées par `,`, les espaces sont ignorés) :
+
+  ````markdown
+  <!-- web : zoom = 50 -->
+  <!-- pdf : zoom = 100, direction = TB -->
+  ```mermaid
+  flowchart LR
+    A --> B
+  ```
+  ````
+
   En HTML, un diagramme se déplace et se zoome (boutons ou molette) et peut passer en plein écran (toujours à taille pleine). Sur téléphone, si les contrôles masquent une partie du diagramme, ils sont remplacés par une colonne à droite avec la seule icône « agrandir » ; le plein écran affiche tous les contrôles.
 - **Saut de page (PDF uniquement)** : une ligne `\newpage` ou `<!-- newpage -->` (ignoré à l'écran). Il fonctionne aussi dans une liste, au milieu d'un paragraphe, dans la TOC, et **dans un tableau Markdown** : une ligne `\newpage` entre deux lignes du tableau n'est pas affichée et la ligne suivante commence une nouvelle page.
 - **Annuler un saut automatique** : `\samepage` (ou `<!-- samepage -->`) **juste avant un titre** dont le niveau figure dans `pdf.pageBreakBefore` supprime le saut de page imposé pour ce titre seul. Il est ignoré à l'écran ; placé ailleurs que devant un titre, il est signalé comme erreur.
@@ -573,8 +584,8 @@ Les palettes `default`, `formal` et `neon` changent **les couleurs uniquement**.
 | Option | Valeurs | Effet |
 | --- | --- | --- |
 | `"layout"` | `"dagre"` ou `"elk"` | Moteur par défaut si le diagramme ne déclare pas son propre `layout` (frontmatter ou `%%{init}%%`). `elk` ajoute ~2,4 Mo au HTML. |
-| `"direction"` | `null`, `"TB"`, `"BT"`, `"LR"`, `"RL"` | Direction par défaut si le diagramme (`flowchart`/`graph`, `stateDiagram`, `classDiagram`) n'en précise pas. |
-| `"zoom"` | `10` à `200` (défaut `100`) | Zoom par défaut en % ; surchargeable par diagramme avec ```` ```mermaid zoom=75 ````. |
+| `"direction"` | `null`, `"TB"`, `"BT"`, `"LR"`, `"RL"` | Direction par défaut si le diagramme (`flowchart`/`graph`, `stateDiagram`, `classDiagram`) n'en précise pas ; surchargeable par format avec `<!-- pdf : direction=TB -->` ou `<!-- web : direction=LR -->`. |
+| `"zoom"` | `10` à `200` (défaut `100`) | Zoom par défaut en % ; surchargeable par diagramme avec ```` ```mermaid zoom=75 ```` ou par format avec `<!-- web : zoom=50 -->` / `<!-- pdf : zoom=100 -->`. |
 
 ```jsonc
 "mermaid": { "layout": "elk", "direction": "TB", "zoom": 100 }

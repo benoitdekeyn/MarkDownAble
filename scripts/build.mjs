@@ -423,6 +423,47 @@ function normalizeMermaidOptions(raw, onError) {
   return out;
 }
 
+function parseMermaidComment(rawInner, onError) {
+  const compact = rawInner.replace(/\s+/g, '');
+  const colonParts = compact.split(':');
+  const target = colonParts[0].toLowerCase();
+  if (colonParts.length !== 2 || !colonParts[1]) {
+    onError(`syntaxe invalide (attendu "${target} : zoom=…", "${target} : direction=…" ou les deux séparés par une virgule)`);
+    return null;
+  }
+  const specs = colonParts[1].split(',');
+  if (specs.length > 2) {
+    onError('maximum 2 spécifications autorisées par commentaire (zoom et direction)');
+  }
+  const opts = {};
+  for (const spec of specs.slice(0, 2)) {
+    if (!spec) {
+      onError(`spécification vide dans "${rawInner.trim()}"`);
+      continue;
+    }
+    const kv = spec.split('=');
+    if (kv.length !== 2 || !kv[0] || !kv[1]) {
+      onError(`spécification "${spec}" invalide (attendu zoom=… ou direction=…)`);
+      continue;
+    }
+    const key = kv[0].toLowerCase();
+    const val = kv[1];
+    if (key === 'zoom') {
+      if ('zoom' in opts) { onError('propriété "zoom" répétée dans le même commentaire'); continue; }
+      const z = normalizeMermaidZoom(val, onError);
+      if (z !== undefined) opts.zoom = z;
+    } else if (key === 'direction') {
+      if ('direction' in opts) { onError('propriété "direction" répétée dans le même commentaire'); continue; }
+      const dir = MERMAID_DIRECTIONS[val.toLowerCase()];
+      if (!dir) onError(`direction "${val}" inconnue (TB, TD, BT, LR, RL)`);
+      else opts.direction = dir;
+    } else {
+      onError(`propriété "${kv[0]}" inconnue (attendu zoom ou direction)`);
+    }
+  }
+  return { target, opts };
+}
+
 function parseMermaidOptions(words, defaults, onError) {
   const raw = {};
   for (const w of words) {
@@ -466,7 +507,7 @@ function injectDefaultLayout(lines, fmEnd, layout) {
   }
 }
 
-function applyMermaidOptions(src, opts) {
+function applyMermaidOptions(src, opts, onWarn = () => {}) {
   const lines = src.replace(/\r\n/g, '\n').split('\n');
   let fmEnd = -1;
   let start = 0;
@@ -474,25 +515,33 @@ function applyMermaidOptions(src, opts) {
     const end = lines.indexOf('---', 1);
     if (end > 0) { fmEnd = end; start = end + 1; }
   }
-  // Direction : priorité à la syntaxe naturelle du diagramme ; opts.direction sert uniquement de défaut.
+  // Direction : si forceDirection (commentaire <!-- web/pdf : direction=… -->), on remplace la direction du diagramme ;
+  // sinon priorité à la syntaxe naturelle du diagramme et opts.direction sert uniquement de défaut.
   if (opts.direction) {
     const h = lines.findIndex((l, i) => i >= start && l.trim() && !/^\s*%%/.test(l));
     const type = h >= 0 ? lines[h].trim() : '';
     if (/^(flowchart|graph)\b/.test(type)) {
-      if (!/^(?:flowchart|graph)\s+(?:TB|TD|BT|LR|RL)\b/.test(type)) {
-        lines[h] = lines[h].replace(/^(\s*(?:flowchart|graph))\b/, `$1 ${opts.direction === 'TB' ? 'TD' : opts.direction}`);
+      const dir = opts.direction === 'TB' ? 'TD' : opts.direction;
+      if (opts.forceDirection) {
+        lines[h] = lines[h].replace(/^(\s*(?:flowchart|graph))(?:\s+(?:TB|TD|BT|LR|RL)\b)?/i, `$1 ${dir}`);
+      } else if (!/^(?:flowchart|graph)\s+(?:TB|TD|BT|LR|RL)\b/i.test(type)) {
+        lines[h] = lines[h].replace(/^(\s*(?:flowchart|graph))\b/, `$1 ${dir}`);
       }
     } else if (/^(stateDiagram(?:-v2)?|classDiagram)\b/.test(type)) {
-      let depth = 0, hasTopDir = false;
+      let depth = 0, top = -1;
       for (let i = h + 1; i < lines.length; i++) {
-        if (depth === 0 && /^\s*direction\s+(?:TB|TD|BT|LR|RL)\s*$/.test(lines[i])) { hasTopDir = true; break; }
+        if (depth === 0 && /^\s*direction\s+(?:TB|TD|BT|LR|RL)\s*$/i.test(lines[i])) { top = i; break; }
         if (/\{\s*$/.test(lines[i])) depth++;
         if (/^\s*\}/.test(lines[i])) depth--;
       }
-      if (!hasTopDir) {
+      if (top >= 0) {
+        if (opts.forceDirection) lines[top] = lines[top].replace(/\b(?:TB|TD|BT|LR|RL)\b/i, opts.direction);
+      } else {
         const indent = (lines[h + 1] || '').match(/^\s*/)[0] || '    ';
         lines.splice(h + 1, 0, `${indent}direction ${opts.direction}`);
       }
+    } else if (opts.forceDirection) {
+      onWarn(`direction "${opts.direction}" ignorée (types gérés : flowchart/graph, stateDiagram, classDiagram) ; type : "${type.split(/\s+/)[0]}"`);
     }
   }
   // Layout : priorité au layout natif (frontmatter ou %%{init}%%) ; opts.layout sert uniquement de défaut.
@@ -684,6 +733,59 @@ async function render(cfg, { pdf = false } = {}) {
     if (pending) warnings.push(`ligne ${pending.line} : <!-- code:${pending.value} --> n'est suivi d'aucun bloc de code, il est ignoré`);
   });
 
+  // Marqueur <!-- web : … --> ou <!-- pdf : … --> placé juste avant un diagramme Mermaid :
+  // surcharge le zoom et/ou la direction pour ce format uniquement (max 2 spécifications par commentaire).
+  md.core.ruler.push('mermaid_override', (state) => {
+    const t = state.tokens;
+    const MARK = /^\s*<!--([\s\S]*?)-->\s*$/;
+    let pending = {};
+    const hasPending = () => Object.keys(pending).length > 0;
+    const flushUnused = (reason) => {
+      for (const p of Object.values(pending)) warnings.push(`ligne ${p.line} : <!-- ${p.raw} --> ${reason}, il est ignoré`);
+      pending = {};
+    };
+    for (let i = 0; i < t.length; i++) {
+      const tok = t[i];
+      if (tok.type === 'html_block' && /^\s*<!--\s*(?:web|pdf)\s*:/i.test(tok.content)) {
+        const line = (tok.map?.[0] ?? 0) + 1;
+        const m = tok.content.match(MARK);
+        if (!m || m[1].includes('-->') || m[1].includes('<!--')) {
+          warnings.push(`ligne ${line} : balise "${tok.content.trim().split('\n')[0]}" ignorée : elle doit tenir seule sur sa ligne (ex. <!-- pdf : zoom=100, direction=TB -->)`);
+          continue;
+        }
+        const raw = m[1].trim();
+        const parsed = parseMermaidComment(m[1], (msg) => warnings.push(`ligne ${line} : <!-- ${raw} --> : ${msg}`));
+        t.splice(i, 1);
+        i--;
+        if (!parsed) continue;
+        if (pending[parsed.target]) {
+          warnings.push(`ligne ${line} : deux balises <!-- ${parsed.target}:… --> de suite, seule la dernière est prise en compte (combine-les avec une virgule : <!-- ${parsed.target} : zoom=…, direction=… -->)`);
+        }
+        pending[parsed.target] = { raw, line, opts: parsed.opts };
+        continue;
+      }
+      if (!hasPending()) continue;
+      if (tok.type !== 'fence') {
+        flushUnused("n'est pas suivi directement d'un diagramme Mermaid");
+        continue;
+      }
+      const lang = tok.info.trim().split(/\s+/)[0].toLowerCase();
+      if (lang !== 'mermaid') {
+        flushUnused("ne s'applique qu'aux diagrammes Mermaid");
+        continue;
+      }
+      tok.meta = {
+        ...tok.meta,
+        mermaidOverrides: {
+          ...(pending.web ? { web: pending.web.opts } : {}),
+          ...(pending.pdf ? { pdf: pending.pdf.opts } : {}),
+        },
+      };
+      pending = {};
+    }
+    if (hasPending()) flushUnused("n'est suivi d'aucun diagramme Mermaid");
+  });
+
   let hasMermaid = false;
   let usesElk = false;
   let mermaidCount = 0;
@@ -693,8 +795,14 @@ async function render(cfg, { pdf = false } = {}) {
     if (lang === 'mermaid') {
       hasMermaid = true;
       const where = `diagramme Mermaid n°${++mermaidCount}`;
-      const opts = parseMermaidOptions(token.info.trim().split(/\s+/).slice(1), cfg.style.mermaid, (m) => warnings.push(`${where} : ${m}`));
-      const applied = applyMermaidOptions(token.content, opts);
+      const baseOpts = parseMermaidOptions(token.info.trim().split(/\s+/).slice(1), cfg.style.mermaid, (m) => warnings.push(`${where} : ${m}`));
+      const targetOverride = token.meta?.mermaidOverrides?.[pdf ? 'pdf' : 'web'] || null;
+      const opts = {
+        ...baseOpts,
+        ...(targetOverride?.zoom != null ? { zoom: targetOverride.zoom } : {}),
+        ...(targetOverride?.direction != null ? { direction: targetOverride.direction, forceDirection: true } : {}),
+      };
+      const applied = applyMermaidOptions(token.content, opts, (m) => warnings.push(`${where} : ${m}`));
       if (applied.usesElk) usesElk = true;
       const zoomAttr = opts.zoom && opts.zoom !== 100 ? ` data-zoom="${opts.zoom}"` : '';
       return `<div class="mermaid-box"${zoomAttr}><pre class="mermaid">${esc(applied.code)}</pre></div>\n`;

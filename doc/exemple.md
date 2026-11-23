@@ -28,6 +28,7 @@ Ce document d'exemple montre ce que l'outil sait faire : texte, tableaux, code, 
 <b>• [Diagrammes Mermaid](#diagrammes-mermaid)</b><br>
 <b>• [1. Système asservi : schéma-bloc en boucle fermée](#1-syst%C3%A8me-asservi--sch%C3%A9ma-bloc-en-boucle-ferm%C3%A9e)</b><br>
 <b>• [2. Organigramme : robot qui résout un labyrinthe](#2-organigramme--robot-qui-r%C3%A9sout-un-labyrinthe)</b><br>
+<b>• [3. Chaîne de génération : rendu adapté web / PDF](#3-cha%C3%AEne-de-g%C3%A9n%C3%A9ration--rendu-adapt%C3%A9-web--pdf)</b><br>
 <b>• [Conclusion](#conclusion)</b><br>
 <b>• [1. Pour aller plus loin : configuration via le fichier .jsonc](#1-pour-aller-plus-loin--configuration-via-le-fichier-jsonc)</b>
 
@@ -216,6 +217,26 @@ flowchart TD
   AV3 --> TEMPS
   TEMPS -->|oui| ECHEC(["Fin : abandon"])
   TEMPS -->|non| ARR
+```
+
+## 3. Chaîne de génération : rendu adapté web / PDF
+
+Un schéma large est naturel à l'horizontale sur un écran (`flowchart LR`), mais vite à l'étroit sur une page A4 portrait. Les commentaires `<!-- web : … -->` et `<!-- pdf : … -->` juste avant le bloc adaptent la direction et le zoom selon le format de sortie :
+
+<!-- web : zoom = 95 -->
+<!-- pdf : direction = TB, zoom = 65 -->
+```mermaid
+---
+config:
+  layout: dagre
+---
+flowchart LR
+  SRC["1. Source<br/>Markdown + JSONC"] --> PARSE["2. Analyse<br/>titres, LaTeX, code"]
+  PARSE --> MM["3. Rendu<br/>Mermaid"]
+  MM --> HTML["4. Assemblage<br/>HTML + CSS"]
+  HTML --> WEB(["Page web<br/>interactive"])
+  HTML --> PDF["5. Impression<br/>Chromium + signets"]
+  PDF --> OUT(["Document PDF<br/>paginé"])
 ```
 
 # Conclusion
