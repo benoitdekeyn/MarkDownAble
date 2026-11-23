@@ -241,16 +241,18 @@ Chaque document a son propre dossier `output_html/<nom>/`, donc plusieurs docume
   ```
   ````
 
-  Pour adapter le `zoom` et/ou la `direction` **uniquement pour le web (`web`) ou uniquement pour le PDF (`pdf`)**, placez un commentaire HTML seul sur sa ligne juste avant le bloc (1 ou 2 spécifications séparées par `,`, les espaces sont ignorés) :
+  Pour adapter le `zoom` et/ou la `direction` selon l'orientation (**`paysage`** = HTML sur ordinateur / écran large et PDF en paysage ; **`portrait`** = HTML sur mobile / écran portrait et PDF en portrait), placez un commentaire HTML seul sur sa ligne juste avant le bloc (1 ou 2 spécifications séparées par `,`, les espaces sont ignorés) :
 
   ````markdown
-  <!-- web : zoom = 50 -->
-  <!-- pdf : zoom = 100, direction = TB -->
+  <!-- paysage : zoom = 95 -->
+  <!-- portrait : zoom = 65, direction = TB -->
   ```mermaid
   flowchart LR
     A --> B
   ```
   ````
+
+  En HTML, le diagramme bascule automatiquement entre les deux variantes quand l'écran passe de paysage à portrait (ex. mobile ou fenêtre étroite).
 
   En HTML, un diagramme se déplace et se zoome (boutons ou molette) et peut passer en plein écran (toujours à taille pleine). Sur téléphone, si les contrôles masquent une partie du diagramme, ils sont remplacés par une colonne à droite avec la seule icône « agrandir » ; le plein écran affiche tous les contrôles.
 - **Saut de page (PDF uniquement)** : une ligne `\newpage` ou `<!-- newpage -->` (ignoré à l'écran). Il fonctionne aussi dans une liste, au milieu d'un paragraphe, dans la TOC, et **dans un tableau Markdown** : une ligne `\newpage` entre deux lignes du tableau n'est pas affichée et la ligne suivante commence une nouvelle page.
@@ -584,8 +586,8 @@ Les palettes `default`, `formal` et `neon` changent **les couleurs uniquement**.
 | Option | Valeurs | Effet |
 | --- | --- | --- |
 | `"layout"` | `"dagre"` ou `"elk"` | Moteur par défaut si le diagramme ne déclare pas son propre `layout` (frontmatter ou `%%{init}%%`). `elk` ajoute ~2,4 Mo au HTML. |
-| `"direction"` | `null`, `"TB"`, `"BT"`, `"LR"`, `"RL"` | Direction par défaut si le diagramme (`flowchart`/`graph`, `stateDiagram`, `classDiagram`) n'en précise pas ; surchargeable par format avec `<!-- pdf : direction=TB -->` ou `<!-- web : direction=LR -->`. |
-| `"zoom"` | `10` à `200` (défaut `100`) | Zoom par défaut en % ; surchargeable par diagramme avec ```` ```mermaid zoom=75 ```` ou par format avec `<!-- web : zoom=50 -->` / `<!-- pdf : zoom=100 -->`. |
+| `"direction"` | `null`, `"TB"`, `"BT"`, `"LR"`, `"RL"` | Direction par défaut si le diagramme (`flowchart`/`graph`, `stateDiagram`, `classDiagram`) n'en précise pas ; surchargeable par orientation avec `<!-- portrait : direction=TB -->` ou `<!-- paysage : direction=LR -->`. |
+| `"zoom"` | `10` à `200` (défaut `100`) | Zoom par défaut en % ; surchargeable par diagramme avec ```` ```mermaid zoom=75 ```` ou par orientation avec `<!-- paysage : zoom=95 -->` / `<!-- portrait : zoom=65 -->`. |
 
 ```jsonc
 "mermaid": { "layout": "elk", "direction": "TB", "zoom": 100 }

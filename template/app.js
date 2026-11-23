@@ -377,7 +377,9 @@
     document.addEventListener('keydown', onKey, true);
   }
 
+  const portraitMq = matchMedia('(orientation: portrait)');
   $$('pre.mermaid').forEach((n) => { n.dataset.src = n.textContent; });
+  const hasResponsiveMermaid = $$('.mermaid-box').some((b) => b.dataset.zoomPortrait !== undefined || b.dataset.zoomPaysage !== undefined || ($('pre.mermaid', b) && $('pre.mermaid', b).dataset.srcPortrait !== undefined));
   let mermaidQueue = Promise.resolve();
   function renderMermaid() {
     if (!window.mermaid) return mermaidQueue;
@@ -387,13 +389,17 @@
       const dark = root.dataset.theme === 'dark';
       const css = CFG.mermaidCss;
       mermaid.initialize({ startOnLoad: false, theme, securityLevel: 'strict', themeCSS: `${css.common}\n${dark ? css.dark : css.light}` });
+      const portrait = portraitMq.matches;
       const nodes = $$('pre.mermaid');
       nodes.forEach((n) => {
         const box = n.parentElement;
         if (box._pz) { try { box._pz.destroy(); } catch (_) {} box._pz = null; }
         box.style.maxWidth = '';
         $$('.mm-ui', box).forEach((x) => x.remove());
-        n.textContent = n.dataset.src;
+        const zoom = portrait ? (box.dataset.zoomPortrait ?? box.dataset.zoom) : (box.dataset.zoomPaysage ?? box.dataset.zoom);
+        if (zoom && Number(zoom) !== 100) box.dataset.zoom = zoom;
+        else delete box.dataset.zoom;
+        n.textContent = (portrait && n.dataset.srcPortrait) ? n.dataset.srcPortrait : n.dataset.src;
         n.removeAttribute('data-processed');
       });
       try { await mermaid.run({ nodes }); } catch (e) { console.error('Mermaid :', e); }
@@ -401,6 +407,7 @@
     });
     return mermaidQueue;
   }
+  if (hasResponsiveMermaid) portraitMq.addEventListener('change', () => renderMermaid());
 
   themeBtn.textContent = labels[mode];
   window.addEventListener('load', async () => {

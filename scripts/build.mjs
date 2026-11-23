@@ -423,12 +423,15 @@ function normalizeMermaidOptions(raw, onError) {
   return out;
 }
 
+const MERMAID_TARGETS = { portrait: 'portrait', paysage: 'paysage', landscape: 'paysage' };
+
 function parseMermaidComment(rawInner, onError) {
   const compact = rawInner.replace(/\s+/g, '');
   const colonParts = compact.split(':');
-  const target = colonParts[0].toLowerCase();
-  if (colonParts.length !== 2 || !colonParts[1]) {
-    onError(`syntaxe invalide (attendu "${target} : zoom=…", "${target} : direction=…" ou les deux séparés par une virgule)`);
+  const target = MERMAID_TARGETS[colonParts[0].toLowerCase()];
+  if (!target || colonParts.length !== 2 || !colonParts[1]) {
+    const label = target || colonParts[0].toLowerCase();
+    onError(`syntaxe invalide (attendu "${label} : zoom=…", "${label} : direction=…" ou les deux séparés par une virgule)`);
     return null;
   }
   const specs = colonParts[1].split(',');
@@ -733,8 +736,9 @@ async function render(cfg, { pdf = false } = {}) {
     if (pending) warnings.push(`ligne ${pending.line} : <!-- code:${pending.value} --> n'est suivi d'aucun bloc de code, il est ignoré`);
   });
 
-  // Marqueur <!-- web : … --> ou <!-- pdf : … --> placé juste avant un diagramme Mermaid :
-  // surcharge le zoom et/ou la direction pour ce format uniquement (max 2 spécifications par commentaire).
+  // Marqueur <!-- portrait : … --> ou <!-- paysage : … --> placé juste avant un diagramme Mermaid :
+  // surcharge le zoom et/ou la direction pour cette orientation (portrait = PDF portrait & HTML mobile ;
+  // paysage = PDF paysage & HTML desktop ; max 2 spécifications par commentaire).
   md.core.ruler.push('mermaid_override', (state) => {
     const t = state.tokens;
     const MARK = /^\s*<!--([\s\S]*?)-->\s*$/;
@@ -748,9 +752,16 @@ async function render(cfg, { pdf = false } = {}) {
       const tok = t[i];
       if (tok.type === 'html_block' && /^\s*<!--\s*(?:web|pdf)\s*:/i.test(tok.content)) {
         const line = (tok.map?.[0] ?? 0) + 1;
+        warnings.push(`ligne ${line} : balise "${tok.content.trim().split('\n')[0]}" ignorée : utilisez <!-- paysage : … --> (desktop / PDF paysage) ou <!-- portrait : … --> (mobile / PDF portrait)`);
+        t.splice(i, 1);
+        i--;
+        continue;
+      }
+      if (tok.type === 'html_block' && /^\s*<!--\s*(?:portrait|paysage|landscape)\s*:/i.test(tok.content)) {
+        const line = (tok.map?.[0] ?? 0) + 1;
         const m = tok.content.match(MARK);
         if (!m || m[1].includes('-->') || m[1].includes('<!--')) {
-          warnings.push(`ligne ${line} : balise "${tok.content.trim().split('\n')[0]}" ignorée : elle doit tenir seule sur sa ligne (ex. <!-- pdf : zoom=100, direction=TB -->)`);
+          warnings.push(`ligne ${line} : balise "${tok.content.trim().split('\n')[0]}" ignorée : elle doit tenir seule sur sa ligne (ex. <!-- portrait : zoom=100, direction=TB -->)`);
           continue;
         }
         const raw = m[1].trim();
@@ -777,8 +788,8 @@ async function render(cfg, { pdf = false } = {}) {
       tok.meta = {
         ...tok.meta,
         mermaidOverrides: {
-          ...(pending.web ? { web: pending.web.opts } : {}),
-          ...(pending.pdf ? { pdf: pending.pdf.opts } : {}),
+          ...(pending.paysage ? { paysage: pending.paysage.opts } : {}),
+          ...(pending.portrait ? { portrait: pending.portrait.opts } : {}),
         },
       };
       pending = {};
@@ -796,16 +807,36 @@ async function render(cfg, { pdf = false } = {}) {
       hasMermaid = true;
       const where = `diagramme Mermaid n°${++mermaidCount}`;
       const baseOpts = parseMermaidOptions(token.info.trim().split(/\s+/).slice(1), cfg.style.mermaid, (m) => warnings.push(`${where} : ${m}`));
-      const targetOverride = token.meta?.mermaidOverrides?.[pdf ? 'pdf' : 'web'] || null;
-      const opts = {
+      const overrides = token.meta?.mermaidOverrides;
+      const mergeOverride = (ov) => ({
         ...baseOpts,
-        ...(targetOverride?.zoom != null ? { zoom: targetOverride.zoom } : {}),
-        ...(targetOverride?.direction != null ? { direction: targetOverride.direction, forceDirection: true } : {}),
-      };
-      const applied = applyMermaidOptions(token.content, opts, (m) => warnings.push(`${where} : ${m}`));
-      if (applied.usesElk) usesElk = true;
-      const zoomAttr = opts.zoom && opts.zoom !== 100 ? ` data-zoom="${opts.zoom}"` : '';
-      return `<div class="mermaid-box"${zoomAttr}><pre class="mermaid">${esc(applied.code)}</pre></div>\n`;
+        ...(ov?.zoom != null ? { zoom: ov.zoom } : {}),
+        ...(ov?.direction != null ? { direction: ov.direction, forceDirection: true } : {}),
+      });
+      if (pdf) {
+        const opts = mergeOverride(overrides?.[cfg.pdf.landscape ? 'paysage' : 'portrait']);
+        const applied = applyMermaidOptions(token.content, opts, (m) => warnings.push(`${where} : ${m}`));
+        if (applied.usesElk) usesElk = true;
+        const zoomAttr = opts.zoom && opts.zoom !== 100 ? ` data-zoom="${opts.zoom}"` : '';
+        return `<div class="mermaid-box"${zoomAttr}><pre class="mermaid">${esc(applied.code)}</pre></div>\n`;
+      }
+      const paysageOpts = mergeOverride(overrides?.paysage);
+      const portraitOpts = mergeOverride(overrides?.portrait);
+      const paysage = applyMermaidOptions(token.content, paysageOpts, (m) => warnings.push(`${where} : ${m}`));
+      const portrait = applyMermaidOptions(token.content, portraitOpts, (m) => warnings.push(`${where} : ${m}`));
+      if (paysage.usesElk || portrait.usesElk) usesElk = true;
+      const sameCode = paysage.code === portrait.code;
+      const zPaysage = paysageOpts.zoom ?? 100;
+      const zPortrait = portraitOpts.zoom ?? 100;
+      if (sameCode && zPaysage === zPortrait) {
+        const zoomAttr = zPaysage !== 100 ? ` data-zoom="${zPaysage}"` : '';
+        return `<div class="mermaid-box"${zoomAttr}><pre class="mermaid">${esc(paysage.code)}</pre></div>\n`;
+      }
+      const boxAttrs = zPaysage !== zPortrait
+        ? ` data-zoom-paysage="${zPaysage}" data-zoom-portrait="${zPortrait}"`
+        : (zPaysage !== 100 ? ` data-zoom="${zPaysage}"` : '');
+      const preAttrs = sameCode ? '' : ` data-src-portrait="${esc(portrait.code)}"`;
+      return `<div class="mermaid-box"${boxAttrs}><pre class="mermaid"${preAttrs}>${esc(paysage.code)}</pre></div>\n`;
     }
     let body;
     if (lang && hljs.getLanguage(lang)) body = hljs.highlight(token.content, { language: lang, ignoreIllegals: true }).value;

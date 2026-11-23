@@ -635,14 +635,15 @@ flowchart LR
   A --&gt; B
 <span class="hljs-code">```
 </span></code></pre></div></div>
-<p>Pour adapter le <code>zoom</code> et/ou la <code>direction</code> <strong>uniquement pour le web (<code>web</code>) ou uniquement pour le PDF (<code>pdf</code>)</strong>, placez un commentaire HTML seul sur sa ligne juste avant le bloc (1 ou 2 spécifications séparées par <code>,</code>, les espaces sont ignorés) :</p>
-<div class="code-block"><div class="code-frame" data-lang="markdown"><div class="code-bar"><div class="code-actions"><button class="copy-btn" type="button" title="Copier le code" aria-label="Copier le code"></button><button class="expand-btn" type="button" title="Agrandir le code" aria-label="Agrandir le code"></button><button class="download-btn" type="button" title="Télécharger le code" aria-label="Télécharger le code"></button></div><span class="code-lang" title="markdown">markdown</span></div><pre><code class="hljs language-markdown">&lt;!-- web : zoom = 50 --&gt;
-&lt;!-- pdf : zoom = 100, direction = TB --&gt;
+<p>Pour adapter le <code>zoom</code> et/ou la <code>direction</code> selon l'orientation (<strong><code>paysage</code></strong> = HTML sur ordinateur / écran large et PDF en paysage ; <strong><code>portrait</code></strong> = HTML sur mobile / écran portrait et PDF en portrait), placez un commentaire HTML seul sur sa ligne juste avant le bloc (1 ou 2 spécifications séparées par <code>,</code>, les espaces sont ignorés) :</p>
+<div class="code-block"><div class="code-frame" data-lang="markdown"><div class="code-bar"><div class="code-actions"><button class="copy-btn" type="button" title="Copier le code" aria-label="Copier le code"></button><button class="expand-btn" type="button" title="Agrandir le code" aria-label="Agrandir le code"></button><button class="download-btn" type="button" title="Télécharger le code" aria-label="Télécharger le code"></button></div><span class="code-lang" title="markdown">markdown</span></div><pre><code class="hljs language-markdown">&lt;!-- paysage : zoom = 95 --&gt;
+&lt;!-- portrait : zoom = 65, direction = TB --&gt;
 <span class="hljs-code">```mermaid
 flowchart LR
   A --&gt; B
 ```</span>
 </code></pre></div></div>
+<p>En HTML, le diagramme bascule automatiquement entre les deux variantes quand l'écran passe de paysage à portrait (ex. mobile ou fenêtre étroite).</p>
 <p>En HTML, un diagramme se déplace et se zoome (boutons ou molette) et peut passer en plein écran (toujours à taille pleine). Sur téléphone, si les contrôles masquent une partie du diagramme, ils sont remplacés par une colonne à droite avec la seule icône « agrandir » ; le plein écran affiche tous les contrôles.</p>
 </li>
 <li>
@@ -1302,12 +1303,12 @@ flowchart LR
 <tr>
 <td><code>&quot;direction&quot;</code></td>
 <td><code>null</code>, <code>&quot;TB&quot;</code>, <code>&quot;BT&quot;</code>, <code>&quot;LR&quot;</code>, <code>&quot;RL&quot;</code></td>
-<td>Direction par défaut si le diagramme (<code>flowchart</code>/<code>graph</code>, <code>stateDiagram</code>, <code>classDiagram</code>) n'en précise pas ; surchargeable par format avec <code>&lt;!-- pdf : direction=TB --&gt;</code> ou <code>&lt;!-- web : direction=LR --&gt;</code>.</td>
+<td>Direction par défaut si le diagramme (<code>flowchart</code>/<code>graph</code>, <code>stateDiagram</code>, <code>classDiagram</code>) n'en précise pas ; surchargeable par orientation avec <code>&lt;!-- portrait : direction=TB --&gt;</code> ou <code>&lt;!-- paysage : direction=LR --&gt;</code>.</td>
 </tr>
 <tr>
 <td><code>&quot;zoom&quot;</code></td>
 <td><code>10</code> à <code>200</code> (défaut <code>100</code>)</td>
-<td>Zoom par défaut en % ; surchargeable par diagramme avec <code>```mermaid zoom=75</code> ou par format avec <code>&lt;!-- web : zoom=50 --&gt;</code> / <code>&lt;!-- pdf : zoom=100 --&gt;</code>.</td>
+<td>Zoom par défaut en % ; surchargeable par diagramme avec <code>```mermaid zoom=75</code> ou par orientation avec <code>&lt;!-- paysage : zoom=95 --&gt;</code> / <code>&lt;!-- portrait : zoom=65 --&gt;</code>.</td>
 </tr>
 </tbody>
 </table>
@@ -1965,7 +1966,9 @@ flowchart LR
     document.addEventListener('keydown', onKey, true);
   }
 
+  const portraitMq = matchMedia('(orientation: portrait)');
   $$('pre.mermaid').forEach((n) => { n.dataset.src = n.textContent; });
+  const hasResponsiveMermaid = $$('.mermaid-box').some((b) => b.dataset.zoomPortrait !== undefined || b.dataset.zoomPaysage !== undefined || ($('pre.mermaid', b) && $('pre.mermaid', b).dataset.srcPortrait !== undefined));
   let mermaidQueue = Promise.resolve();
   function renderMermaid() {
     if (!window.mermaid) return mermaidQueue;
@@ -1975,13 +1978,17 @@ flowchart LR
       const dark = root.dataset.theme === 'dark';
       const css = CFG.mermaidCss;
       mermaid.initialize({ startOnLoad: false, theme, securityLevel: 'strict', themeCSS: `${css.common}\n${dark ? css.dark : css.light}` });
+      const portrait = portraitMq.matches;
       const nodes = $$('pre.mermaid');
       nodes.forEach((n) => {
         const box = n.parentElement;
         if (box._pz) { try { box._pz.destroy(); } catch (_) {} box._pz = null; }
         box.style.maxWidth = '';
         $$('.mm-ui', box).forEach((x) => x.remove());
-        n.textContent = n.dataset.src;
+        const zoom = portrait ? (box.dataset.zoomPortrait ?? box.dataset.zoom) : (box.dataset.zoomPaysage ?? box.dataset.zoom);
+        if (zoom && Number(zoom) !== 100) box.dataset.zoom = zoom;
+        else delete box.dataset.zoom;
+        n.textContent = (portrait && n.dataset.srcPortrait) ? n.dataset.srcPortrait : n.dataset.src;
         n.removeAttribute('data-processed');
       });
       try { await mermaid.run({ nodes }); } catch (e) { console.error('Mermaid :', e); }
@@ -1989,6 +1996,7 @@ flowchart LR
     });
     return mermaidQueue;
   }
+  if (hasResponsiveMermaid) portraitMq.addEventListener('change', () => renderMermaid());
 
   themeBtn.textContent = labels[mode];
   window.addEventListener('load', async () => {
