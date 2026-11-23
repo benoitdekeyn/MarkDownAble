@@ -142,12 +142,15 @@
   }
 
   // Diagrammes Mermaid, un par un pour isoler les erreurs.
+  await document.fonts.ready;
   const nodes = $$('pre.mermaid');
   if (nodes.length && window.mermaid) {
     const dark = root.dataset.theme === 'dark';
     const theme = CFG.mermaidTheme === 'auto' ? (dark ? 'dark' : 'default') : CFG.mermaidTheme;
     if (window.__elk && mermaid.registerLayoutLoaders) mermaid.registerLayoutLoaders(window.__elk.default);
     mermaid.initialize({ startOnLoad: false, theme, securityLevel: 'strict', themeCSS: `${CFG.mermaidCss.common}\n${dark ? CFG.mermaidCss.dark : CFG.mermaidCss.light}` });
+    const pageH = window.innerHeight || parseFloat(getComputedStyle(root).getPropertyValue('--pdf-fig-h')) || 0;
+    const floor1 = (v) => Math.floor(v * 10) / 10;
     for (const [i, n] of nodes.entries()) {
       try {
         await mermaid.run({ nodes: [n] });
@@ -156,21 +159,68 @@
         else {
           const box = n.parentElement;
           const z = Number((box && box.dataset.zoom) || 100) / 100;
-          if (z !== 1) {
-            const r = svg.getBoundingClientRect();
-            const maxW = box ? box.clientWidth : r.width;
-            const maxH = parseFloat(getComputedStyle(svg).maxHeight);
-            if (r.width > 0 && r.height > 0) {
-              let targetW = Math.min(maxW, r.width * z);
-              let targetH = r.height * (targetW / r.width);
-              if (Number.isFinite(maxH) && targetH > maxH) {
-                targetH = maxH;
-                targetW = targetH * (r.width / r.height);
+          const vb = svg.viewBox && svg.viewBox.baseVal;
+          const r = svg.getBoundingClientRect();
+          const vbW = (vb && vb.width > 0) ? vb.width : r.width;
+          const vbH = (vb && vb.height > 0) ? vb.height : r.height;
+          const maxW = (box && box.clientWidth > 0) ? box.clientWidth : r.width;
+          let maxH = parseFloat(getComputedStyle(svg).maxHeight);
+          // Hauteur maximale adaptée à la place réellement occupée par le titre / texte qui accompagne ce diagramme.
+          if (box && pageH > 0) {
+            const boxCs = getComputedStyle(box);
+            const marginTop = parseFloat(boxCs.marginTop) || 0;
+            const marginBottom = parseFloat(boxCs.marginBottom) || 0;
+            const boxRect = box.getBoundingClientRect();
+            const seg = box.parentElement && box.parentElement.classList.contains('pdf-seg') ? box.parentElement : null;
+            let overhead = marginTop + marginBottom;
+            if (seg) {
+              // Remonter les titres enchaînés (ex. # suivi immédiatement de ##) qui doivent rester sur la même page.
+              let topEl = seg;
+              while (topEl.parentElement && topEl.parentElement.classList.contains('pdf-seg')
+                && topEl.previousElementSibling === topEl.parentElement.firstElementChild
+                && isHeading(topEl.previousElementSibling)) {
+                topEl = topEl.parentElement;
               }
-              svg.style.maxWidth = `${targetW.toFixed(1)}px`;
-              svg.style.width = `${targetW.toFixed(1)}px`;
-              svg.style.height = `${targetH.toFixed(1)}px`;
+              let simpleBefore = true;
+              for (let el = seg.firstElementChild; el && el !== box; el = el.nextElementSibling) {
+                if (el.classList.contains('pdf-seg') || el.classList.contains('mermaid-box')) { simpleBefore = false; break; }
+              }
+              const firstEl = topEl.firstElementChild || topEl;
+              const firstMarginTop = parseFloat(getComputedStyle(firstEl).marginTop) || 0;
+              const beforeH = firstMarginTop + (boxRect.top - firstEl.getBoundingClientRect().top);
+              if (simpleBefore && beforeH >= 0 && beforeH <= pageH * 0.45) {
+                let simpleAfter = true;
+                for (let el = box.nextElementSibling; el; el = el.nextElementSibling) {
+                  if (el.classList.contains('pdf-seg') || el.classList.contains('mermaid-box')) { simpleAfter = false; break; }
+                }
+                const segRect = seg.getBoundingClientRect();
+                const rawAfter = simpleAfter ? Math.max(marginBottom, segRect.bottom - boxRect.bottom) : marginBottom;
+                const afterH = rawAfter <= pageH * 0.25 ? rawAfter : marginBottom;
+                overhead = beforeH + afterH;
+              } else if (isHeading(box.previousElementSibling)) {
+                const prev = box.previousElementSibling;
+                const prevMarginTop = parseFloat(getComputedStyle(prev).marginTop) || 0;
+                overhead = prevMarginTop + Math.max(marginTop, boxRect.top - prev.getBoundingClientRect().top) + marginBottom;
+              }
+            } else if (isHeading(box.previousElementSibling)) {
+              const prev = box.previousElementSibling;
+              const prevMarginTop = parseFloat(getComputedStyle(prev).marginTop) || 0;
+              overhead = prevMarginTop + Math.max(marginTop, boxRect.top - prev.getBoundingClientRect().top) + marginBottom;
             }
+            const availH = pageH - overhead - 20;
+            if (availH > 80) maxH = availH;
+          }
+          if (vbW > 0 && vbH > 0 && maxW > 0) {
+            const capH = Number.isFinite(maxH) && maxH > 0 ? maxH / vbH : Infinity;
+            const capW = maxW / vbW;
+            const baseScale = Math.min(1, capW, capH);
+            const targetScale = Math.min(baseScale * z, capW, capH);
+            const targetW = floor1(vbW * targetScale);
+            const targetH = floor1(vbH * targetScale);
+            svg.style.maxWidth = `${targetW}px`;
+            svg.style.width = `${targetW}px`;
+            svg.style.height = `${targetH}px`;
+            if (Number.isFinite(maxH) && maxH > 0) svg.style.maxHeight = `${floor1(maxH)}px`;
           }
         }
       } catch (e) {

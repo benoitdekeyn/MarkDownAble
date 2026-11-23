@@ -27,6 +27,6 @@
   .code-frame { overflow: visible; }
   .mermaid-box { border: 0; overflow: visible; margin: 1em 0; }
   pre.mermaid { padding: 0; }
-  pre.mermaid svg { max-height: calc(var(--pdf-fig-h, 100vh) - 9em); }
+  pre.mermaid svg { display: block; margin: 0 auto; max-height: calc(var(--pdf-fig-h, 100vh) - 4em); }
   .markdown-body a { color: var(--accent); }
 }

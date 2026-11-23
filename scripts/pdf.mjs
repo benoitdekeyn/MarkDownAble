@@ -55,8 +55,16 @@ export function validatePdfConfig(p) {
 export function pdfGeometry(p, zoom = p.zoom) {
   const [w, h] = FORMATS[String(p.format).toLowerCase()];
   const [pw, ph] = p.landscape ? [h, w] : [w, h];
+  const innerW = pw * 96 - toPx(p.margins.left) - toPx(p.margins.right);
   const innerH = ph * 96 - toPx(p.margins.top) - toPx(p.margins.bottom);
-  return { figHeight: Math.floor((innerH / (zoom / 100)) * 0.96) };
+  const scale = zoom / 100;
+  return {
+    innerW,
+    innerH,
+    viewportWidth: Math.max(1, Math.floor(innerW / scale)),
+    viewportHeight: Math.max(1, Math.floor(innerH / scale)),
+    figHeight: Math.floor((innerH / scale) * 0.96),
+  };
 }
 
 async function launch(chromium, browserPath) {
@@ -252,7 +260,10 @@ export async function exportPdf({ cfg, html, ConfigError, warn }) {
   let browser;
   try {
     try { browser = await launch(chromium, p.browser); } catch (e) { throw new ConfigError(e.message); }
+    const geo = pdfGeometry(p, cfg.render.pdf.zoom);
     const page = await browser.newPage();
+    await page.emulateMedia({ media: 'print' });
+    await page.setViewportSize({ width: geo.viewportWidth, height: geo.viewportHeight });
     page.on('pageerror', (e) => warn(`erreur dans la page : ${e.message}`));
     fs.writeFileSync(tmpFile, html);
     await page.goto(pathToFileURL(tmpFile).href, { waitUntil: 'load' });
