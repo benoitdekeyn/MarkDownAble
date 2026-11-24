@@ -37,11 +37,11 @@
     }
   }
 
-  // \samepage juste avant un titre : annule le saut de page imposé par pdf.pageBreakBefore pour ce titre.
+  // \samepage juste avant un titre ou un bloc : annule localement le saut de page (pageBreakBefore, keepSectionsTogether, keepBlocksTogether).
   $$('.samepage', article).forEach((m) => {
     const next = m.nextElementSibling;
-    if (isHeading(next)) next.dataset.samepage = '1';
-    else errors.push('\\samepage ignoré : il doit être placé juste avant un titre');
+    if (next) next.dataset.samepage = '1';
+    else errors.push('\\samepage ignoré : aucun élément ne le suit');
     m.remove();
   });
 
@@ -121,6 +121,16 @@
       }
     }
   }
+
+  // \samepage suspend localement keepSectionsTogether et keepBlocksTogether sur l'élément ciblé et ses sections englobantes.
+  $$('[data-samepage="1"]', article).forEach((target) => {
+    target.classList.add('split-ok');
+    for (let el = target.parentElement; el && el !== article; el = el.parentElement) {
+      if (el.classList.contains('pdf-seg') || el.classList.contains('code-block') || el.classList.contains('code-frame')) {
+        el.classList.add('split-ok');
+      }
+    }
+  });
 
   // Un bloc de code qui tient sur une page reste d'un seul tenant (il passe à la page suivante si besoin).
   // Seul un bloc plus haut qu'une page est autorisé à être coupé, ainsi que les sections qui le contiennent.
