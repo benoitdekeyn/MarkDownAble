@@ -251,7 +251,7 @@ const readAsset = (...p) => fs.readFileSync(path.join(...p), 'utf8');
 const esc = (s) => MarkdownIt().utils.escapeHtml(s);
 
 // Mention de fin de page / de document.
-const credit = (pdf) => `<footer class="mdable-credit">${pdf ? 'Document' : 'Site'} généré avec <a href="https://markdownable.benoitdekeyn.com">MarkDownAble</a></footer>`;
+const credit = (pdf) => `<footer class="mdable-credit">${pdf ? 'Document' : 'Site'} généré avec <a href="https://markdownable.benoitdekeyn.com" target="_blank" rel="noopener noreferrer">MarkDownAble</a></footer>`;
 
 // Nom de fichier proposé au téléchargement quand le texte de <!-- code:… --> ressemble à "chemin/main.cpp" ; sinon ''.
 function safeFileName(label) {
@@ -905,7 +905,11 @@ async function render(cfg, { pdf = false } = {}) {
     walk(state.tokens);
   });
 
-  let body = md.render(source);
+  let body = md.render(source).replace(/<a\b([^>]*\bhref=["']https?:\/\/[^"']+["'][^>]*)>/gi, (m, attrs) => {
+    if (/\btarget\s*=/i.test(attrs)) return m;
+    const rel = /\brel\s*=/i.test(attrs) ? '' : ' rel="noopener noreferrer"';
+    return `<a${attrs} target="_blank"${rel}>`;
+  });
   const hasMath = /class="katex/.test(body);
 
   // Vérifications : ancres internes et fichiers locaux (relatifs au .md)
