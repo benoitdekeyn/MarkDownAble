@@ -30,7 +30,6 @@
   --quote: #a0a0a0;
   color-scheme: dark;
 }
-:root[data-theme="dark"] .markdown-body img { background: #fff; }
 
 * { box-sizing: border-box; }
 html { scroll-padding-top: 16px; }

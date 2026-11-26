@@ -14,11 +14,11 @@
 // Les dossiers de sortie sont créés au besoin ; « npm run init » crée aussi le dossier "doc" s'il n'existe pas.
 {
   // Vos documents : <nom>.md + <nom>.jsonc, et leurs images (ex. media/…).
-  "doc": "./doc",
+  "doc": "../",
 
   // Pages HTML générées : un sous-dossier par document (<nom>/index.html + médias utilisés).
-  "output_html": "./output_html",
+  "output_html": "../web-version",
 
   // PDF générés : <nom>.pdf
-  "output_pdf": "./output_pdf"
+  "output_pdf": "../"
 }
