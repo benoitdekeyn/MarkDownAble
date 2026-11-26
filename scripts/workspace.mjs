@@ -43,7 +43,7 @@ export const isToolFile = (baseDir, abs) => norm(baseDir) !== norm(WORKSPACE) &&
 // vérifie qu'ils sont utilisables. Lève une ConfigError explicite sinon.
 function readPaths() {
   let user = {};
-  if (fs.existsSync(PATHS_FILE)) {
+  if (!process.env.MARKDOWN_IGNORE_PATHS && fs.existsSync(PATHS_FILE)) {
     try { user = JSON.parse(stripJsonComments(fs.readFileSync(PATHS_FILE, 'utf8'))); }
     catch (e) { throw new ConfigError(`paths.jsonc : JSON invalide : ${e.message}`); }
     if (!isObj(user)) throw new ConfigError('paths.jsonc doit contenir un objet JSON { "doc": …, "output_html": …, "output_pdf": … }');

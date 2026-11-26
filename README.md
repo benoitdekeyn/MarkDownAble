@@ -29,11 +29,16 @@ Vous pouvez consulter le dépôt GitHub mais ce n'est pas nécessaire pour utili
 
 De zéro à un aperçu dans le navigateur en quelques minutes. Il faut **Node.js** (obligatoire), **Git** (facultatif) et **Chrome ou Edge** (uniquement pour le PDF).
 
+Par défaut (`paths.jsonc`), l'outil est prévu pour être placé **dans un sous-dossier de votre projet** : il lit vos `.md` / `.jsonc` dans le dossier parent (`../`), génère les PDF au même endroit (`../`) et les pages web dans `../web-version/`.
+
 ```powershell
-git clone https://github.com/benoitdekeyn/MarkDownAble MonProjet     # remplacez MonProjet
-cd MonProjet
+cd MonProjet                                          # votre dossier (ou dépôt) de documents
+git clone https://github.com/benoitdekeyn/MarkDownAble markdownable
+cd markdownable
 npm install
-npm run dev                              # aperçu en direct de doc/exemple.md
+npm run ghost                                         # facultatif (si MonProjet est un dépôt Git) : ajoute markdownable/ au .gitignore
+npm run init -- MonDoc                                # crée ../MonDoc.md et ../MonDoc.jsonc
+npm run dev                                           # aperçu en direct dans le navigateur
 ```
 
 > **Erreur `npm : Le terme « npm » n'est pas reconnu…` (ou `'npm' is not recognized…`, `npm: command not found`) ?** Node.js (qui fournit `npm`) n'est pas installé, ou le terminal a été ouvert avant l'installation : suivez le [§1.1](#11-installer-nodejs) puis fermez et rouvrez le terminal. De même, `git : Le terme « git » n'est pas reconnu` signifie que Git n'est pas installé : voir le [§1.2](#12-récupérer-le-projet) (ou téléchargez le dépôt en ZIP).
@@ -57,16 +62,18 @@ Node.js est le programme qui exécute l'outil (à faire une seule fois par machi
 
 ### 1.2 Récupérer le projet
 
-**Avec Git** : `git clone https://github.com/benoitdekeyn/MarkDownAble MonProjet` puis `cd MonProjet`.
+Placez l'outil dans un sous-dossier de votre dossier de documents (par exemple `MonProjet/markdownable/`) :
+
+**Avec Git** : `cd MonProjet` puis `git clone https://github.com/benoitdekeyn/MarkDownAble markdownable` puis `cd markdownable`.
 > Pour installer Git, rendez-vous sur <https://git-scm.com/downloads> (options par défaut) ; rouvrez ensuite le terminal et vérifiez avec `git --version`.
 
-**Sans Git** : [Télécharger le ZIP du dépôt GitHub](https://github.com/benoitdekeyn/MarkDownAble/archive/refs/heads/main.zip), dézippez, puis ouvrez un terminal dans le dossier obtenu.
+**Sans Git** : [Télécharger le ZIP du dépôt GitHub](https://github.com/benoitdekeyn/MarkDownAble/archive/refs/heads/main.zip), dézippez-le dans un sous-dossier de votre projet (ex. `MonProjet/markdownable/`), puis ouvrez un terminal dans ce dossier.
 
 > Astuce VS Code : clic droit sur le dossier → « Ouvrir dans le terminal intégré ».
 
 ### 1.3 Installer les dépendances de l'outil
 
-Dans un terminal **ouvert dans le dossier du projet** (celui qui contient ce `README.md`) :
+Dans un terminal **ouvert dans le dossier de l'outil** (celui qui contient ce `README.md`) :
 
 ```powershell
 npm install
@@ -76,61 +83,47 @@ Cela crée le dossier `node_modules/` (ne le modifiez pas, il n'est pas versionn
 
 ### 1.4 Voir l'exemple
 
-```powershell
-npm run dev
-```
-
-Le navigateur s'ouvre sur l'aperçu de `doc/exemple.md` (formules, code, Mermaid, images…). Chaque sauvegarde recharge la page. `Ctrl+C` arrête le serveur.
-
-Le même document d'exemple, tel qu'il est écrit puis tel qu'il est généré :
+Un document d'exemple complet (formules, code, Mermaid, images…) est fourni dans le dossier `doc/` du dépôt :
 
 - **Le texte** : [doc/exemple.md](https://github.com/benoitdekeyn/MarkDownAble/blob/main/doc/exemple.md), le Markdown que l'on écrit.
 - **Ses réglages** : [doc/exemple.jsonc](https://github.com/benoitdekeyn/MarkDownAble/blob/main/doc/exemple.jsonc), la configuration commentée qui pilote l'apparence, le PDF, la numérotation…
 - **La page web** : [exemple en HTML](https://htmlpreview.github.io/?https://github.com/benoitdekeyn/MarkDownAble/blob/main/output_html/exemple/index.html), le résultat affiché dans un navigateur (en local : `output_html/exemple/index.html`).
 - **Le PDF** : [exemple en PDF](https://github.com/benoitdekeyn/MarkDownAble/blob/main/output_pdf/exemple.pdf), le résultat avec signets (en local : `output_pdf/exemple.pdf`).
 
+> Pour lancer `npm run dev` en local sur cet exemple, indiquez temporairement `"doc": "./doc"`, `"output_html": "./output_html"` et `"output_pdf": "./output_pdf"` dans `paths.jsonc` (ou supprimez `paths.jsonc`, qui pointe vers `../` par défaut).
+
 ### 1.5 Démarrer votre propre document
 
-La méthode la plus simple : une commande crée un `.md` et un `.jsonc` vierges, que vous pouvez écrire aussitôt.
+Une commande crée un `.md` et un `.jsonc` vierges dans le dossier configuré par `paths.jsonc` (par défaut le dossier parent `../`), prêts à être rédigés aussitôt :
 
 ```powershell
 npm run init -- MonDoc
 npm run dev -- MonDoc
 ```
 
-Vous pouvez ensuite supprimer l'exemple (`doc/exemple.md`, `doc/exemple.jsonc` et les images `doc/media/exemple_*`). Autre possibilité : dans `doc/`, **renommer `exemple.md` et `exemple.jsonc` avec le même nouveau nom** (le lien entre les deux se fait uniquement par ce nom), puis remplacer le texte et les images.
+Le navigateur s'ouvre sur l'aperçu ; chaque sauvegarde recharge la page (`Ctrl+C` arrête le serveur). Si vous avez déjà un fichier `../MonDoc.md`, lancez `npm run init -- MonDoc --no-md` pour créer uniquement `../MonDoc.jsonc` sans toucher à votre `.md`.
 
-Pour les livrables : `npm run edit:outline` (numérotation + table des matières, facultatif), puis `npm run build:html` et/ou `npm run build:pdf`. Les fichiers sont écrits dans `output_html/` et `output_pdf/`. Le détail des commandes est au [§2](#2-utilisation-au-quotidien).
+Pour les livrables : `npm run edit:outline` (numérotation + table des matières, facultatif), puis `npm run build:html` (écrit dans `../web-version/<nom>/`) et/ou `npm run build:pdf` (écrit `../<nom>.pdf`). Le détail des commandes est au [§2](#2-utilisation-au-quotidien).
 
 ### 1.6 Pour le PDF : Chrome ou Edge
 
 L'export PDF utilise le navigateur déjà installé sur la machine (Google Chrome ou Microsoft Edge, détecté automatiquement). Rien à télécharger de plus ; si la détection échoue, indiquez son chemin avec `pdf.browser` (§5.6).
 
-### 1.7 Un projet à vous, avec l'outil dans un sous-dossier (facultatif)
+### 1.7 Intégrer dans votre dépôt Git (`npm run ghost`) ou travailler en mode autonome
 
-Cas d'usage : vous avez **votre** dépôt (rapport, tutoriel…) et vous voulez y mettre l'outil sans le mélanger avec votre historique Git.
-
-```powershell
-cd MonProjet                                                      # votre dépôt
-git clone https://github.com/benoitdekeyn/MarkDownAble markdownable
-cd markdownable
-npm install
-npm run ghost                                                     # ajoute « markdownable/ » au .gitignore de MonProjet
-```
-
-Le dossier `markdownable/` garde son propre `.git` : `git pull` y reste possible pour recevoir les mises à jour de l'outil, et votre dépôt ne le suit pas. Puis, dans `markdownable/paths.jsonc`, pointez vers votre projet (chemins relatifs à `markdownable/`) :
+**Dans votre propre dépôt Git (configuration par défaut).** L'outil étant cloné dans un sous-dossier (ex. `MonProjet/markdownable/`) et `paths.jsonc` pointant déjà vers le dossier parent :
 
 ```jsonc
 {
   "doc": "../",                  // vos .md + .jsonc à la racine de MonProjet
-  "output_html": "../html",
-  "output_pdf": "../pdf"
+  "output_html": "../web-version",
+  "output_pdf": "../"
 }
 ```
 
-Les chemins peuvent être le dossier parent lui-même : le dossier de l'outil (`markdownable/`) est alors ignoré (pas de rebuild en boucle, pas servi par `npm run dev`). Ne modifiez pas `scripts/` pour que les mises à jour restent sans conflit (voir §6.1 pour `paths.jsonc`).
+Lancez `npm run ghost` (une seule fois) pour ajouter `markdownable/` au `.gitignore` de `MonProjet` : le dossier de l'outil garde son propre `.git` (`git pull` reste possible pour recevoir les mises à jour) sans être suivi par votre dépôt parent, et `npm run dev` ignore automatiquement le dossier de l'outil ainsi que les fichiers générés. Ne modifiez pas `scripts/` pour que les mises à jour restent sans conflit (voir §6.1 pour `paths.jsonc`).
 
-Pour un projet totalement indépendant, supprimez plutôt le dossier `.git` du clone (`Remove-Item -Recurse -Force .git`) puis `git init`.
+**En mode autonome (tout dans le dossier de l'outil).** Si vous préférez garder vos documents à l'intérieur du dossier cloné (`doc/`, `output_html/`, `output_pdf/`), modifiez `paths.jsonc` avec `"./doc"`, `"./output_html"`, `"./output_pdf"` (ou supprimez `paths.jsonc`). Pour un dépôt totalement indépendant, supprimez le dossier `.git` du clone (`Remove-Item -Recurse -Force .git`) puis faites `git init`.
 
 
 ---
@@ -141,16 +134,17 @@ Toutes les commandes se lancent depuis le terminal, dans ce dossier.
 
 | Commande | Effet |
 | --- | --- |
-| `npm run init -- MonDoc` | Crée `doc/MonDoc.md` et `doc/MonDoc.jsonc` (config commentée). Voir §3. |
+| `npm run init -- MonDoc` | Crée `<doc>/MonDoc.md` et `<doc>/MonDoc.jsonc` (`../` par défaut via `paths.jsonc`). Voir §3. |
 | `npm run dev` | Serveur local avec **rechargement automatique** à chaque sauvegarde (ouvre le navigateur sur http://localhost:4173). Ctrl+C pour arrêter. |
-| `npm run build:html` | Écrit `output_html/<nom>/<html.name>.html` + médias utilisés, et l'ouvre dans le navigateur par défaut avec `--open`. |
-| `npm run build:pdf` | Écrit `output_pdf/<nom>.pdf` (l'ouvre avec `--open`). |
+| `npm run build:html` | Écrit `<output_html>/<nom>/<html.name>.html` (`../web-version/<nom>/` par défaut) + médias utilisés, et l'ouvre dans le navigateur par défaut avec `--open`. |
+| `npm run build:pdf` | Écrit `<output_pdf>/<nom>.pdf` (`../<nom>.pdf` par défaut ; l'ouvre avec `--open`). |
 | `npm run edit:numbering` | Numérote les titres du `.md` selon `numbering`. |
 | `npm run edit:numbering:guess` | Détecte la numérotation **déjà présente** et réécrit `numbering.levels` dans la config. |
 | `npm run edit:numbering:reset` | Retire toute la numérotation des titres. |
 | `npm run edit:toc` | Génère / met à jour la table des matières dans le `.md`. |
 | `npm run edit:outline` | `edit:numbering` puis `edit:toc`. |
-| `npm run release` | Publication de ce dépôt : copie `README.md` vers `doc/README.md`, génère les HTML et PDF de **tous** les documents, puis copie `output_html/README/index.html` et `output_pdf/README.pdf` vers `README.html` et `README.pdf` à la racine (fichiers écrasés). Nécessite `doc/README.jsonc`. |
+| `npm run ghost` | Ajoute le dossier de l'outil au `.gitignore` du dépôt Git parent (§1.7). |
+| `npm run release` | Publication de ce dépôt (utilise toujours `./doc`, `./output_html`, `./output_pdf`, indépendamment de `paths.jsonc`) : copie `README.md` vers `doc/README.md`, génère les HTML et PDF de **tous** les documents de `doc/`, puis copie `output_html/README/index.html` et `output_pdf/README.pdf` vers `README.html` et `README.pdf` à la racine (fichiers écrasés). Nécessite `doc/README.jsonc`. |
 
 Options (à ajouter après `--`) :
 
@@ -160,9 +154,9 @@ npm run edit:toc -- exemple --dry     # --dry : affiche ce qui serait fait sans 
 npm run build:html -- --open          # ouvre le résultat à la fin du build (rien ne s'ouvre par défaut)
 ```
 
-- Avec **un seul** document dans `doc/`, le nom est facultatif. Avec **plusieurs**, les commandes `edit:*` exigent le nom ; `build:*` traitent tout si aucun nom n'est donné.
+- Avec **un seul** document dans le dossier `doc` (configuré par `paths.jsonc`), le nom est facultatif. Avec **plusieurs**, les commandes `edit:*` exigent le nom ; `build:*` traitent tout si aucun nom n'est donné.
 - Variables d'environnement : `MARKDOWN_OPEN=1` (équivaut à `--open`), `MARKDOWN_NO_OPEN=1` (équivaut à `--no-open` : `dev` n'ouvre pas le navigateur), `PORT=5000` (port du serveur `dev`), `MARKDOWN_KEEP_TMP=1` (conserve le HTML temporaire du PDF, utile pour déboguer).
-- En mode `dev` avec plusieurs documents, `/` affiche la liste et chaque document est sur `/<nom>/`. Rien n'est écrit dans `output_html/` en mode `dev`.
+- En mode `dev` avec plusieurs documents, `/` affiche la liste et chaque document est sur `/<nom>/`. Rien n'est écrit dans le dossier HTML en mode `dev`.
 
 ### Lire les messages du terminal
 
@@ -184,7 +178,7 @@ Une commande crée le Markdown et sa configuration commentée :
 npm run init -- MonDoc
 ```
 
-Elle écrit `doc/MonDoc.md` (un squelette, jamais écrasé s'il existe) et `doc/MonDoc.jsonc` (tous les réglages avec leurs explications). Des options préremplissent la config pour aller plus vite :
+Elle écrit `<doc>/MonDoc.md` (un squelette, jamais écrasé s'il existe) et `<doc>/MonDoc.jsonc` (tous les réglages avec leurs explications) dans le dossier `"doc"` défini dans `paths.jsonc` (`../` par défaut, donc `../MonDoc.md` et `../MonDoc.jsonc`). Des options préremplissent la config pour aller plus vite :
 
 ```powershell
 npm run init -- MonDoc --title "Mon document" --icon media/logo.png --theme dark --pdf-theme light --format A4 --margin 15mm --page-breaks 1,2 --numbering decimal
@@ -202,9 +196,9 @@ npm run init -- --help        # liste complète des options
 | `--numbering off\|decimal`, `--toc-range 2,3` | Numérotation des titres, niveaux de la table des matières. |
 | `--no-md`, `--force` | Ne pas créer le `.md` ; écraser un `.jsonc` existant. |
 
-Vous pouvez aussi le faire à la main : créez `doc/MonDoc.md` et `doc/MonDoc.jsonc` (même `{}` suffit, tout a une valeur par défaut).
+Vous pouvez aussi le faire à la main : créez `<doc>/MonDoc.md` et `<doc>/MonDoc.jsonc` (même `{}` suffit, tout a une valeur par défaut).
 
-Chaque document a son propre dossier `output_html/<nom>/`, donc plusieurs documents peuvent garder `html.name: "index"` sans conflit. Seuls deux **PDF** de même nom entrent en conflit (l'outil s'arrête alors en le signalant : changez `pdf.name`).
+Chaque document a son propre dossier HTML (`<output_html>/<nom>/`, soit `../web-version/<nom>/` par défaut), donc plusieurs documents peuvent garder `html.name: "index"` sans conflit. Seuls deux **PDF** de même nom entrent en conflit dans `<output_pdf>/` (`../` par défaut ; l'outil s'arrête alors en le signalant : changez `pdf.name`).
 
 ---
 
@@ -665,53 +659,59 @@ Exemple : `doc/exemple.jsonc` → `"customCss": "styles/document.css"` lit `doc/
 
 ## 6. Organisation des dossiers
 
+Avec le `paths.jsonc` fourni par défaut, l'outil vit dans un sous-dossier de votre projet (ex. `markdownable/`) :
+
 ```
-.
-├── doc/                  ← VOS documents (à modifier)
-│   ├── exemple.md              le texte Markdown (exemple fourni : à renommer)
-│   ├── exemple.jsonc           sa configuration (même nom que le .md, extension .jsonc)
-│   └── media/                  vos images (partagées par tous les documents)
-├── template/             ← le VISUEL des générations (CSS / JS), modifiable : style.css, print.css, mermaid.css, highlight.css…
-├── output_html/          ← généré : un sous-dossier par document, avec son HTML + ses seuls médias utilisés
-│   └── exemple/
+MonProjet/                    ← votre dossier / dépôt ("doc": "../" et "output_pdf": "../")
+├── MonDoc.md                       votre texte Markdown
+├── MonDoc.jsonc                    sa configuration (même nom que le .md, extension .jsonc)
+├── MonDoc.pdf                      ← généré : PDF directement à côté du .md
+├── media/                          vos images (partagées par tous les documents)
+├── web-version/              ← généré ("output_html": "../web-version") : un sous-dossier par document
+│   └── MonDoc/
 │       ├── index.html
 │       └── media/…
-├── output_pdf/           ← généré : exemple.pdf
-├── scripts/              ← l'outil lui-même (build, init, edit…), à ne pas modifier
-│   └── state/            ← mémoire de numérotation et manifestes HTML (JSON internes, non versionnés)
-├── package.json          ← liste des commandes npm
-└── README.md
+└── markdownable/             ← le dépôt MarkDownAble (ignoré par votre Git après « npm run ghost »)
+    ├── paths.jsonc                 emplacement des 3 dossiers (doc, output_html, output_pdf)
+    ├── template/             ← le VISUEL des générations (CSS / JS), modifiable : style.css, print.css, mermaid.css, highlight.css…
+    ├── scripts/              ← l'outil lui-même (build, init, edit…), à ne pas modifier
+    │   └── state/            ← mémoire de numérotation et manifestes HTML (JSON internes, non versionnés)
+    ├── doc/                  ← exemple fourni (exemple.md, exemple.jsonc) et source du README du dépôt
+    ├── output_html/          ← sorties HTML de l'exemple (et repli si paths.jsonc est supprimé)
+    ├── output_pdf/           ← sorties PDF de l'exemple (et repli si paths.jsonc est supprimé)
+    ├── package.json          ← liste des commandes npm
+    └── README.md
 ```
 
 Règles importantes :
 
-- Les fichiers générés sont mis à jour dans **`output_html/` et `output_pdf/`** : ne travaillez jamais dedans. Les anciens dossiers, s'ils existent, ne sont ni déplacés ni supprimés automatiquement.
-- Un document n'est généré que si **`doc/<nom>.md` ET `doc/<nom>.jsonc`** existent (même `<nom>`). Un `.md` sans `.jsonc` est ignoré ; une config invalide est signalée et ignorée, les autres documents sont quand même traités.
-- Plusieurs `.md` = des **variantes** d'un même sujet qui partagent le même dossier `doc/media/`.
+- Les fichiers générés sont mis à jour dans **`output_html` (`../web-version/` par défaut) et `output_pdf` (`../` par défaut)** : ne modifiez pas directement les fichiers générés. Les anciens dossiers, s'ils existent, ne sont ni déplacés ni supprimés automatiquement.
+- Un document n'est généré que si **`<nom>.md` ET `<nom>.jsonc`** existent (même `<nom>`) dans le dossier `doc` configuré (`../` par défaut). Un `.md` sans `.jsonc` est ignoré ; une config invalide est signalée et ignorée, les autres documents sont quand même traités.
+- Plusieurs `.md` = des **variantes** d'un même sujet qui partagent le même dossier `media/`.
 - Les images se référencent **relativement au `.md`** : `![schéma](media/schema.png)`.
-- Dans `output_html/<nom>/`, le livrable contient le HTML et un seul dossier `media/`. Les ressources référencées dans `doc/media/` gardent leur chemin ; les autres ressources locales (y compris les fichiers JSON liés) sont copiées dans `media/linked/`, et leurs URL sont réécrites dans le HTML. **Seules les ressources utilisées** sont copiées. Pour publier ou envoyer la page : donnez/ouvrez **tout le dossier `output_html/<nom>/`**.
-- Les fichiers qui ne sont plus utilisés sont supprimés de `output_html/<nom>/` au build suivant (uniquement ceux que l'outil y avait écrits). Les manifestes JSON qui mémorisent ces fichiers sont conservés dans `scripts/state/`, pas dans les sorties HTML. Les ressources JSON explicitement référencées dans un Markdown restent des ressources de document et peuvent, elles, être copiées avec les autres médias.
+- Dans `<output_html>/<nom>/`, le livrable contient le HTML et un seul dossier `media/`. Les ressources référencées dans `media/` gardent leur chemin ; les autres ressources locales (y compris les fichiers JSON liés) sont copiées dans `media/linked/`, et leurs URL sont réécrites dans le HTML. **Seules les ressources utilisées** sont copiées. Pour publier ou envoyer la page : donnez/ouvrez **tout le dossier `<output_html>/<nom>/`**.
+- Les fichiers qui ne sont plus utilisés sont supprimés de `<output_html>/<nom>/` au build suivant (uniquement ceux que l'outil y avait écrits). Les manifestes JSON qui mémorisent ces fichiers sont conservés dans `scripts/state/`, pas dans les sorties HTML. Les ressources JSON explicitement référencées dans un Markdown restent des ressources de document et peuvent, elles, être copiées avec les autres médias.
 - **Personnaliser l'apparence** : modifiez les fichiers de `template/` (voir §5) ; ils s'appliquent à tous les documents.
 
-### 6.1 Choisir où vivent `doc/`, `output_html/` et `output_pdf/` : `paths.jsonc`
+### 6.1 Choisir où vivent `doc`, `output_html` et `output_pdf` : `paths.jsonc`
 
-Le dépôt peut n'être qu'un dossier « d'installation » de l'outil (cloné une fois), pendant que vos documents et vos sorties vivent ailleurs (OneDrive, un autre projet…). Le fichier **`paths.jsonc`**, à la racine du dépôt, règle l'emplacement de ces trois dossiers :
+Le dépôt peut n'être qu'un dossier « d'installation » de l'outil (cloné une fois dans un sous-dossier de votre projet, ou ailleurs sur la machine), pendant que vos documents et vos sorties vivent là où vous le voulez (dossier parent, OneDrive, autre projet…). Le fichier **`paths.jsonc`**, à la racine de l'outil, règle l'emplacement de ces trois dossiers. Valeurs fournies par défaut dans le dépôt :
 
 ```jsonc
 {
-  "doc": "./doc",                      // vos .md et .jsonc (et leurs médias)
-  "output_html": "./output_html",      // sites HTML générés
-  "output_pdf": "./output_pdf"         // PDF générés
+  "doc": "../",                        // vos .md et .jsonc (et leurs médias) dans le dossier parent
+  "output_html": "../web-version",     // sites HTML générés (<nom>/index.html + médias)
+  "output_pdf": "../"                  // PDF générés (<nom>.pdf à côté des .md)
 }
 ```
 
 - Un chemin **relatif** part du dossier où l'outil est cloné ; un chemin **absolu** peut pointer n'importe où (`"D:/Projets/rapports/doc"`). Sous Windows, écrivez `/` ou `\\` (backslash doublé).
-- Les trois clés sont facultatives (valeur par défaut = celle ci-dessus). Les commentaires `//` sont acceptés.
+- Les trois clés sont facultatives ; si `paths.jsonc` est absent (ou si une clé est omise), l'outil se replie sur ses dossiers internes `./doc`, `./output_html` et `./output_pdf`. Les commentaires `//` sont acceptés.
 - **Prise en compte immédiate** : le fichier est relu à chaque commande, et en direct pendant `npm run dev` (pas besoin de relancer). Si le JSON est invalide, l'ancienne configuration est conservée et l'erreur est affichée.
 - Les dossiers de sortie sont créés au besoin ; `npm run init` crée le dossier `doc`.
-- Garde-fous : clés inconnues, valeur vide, chemin pointant sur un fichier, sur la racine de l'outil elle-même, dans `scripts/`, `template/`, `node_modules/` ou `.git/` sont refusés avec un message clair. Un **parent** de l'outil est accepté (voir §1.7) : le dossier de l'outil y est ignoré par `npm run dev`. En revanche les trois dossiers **peuvent être identiques ou imbriqués** (ex. `output_html` dans `doc`) : le HTML va dans `<output_html>/<nom>/` et le PDF dans `<output_pdf>/<nom>.pdf`, et `npm run dev` ignore ces fichiers générés pour ne pas se relancer en boucle. Évitez seulement de nommer un document comme un sous-dossier de `doc` (ex. un document `media` si `output_html` = `doc`).
+- Garde-fous : clés inconnues, valeur vide, chemin pointant sur un fichier, sur la racine de l'outil elle-même, dans `scripts/`, `template/`, `node_modules/` ou `.git/` sont refusés avec un message clair. Un **parent** de l'outil (`"../"`, la valeur par défaut) est accepté : le dossier de l'outil y est ignoré par `npm run dev`. De même, les trois dossiers **peuvent être identiques ou imbriqués** (comme ici `doc` et `output_pdf` tous deux dans `../`) : le HTML va dans `<output_html>/<nom>/` et le PDF dans `<output_pdf>/<nom>.pdf`, et `npm run dev` ignore ces fichiers générés pour ne pas se relancer en boucle. Évitez seulement de nommer un document comme un sous-dossier de `doc` (ex. un document `media` si `output_html` = `doc`).
 - Les liens et images d'un `.md` restent relatifs au dossier `doc` choisi. Le lien `../README.md#…` de `exemple.md` n'a donc plus de cible si vous déplacez `doc` hors du dépôt : l'avertissement est normal (supprimez ce lien dans votre copie).
-- `npm run release` copie le `README.md` du dépôt dans le dossier `doc` choisi, puis génère dans les dossiers choisis ; `README.html` et `README.pdf` sont recopiés à la racine du dépôt.
+- `npm run release` ignore `paths.jsonc` et utilise toujours `./doc`, `./output_html` et `./output_pdf` du dépôt de l'outil, puis recopie `README.html` et `README.pdf` à la racine du dépôt.
 - `paths.jsonc` est versionné avec les valeurs par défaut : si vous le modifiez, une mise à jour du dépôt (`git pull`) peut entrer en conflit (`git stash` avant, `git stash pop` après).
 - `npm run ghost` ajoute le dossier de l'outil au `.gitignore` du dépôt qui le contient (§1.7).
 
@@ -724,10 +724,10 @@ Le dépôt peut n'être qu'un dossier « d'installation » de l'outil (cloné un
 | `node` / `npm` : « commande introuvable » | Node.js non installé, ou terminal ouvert avant l'installation : fermez et rouvrez-le. |
 | `npm : Le terme « npm » n'est pas reconnu…` / `'npm' is not recognized` | Node.js n'est pas installé (ou terminal ouvert avant l'installation) : voir [§1.1](#11-installer-nodejs), puis rouvrez le terminal. |
 | `Cannot find module …` | Lancez `npm install` dans ce dossier. |
-| « aucun document à générer » | Vérifiez que `doc/<nom>.md` **et** `doc/<nom>.jsonc` existent avec le même nom. |
+| « aucun document à générer » | Vérifiez que `<nom>.md` **et** `<nom>.jsonc` existent avec le même nom dans le dossier `"doc"` de `paths.jsonc` (`../` par défaut). |
 | « <nom>.jsonc : … document ignoré » | Erreur dans la config (virgule manquante, valeur invalide) : le message indique laquelle. |
-| Images absentes dans le HTML | Ouvrez le HTML **depuis `output_html/<nom>/`** avec son dossier `media/` à côté, ou mettez `embedImages: true`. |
-| « fichier situé hors de doc/ » | Une image est référencée avec `../` hors de `doc/` : déplacez-la dans `doc/`. |
+| Images absentes dans le HTML | Ouvrez le HTML **depuis `<output_html>/<nom>/`** (`../web-version/<nom>/` par défaut) avec son dossier `media/` à côté, ou mettez `embedImages: true`. |
+| « fichier situé hors de … » | Une image est référencée avec `../` hors du dossier `"doc"` configuré : déplacez-la dedans. |
 | PDF : « navigateur introuvable » | Installez Chrome ou Edge, ou indiquez `pdf.browser` (chemin de l'exécutable). |
 | `dev` : « port déjà utilisé » | Un autre `npm run dev` tourne encore (fermez-le) ou lancez avec un autre port : `$env:PORT=5000; npm run dev`. |
 | Liens internes cassés signalés | Après renumérotation, relancez `npm run edit:numbering` (met à jour les liens) ou corrigez à la main. |
